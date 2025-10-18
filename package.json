@@ -1,12 +1,14 @@
 {
-  "name": "color-gradient-tool",
+  "name": "gradient-screensavers-pwa",
   "version": "1.0.0",
-  "description": "Веб-приложение с анимированными градиентными заставками. Поддерживает переключаемые варианты заставок с настраиваемыми параметрами.",
+  "description": "PWA с анимированными градиентными заставками. Поддерживает переключаемые варианты заставок с настраиваемыми параметрами. Можно установить как приложение.",
   "main": "script.js",
   "scripts": {
+    "start": "npx http-server -p 8080",
+    "build": "echo \"PWA не требует сборки, просто откройте index.html в браузере\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["screensaver", "gradient", "animation", "pwa", "web-app"],
   "author": "",
   "license": "ISC",
   "dependencies": {
