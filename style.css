@@ -16,6 +16,11 @@ sl-drawer::part(overlay) {
     background-color: transparent;
 }
 
+/* Отступ между лейблом селекта и самим селектом */
+sl-drawer sl-select {
+    margin-top: var(--sl-spacing-small);
+}
+
 /* Вертикальное расположение элементов настроек */
 #screensaver-settings > div {
     margin-bottom: var(--sl-spacing-medium);

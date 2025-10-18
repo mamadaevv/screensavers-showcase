@@ -241,14 +241,22 @@ screensaverSelect.addEventListener('sl-change', (event) => {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Script: инициализация приложения');
 
-    // Получаем сохраненную заставку или используем значение по умолчанию
-    const savedScreensaver = localStorage.getItem('selectedScreensaver') || 'linear-gradient';
-    console.log('Script: сохраненная заставка:', savedScreensaver);
+    // Ждем инициализации Shoelace компонентов
+    Promise.all([
+        customElements.whenDefined('sl-select'),
+        customElements.whenDefined('sl-option')
+    ]).then(() => {
+        console.log('Script: Shoelace компоненты готовы');
 
-    // Устанавливаем значение в селекте
-    screensaverSelect.value = savedScreensaver;
-    console.log('Script: установлено значение в селекте:', savedScreensaver);
+        // Получаем сохраненную заставку или используем значение по умолчанию
+        const savedScreensaver = localStorage.getItem('selectedScreensaver') || 'linear-gradient';
+        console.log('Script: сохраненная заставка:', savedScreensaver);
 
-    // Показываем выбранную заставку (это также создаст динамические элементы управления)
-    switchScreensaver(savedScreensaver);
+        // Устанавливаем значение в селекте
+        screensaverSelect.value = savedScreensaver;
+        console.log('Script: установлено значение в селекте:', savedScreensaver);
+
+        // Показываем выбранную заставку (это также создаст динамические элементы управления)
+        switchScreensaver(savedScreensaver);
+    });
 });
