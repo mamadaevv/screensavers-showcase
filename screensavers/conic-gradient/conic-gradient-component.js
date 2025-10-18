@@ -1,17 +1,42 @@
 class ConicGradientScreensaver extends HTMLElement {
+  static getSettings() {
+    return [
+      {
+        name: 'speed',
+        label: 'Скорость вращения',
+        type: 'range',
+        min: 0,
+        max: 100,
+        default: 50,
+        step: 1
+      }
+    ];
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
     this.animationId = null;
     this.gradientAngle = 0;
+    this.speed = 50; // значение по умолчанию
   }
 
   connectedCallback() {
+    console.log('ConicGradientScreensaver: инициализация компонента');
+
+    // Читаем настройки из атрибутов
+    const speedAttr = this.getAttribute('data-speed');
+    if (speedAttr !== null) {
+      this.speed = parseInt(speedAttr, 10);
+      console.log('ConicGradientScreensaver: скорость установлена из атрибута:', this.speed);
+    }
+
     this.render();
     this.startAnimation();
   }
 
   disconnectedCallback() {
+    console.log('ConicGradientScreensaver: компонент удален');
     this.stopAnimation();
   }
 
@@ -38,9 +63,20 @@ class ConicGradientScreensaver extends HTMLElement {
   }
 
   startAnimation() {
-    const animateGradient = () => {
-      this.gradientAngle = (this.gradientAngle + 1) % 360;
-      this.gradientElement.style.setProperty('--gradient-angle', this.gradientAngle + 'deg');
+    console.log('ConicGradientScreensaver: запуск анимации со скоростью', this.speed);
+
+    if (this.speed === 0) {
+      console.log('ConicGradientScreensaver: скорость 0, анимация не запущена');
+      return; // не запускаем анимацию при нулевой скорости
+    }
+
+    let lastTime = 0;
+    const animateGradient = (currentTime) => {
+      if (currentTime - lastTime >= (1000 / (this.speed * 10))) { // скорость влияет на частоту обновлений
+        this.gradientAngle = (this.gradientAngle + 1) % 360;
+        this.gradientElement.style.setProperty('--gradient-angle', this.gradientAngle + 'deg');
+        lastTime = currentTime;
+      }
       this.animationId = requestAnimationFrame(animateGradient);
     };
     this.animationId = requestAnimationFrame(animateGradient);
@@ -48,9 +84,22 @@ class ConicGradientScreensaver extends HTMLElement {
 
   stopAnimation() {
     if (this.animationId) {
+      console.log('ConicGradientScreensaver: остановка анимации');
       cancelAnimationFrame(this.animationId);
       this.animationId = null;
     }
+  }
+
+  // Метод для обновления скорости
+  updateSpeed(newSpeed) {
+    console.log('ConicGradientScreensaver: updateSpeed вызван с параметром', newSpeed);
+    console.log('ConicGradientScreensaver: текущая скорость', this.speed);
+    this.speed = newSpeed;
+    console.log('ConicGradientScreensaver: установлена новая скорость', this.speed);
+    // Перезапускаем анимацию с новой скоростью
+    this.stopAnimation();
+    this.startAnimation();
+    console.log('ConicGradientScreensaver: анимация перезапущена с новой скоростью');
   }
 }
 
