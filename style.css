@@ -15,3 +15,17 @@ html, body {
 sl-drawer::part(overlay) {
     background-color: transparent;
 }
+
+/* Вертикальное расположение элементов настроек */
+#screensaver-settings > div {
+    margin-bottom: var(--sl-spacing-medium);
+}
+
+#screensaver-settings > div:last-child {
+    margin-bottom: 0;
+}
+
+/* Отступ между input и range в настройках */
+#screensaver-settings sl-input {
+    margin-bottom: var(--sl-spacing-small);
+}

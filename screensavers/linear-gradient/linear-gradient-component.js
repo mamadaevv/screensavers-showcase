@@ -41,6 +41,7 @@ class LinearGradientScreensaver extends HTMLElement {
   }
 
   render() {
+    console.log('LinearGradientScreensaver: рендеринг компонента');
     const style = document.createElement('style');
     style.textContent = `
       .gradient-background {

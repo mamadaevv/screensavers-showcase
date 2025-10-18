@@ -50,25 +50,30 @@ function createSettingsControls(componentClass, container) {
     // Создаем элементы управления для каждой настройки
     settings.forEach(setting => {
         const settingDiv = document.createElement('div');
-        settingDiv.style.marginBottom = '1rem';
 
-        // Создаем sl-range
+        // Создаем лейбл
+        const label = document.createElement('label');
+        label.textContent = setting.label;
+        label.style.display = 'block';
+        label.style.marginBottom = 'var(--sl-spacing-small)';
+        label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+        label.style.fontWeight = 'var(--sl-input-label-font-weight)';
+        label.style.color = 'var(--sl-input-label-color)';
+
+        // Создаем sl-range без лейбла
         const range = document.createElement('sl-range');
-        range.label = setting.label;
         range.min = setting.min;
         range.max = setting.max;
         range.step = setting.step;
         range.value = getSavedSetting(componentTagName, setting.name, setting.default);
 
-        // Создаем sl-input для числового ввода
+        // Создаем sl-input для числового ввода без лейбла
         const input = document.createElement('sl-input');
         input.type = 'number';
         input.min = setting.min;
         input.max = setting.max;
         input.step = setting.step;
         input.value = range.value;
-        input.style.marginLeft = '0.5rem';
-        input.style.width = '80px';
 
         console.log(`Script: создание настройки "${setting.name}" со значением`, range.value);
 
@@ -91,8 +96,9 @@ function createSettingsControls(componentClass, container) {
             updateCurrentScreensaver();
         });
 
-        settingDiv.appendChild(range);
+        settingDiv.appendChild(label);
         settingDiv.appendChild(input);
+        settingDiv.appendChild(range);
         container.appendChild(settingDiv);
     });
 }
