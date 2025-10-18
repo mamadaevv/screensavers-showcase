@@ -1,0 +1,20 @@
+/* Базовые стили для применения системного шрифта Shoelace ко всему документу */
+body {
+  font-family: var(--sl-font-sans);
+}
+
+/* Предотвращение Flash of Undefined Custom Elements только для используемых Shoelace компонентов */
+sl-button:not(:defined),
+sl-drawer:not(:defined) {
+  visibility: hidden;
+}
+
+/* Кастомные стили приложения */
+.drawer-placement-start {
+    --size: 300px;
+}
+
+/* Убрать затемнение overlay для drawer */
+sl-drawer::part(overlay) {
+    background-color: transparent;
+}
