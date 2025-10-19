@@ -69,6 +69,40 @@ function createSettingsControls(componentClass, container) {
     const rangeSettings = settings.filter(setting => setting.type === 'range');
     const colorSettings = settings.filter(setting => setting.type === 'color');
 
+    // Специальная обработка для solid-color (inline color picker)
+    if (componentTagName === 'solid-color-screensaver' && colorSettings.length === 1) {
+        const setting = colorSettings[0];
+        const colorDiv = document.createElement('div');
+
+        // Создаем лейбл
+        const label = document.createElement('label');
+        label.textContent = setting.label;
+        label.style.display = 'block';
+        label.style.marginBottom = 'var(--sl-spacing-small)';
+        label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+        label.style.fontWeight = 'var(--sl-input-label-font-weight)';
+        label.style.color = 'var(--sl-input-label-color)';
+
+        // Создаем inline color picker
+        const colorPicker = document.createElement('sl-color-picker');
+        colorPicker.value = getSavedSetting(componentTagName, setting.name, setting.default);
+        colorPicker.inline = true; // Используем inline режим
+        colorPicker.swatches = '#ff0000;#ff8000;#ffff00;#80ff00;#00ff80;#0080ff;#8000ff;#ffffff;#c0c0c0;#808080;#404040;#000000';
+
+        colorPicker.addEventListener('sl-input', (e) => {
+            const newHex = e.target.value;
+            const currentElement = document.querySelector(`${componentTagName}`);
+            if (currentElement && typeof currentElement.updateColor === 'function') {
+                currentElement.updateColor(newHex);
+            }
+        });
+
+        colorDiv.appendChild(label);
+        colorDiv.appendChild(colorPicker);
+        container.appendChild(colorDiv);
+        return; // Для solid-color не нужны другие настройки
+    }
+
     // Создаем элементы управления для range настроек
     rangeSettings.forEach(setting => {
         const settingDiv = document.createElement('div');
@@ -258,6 +292,13 @@ function createSettingsControls(componentClass, container) {
 
 // Функция получения сохраненной настройки
 function getSavedSetting(componentName, settingName, defaultValue) {
+    // Для solid-color получаем одиночный цвет
+    if (componentName === 'solid-color-screensaver' && settingName === 'color') {
+        const colorKey = `screensaver-${componentName}-color`;
+        const savedColor = localStorage.getItem(colorKey);
+        return savedColor !== null ? savedColor : defaultValue;
+    }
+
     // Для цветовых настроек конического градиента и смены цветов получаем из массива цветов
     if ((componentName === 'conic-gradient-screensaver' || componentName === 'color-transition-screensaver') && settingName.startsWith('color')) {
         const colorsKey = `screensaver-${componentName}-colors`;
@@ -295,6 +336,8 @@ function getComponentClass(componentName) {
             return ConicGradientScreensaver;
         case 'color-transition-screensaver':
             return ColorTransitionScreensaver;
+        case 'solid-color-screensaver':
+            return SolidColorScreensaver;
         default:
             return null;
     }
@@ -321,6 +364,8 @@ function updateCurrentScreensaver() {
                 currentElement.updateSpeed(value);
             } else if (setting.name === 'angle' && typeof currentElement.updateAngleValue === 'function') {
                 currentElement.updateAngleValue(value);
+            } else if (setting.name === 'color' && componentName === 'solid-color-screensaver' && typeof currentElement.updateColor === 'function') {
+                currentElement.updateColor(value);
             } else if (setting.name.startsWith('color') && typeof currentElement.updateColor === 'function') {
                 const colorIndex = parseInt(setting.name.replace('color', '')) - 1;
                 currentElement.updateColor(colorIndex, value);
@@ -354,6 +399,9 @@ function switchScreensaver(type) {
         case 'color-transition':
             componentClass = ColorTransitionScreensaver;
             break;
+        case 'solid-color':
+            componentClass = SolidColorScreensaver;
+            break;
         default:
             return;
     }
@@ -365,10 +413,11 @@ function switchScreensaver(type) {
     const settings = componentClass.getSettings();
     const componentTagName = `${type}-screensaver`;
     settings.forEach(setting => {
-        // Для цветовых настроек конического градиента и смены цветов не устанавливаем атрибуты,
+        // Для цветовых настроек конического градиента, смены цветов и сплошного цвета не устанавливаем атрибуты,
         // поскольку цвета загружаются из localStorage в connectedCallback
         if (!(componentTagName === 'conic-gradient-screensaver' && setting.type === 'color') &&
-            !(componentTagName === 'color-transition-screensaver' && setting.type === 'color')) {
+            !(componentTagName === 'color-transition-screensaver' && setting.type === 'color') &&
+            !(componentTagName === 'solid-color-screensaver' && setting.type === 'color')) {
             const value = getSavedSetting(componentTagName, setting.name, setting.default);
             component.setAttribute(`data-${setting.name}`, value);
         }
