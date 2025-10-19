@@ -35,3 +35,15 @@ sl-drawer sl-input::part(form-control-label) {
 #screensaver-settings sl-input {
     margin-bottom: var(--sl-spacing-small);
 }
+
+/* Стили для main контейнера - занимает всю высоту и кликабелен */
+main {
+    height: 100vh;
+    cursor: pointer;
+    position: relative;
+}
+
+#screensaver-container {
+    width: 100%;
+    height: 100%;
+}
