@@ -1,7 +1,7 @@
 {
-  "name": "Gradient Screensavers",
-  "short_name": "Screensavers",
-  "description": "Веб-приложение с анимированными градиентными заставками",
+  "name": "Screensavers Showcase",
+  "short_name": "Screensavers Showcase",
+  "description": "Веб-приложение с разными заставками",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
