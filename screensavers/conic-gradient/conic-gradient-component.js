@@ -9,6 +9,24 @@ class ConicGradientScreensaver extends HTMLElement {
         max: 100,
         default: 50,
         step: 1
+      },
+      {
+        name: 'offsetX',
+        label: 'Смещение по X (%)',
+        type: 'range',
+        min: 0,
+        max: 100,
+        default: 0,
+        step: 1
+      },
+      {
+        name: 'offsetY',
+        label: 'Смещение по Y (%)',
+        type: 'range',
+        min: 0,
+        max: 100,
+        default: 30,
+        step: 1
       }
     ];
   }
@@ -19,6 +37,8 @@ class ConicGradientScreensaver extends HTMLElement {
     this.animationId = null;
     this.gradientAngle = 0;
     this.speed = 50; // значение по умолчанию
+    this.offsetX = 0; // значение по умолчанию
+    this.offsetY = 30; // значение по умолчанию
   }
 
   connectedCallback() {
@@ -26,6 +46,16 @@ class ConicGradientScreensaver extends HTMLElement {
     const speedAttr = this.getAttribute('data-speed');
     if (speedAttr !== null) {
       this.speed = parseInt(speedAttr, 10);
+    }
+
+    const offsetXAttr = this.getAttribute('data-offsetX');
+    if (offsetXAttr !== null) {
+      this.offsetX = parseInt(offsetXAttr, 10);
+    }
+
+    const offsetYAttr = this.getAttribute('data-offsetY');
+    if (offsetYAttr !== null) {
+      this.offsetY = parseInt(offsetYAttr, 10);
     }
 
     this.render();
@@ -45,7 +75,7 @@ class ConicGradientScreensaver extends HTMLElement {
         left: 0;
         width: 100%;
         height: 100%;
-        background: conic-gradient(from var(--gradient-angle, 90deg), #0084ff 0%, #04ff00 20%, #ff00ea 40%, #ff9100 60%, #7300ff 80%, #0084ff 100%);
+        background: conic-gradient(from var(--gradient-angle, 90deg) at var(--offset-x, 0%) var(--offset-y, 30%), #0084ff 0%, #04ff00 20%, #ff00ea 40%, #ff9100 60%, #7300ff 80%, #0084ff 100%);
         z-index: -1;
       }
     `;
@@ -56,6 +86,9 @@ class ConicGradientScreensaver extends HTMLElement {
     this.shadowRoot.appendChild(style);
     this.shadowRoot.appendChild(container);
     this.gradientElement = container;
+
+    // Устанавливаем начальные значения смещений
+    this.updateOffset();
   }
 
   startAnimation() {
@@ -96,6 +129,24 @@ class ConicGradientScreensaver extends HTMLElement {
     // Перезапускаем анимацию с новой скоростью
     this.stopAnimation();
     this.startAnimation();
+  }
+
+  // Метод для обновления смещения
+  updateOffset() {
+    this.gradientElement.style.setProperty('--offset-x', this.offsetX + '%');
+    this.gradientElement.style.setProperty('--offset-y', this.offsetY + '%');
+  }
+
+  // Метод для обновления смещения по X
+  updateOffsetX(newOffsetX) {
+    this.offsetX = newOffsetX;
+    this.updateOffset();
+  }
+
+  // Метод для обновления смещения по Y
+  updateOffsetY(newOffsetY) {
+    this.offsetY = newOffsetY;
+    this.updateOffset();
   }
 }
 

@@ -71,14 +71,14 @@ function createSettingsControls(componentClass, container) {
         input.step = setting.step;
         input.value = range.value;
 
-        // Синхронизируем значения между range и input
-        range.addEventListener('sl-change', (e) => {
+        // Синхронизируем значения между range и input в реальном времени
+        range.addEventListener('sl-input', (e) => {
             input.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
             updateCurrentScreensaver();
         });
 
-        input.addEventListener('sl-change', (e) => {
+        input.addEventListener('sl-input', (e) => {
             range.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
             updateCurrentScreensaver();
@@ -130,6 +130,10 @@ function updateCurrentScreensaver() {
 
             if (setting.name === 'speed') {
                 currentElement.updateSpeed(value);
+            } else if (setting.name === 'offsetX' && typeof currentElement.updateOffsetX === 'function') {
+                currentElement.updateOffsetX(value);
+            } else if (setting.name === 'offsetY' && typeof currentElement.updateOffsetY === 'function') {
+                currentElement.updateOffsetY(value);
             }
             // Здесь можно добавить другие настройки
         });
