@@ -172,8 +172,8 @@ function createSettingsControls(componentClass, container) {
             colorPicker.addEventListener('sl-input', (e) => {
                 const newHex = e.target.value;
 
-                // Для конического и линейного градиентов обновляем массив цветов в компоненте
-                if (componentTagName === 'conic-gradient-screensaver' || componentTagName === 'linear-gradient-screensaver') {
+                // Для конического, линейного градиентов и смены цветов обновляем массив цветов в компоненте
+                if (componentTagName === 'conic-gradient-screensaver' || componentTagName === 'linear-gradient-screensaver' || componentTagName === 'color-transition-screensaver') {
                     const currentElement = document.querySelector(`${componentTagName}`);
                     if (currentElement && typeof currentElement.updateColor === 'function') {
                         const colorIndex = parseInt(setting.name.replace('color', '')) - 1;
@@ -258,8 +258,8 @@ function createSettingsControls(componentClass, container) {
 
 // Функция получения сохраненной настройки
 function getSavedSetting(componentName, settingName, defaultValue) {
-    // Для цветовых настроек конического градиента получаем из массива цветов
-    if (componentName === 'conic-gradient-screensaver' && settingName.startsWith('color')) {
+    // Для цветовых настроек конического градиента и смены цветов получаем из массива цветов
+    if ((componentName === 'conic-gradient-screensaver' || componentName === 'color-transition-screensaver') && settingName.startsWith('color')) {
         const colorsKey = `screensaver-${componentName}-colors`;
         const savedColors = localStorage.getItem(colorsKey);
         if (savedColors) {
@@ -293,6 +293,8 @@ function getComponentClass(componentName) {
             return LinearGradientScreensaver;
         case 'conic-gradient-screensaver':
             return ConicGradientScreensaver;
+        case 'color-transition-screensaver':
+            return ColorTransitionScreensaver;
         default:
             return null;
     }
@@ -319,16 +321,9 @@ function updateCurrentScreensaver() {
                 currentElement.updateSpeed(value);
             } else if (setting.name === 'angle' && typeof currentElement.updateAngleValue === 'function') {
                 currentElement.updateAngleValue(value);
-            } else if (setting.name === 'color1' && typeof currentElement.updateColor1 === 'function') {
-                currentElement.updateColor1(value);
-            } else if (setting.name === 'color2' && typeof currentElement.updateColor2 === 'function') {
-                currentElement.updateColor2(value);
-            } else if (setting.name === 'color3' && typeof currentElement.updateColor3 === 'function') {
-                currentElement.updateColor3(value);
-            } else if (setting.name === 'color4' && typeof currentElement.updateColor4 === 'function') {
-                currentElement.updateColor4(value);
-            } else if (setting.name === 'color5' && typeof currentElement.updateColor5 === 'function') {
-                currentElement.updateColor5(value);
+            } else if (setting.name.startsWith('color') && typeof currentElement.updateColor === 'function') {
+                const colorIndex = parseInt(setting.name.replace('color', '')) - 1;
+                currentElement.updateColor(colorIndex, value);
             } else if (setting.name === 'offsetX' && typeof currentElement.updateOffsetX === 'function') {
                 currentElement.updateOffsetX(value);
             } else if (setting.name === 'offsetY' && typeof currentElement.updateOffsetY === 'function') {
@@ -356,6 +351,9 @@ function switchScreensaver(type) {
         case 'conic-gradient':
             componentClass = ConicGradientScreensaver;
             break;
+        case 'color-transition':
+            componentClass = ColorTransitionScreensaver;
+            break;
         default:
             return;
     }
@@ -367,9 +365,10 @@ function switchScreensaver(type) {
     const settings = componentClass.getSettings();
     const componentTagName = `${type}-screensaver`;
     settings.forEach(setting => {
-        // Для цветовых настроек конического градиента не устанавливаем атрибуты,
+        // Для цветовых настроек конического градиента и смены цветов не устанавливаем атрибуты,
         // поскольку цвета загружаются из localStorage в connectedCallback
-        if (!(componentTagName === 'conic-gradient-screensaver' && setting.type === 'color')) {
+        if (!(componentTagName === 'conic-gradient-screensaver' && setting.type === 'color') &&
+            !(componentTagName === 'color-transition-screensaver' && setting.type === 'color')) {
             const value = getSavedSetting(componentTagName, setting.name, setting.default);
             component.setAttribute(`data-${setting.name}`, value);
         }
