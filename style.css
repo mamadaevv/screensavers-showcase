@@ -22,6 +22,11 @@ sl-drawer sl-input::part(form-control-label) {
     margin-bottom: var(--sl-spacing-small);
 }
 
+/* Отступ для селекта "Выберите заставку" */
+sl-drawer sl-select[label="Выберите заставку"] {
+    margin-bottom: var(--sl-spacing-medium);
+}
+
 /* Вертикальное расположение элементов настроек */
 #screensaver-settings > div {
     margin-bottom: var(--sl-spacing-medium);
@@ -32,7 +37,8 @@ sl-drawer sl-input::part(form-control-label) {
 }
 
 /* Отступ между input и range в настройках */
-#screensaver-settings sl-input {
+#screensaver-settings sl-input,
+#brightness-settings sl-input {
     margin-bottom: var(--sl-spacing-small);
 }
 

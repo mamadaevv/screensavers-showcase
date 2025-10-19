@@ -51,6 +51,146 @@ function toggleFullscreen() {
 // Получаем селект для выбора заставки
 const screensaverSelect = document.querySelector('sl-select');
 
+// Функции для работы с настройками яркости
+function getBrightnessSetting() {
+    const saved = localStorage.getItem('brightness-value');
+    return saved !== null ? parseInt(saved) : 0;
+}
+
+function saveBrightnessSetting(value) {
+    localStorage.setItem('brightness-value', value);
+}
+
+function getBrightnessSwitchSetting() {
+    const saved = localStorage.getItem('brightness-switch-enabled');
+    return saved !== null ? saved === 'true' : true; // По умолчанию включено
+}
+
+function saveBrightnessSwitchSetting(enabled) {
+    localStorage.setItem('brightness-switch-enabled', enabled);
+}
+
+// Функция обновления яркости
+function updateBrightness() {
+    const brightnessSwitch = document.getElementById('brightness-switch');
+    const screensaverContainer = document.getElementById('screensaver-container');
+    const body = document.body;
+
+    if (!brightnessSwitch || !screensaverContainer) return;
+
+    const isEnabled = brightnessSwitch.checked;
+    const brightness = getBrightnessSetting();
+
+    // Показываем/скрываем элементы управления яркостью
+    const brightnessContainer = document.getElementById('brightness-settings');
+    if (brightnessContainer) {
+        const controls = brightnessContainer.querySelectorAll('sl-range, sl-input');
+        controls.forEach(control => {
+            control.style.display = isEnabled ? '' : 'none';
+        });
+    }
+
+    if (isEnabled) {
+        // Применяем яркость - инвертированная прозрачность
+        const opacity = (100 - Math.abs(brightness)) / 100; // От 1 до 0
+        screensaverContainer.style.opacity = opacity;
+
+        // Меняем цвет фона body
+        if (brightness < 0) {
+            body.style.backgroundColor = 'black';
+        } else if (brightness > 0) {
+            body.style.backgroundColor = 'white';
+        } else {
+            body.style.backgroundColor = '';
+        }
+    } else {
+        // Не применяем яркость - сбрасываем стили
+        screensaverContainer.style.opacity = '';
+        body.style.backgroundColor = '';
+    }
+}
+
+// Функция добавления глобальной настройки яркости
+function addBrightnessControl(container) {
+    const brightnessDiv = document.createElement('div');
+
+    // Создаем контейнер для заголовка и switch
+    const headerDiv = document.createElement('div');
+    headerDiv.style.display = 'flex';
+    headerDiv.style.alignItems = 'center';
+    headerDiv.style.justifyContent = 'space-between';
+    headerDiv.style.marginBottom = 'var(--sl-spacing-small)';
+
+    // Создаем лейбл
+    const label = document.createElement('label');
+    label.textContent = 'Яркость';
+    label.style.display = 'block';
+    label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+    label.style.fontWeight = 'var(--sl-input-label-font-weight)';
+    label.style.color = 'var(--sl-input-label-color)';
+
+    // Создаем switch без лейбла
+    const brightnessSwitch = document.createElement('sl-switch');
+    brightnessSwitch.id = 'brightness-switch';
+    brightnessSwitch.checked = getBrightnessSwitchSetting();
+
+    // Обработчик изменения switch яркости
+    brightnessSwitch.addEventListener('sl-change', (event) => {
+        const isEnabled = event.target.checked;
+        saveBrightnessSwitchSetting(isEnabled);
+        updateBrightness();
+    });
+
+    headerDiv.appendChild(label);
+    headerDiv.appendChild(brightnessSwitch);
+
+    // Создаем sl-range с custom track offset
+    const range = document.createElement('sl-range');
+    range.min = -100;
+    range.max = 100;
+    range.step = 1;
+    range.value = getBrightnessSetting();
+    range.style.setProperty('--track-active-offset', '50%');
+
+    // Создаем sl-input для числового ввода
+    const input = document.createElement('sl-input');
+    input.type = 'number';
+    input.min = -100;
+    input.max = 100;
+    input.step = 1;
+    input.value = range.value;
+
+    // Синхронизируем значения между range и input в реальном времени
+    range.addEventListener('input', (e) => {
+        input.value = e.target.value;
+        saveBrightnessSetting(e.target.value);
+        updateBrightness();
+    });
+
+    range.addEventListener('sl-input', (e) => {
+        input.value = e.target.value;
+        saveBrightnessSetting(e.target.value);
+        updateBrightness();
+    });
+
+    input.addEventListener('input', (e) => {
+        range.value = e.target.value;
+        saveBrightnessSetting(e.target.value);
+        updateBrightness();
+    });
+
+    input.addEventListener('sl-input', (e) => {
+        range.value = e.target.value;
+        saveBrightnessSetting(e.target.value);
+        updateBrightness();
+    });
+
+    brightnessDiv.appendChild(headerDiv);
+    brightnessDiv.appendChild(input);
+    brightnessDiv.appendChild(range);
+    container.appendChild(brightnessDiv);
+}
+
 // Функция создания элементов управления настройками
 function createSettingsControls(componentClass, container) {
   // Делаем функцию глобальной для доступа из компонентов
@@ -383,9 +523,11 @@ function updateCurrentScreensaver() {
 function switchScreensaver(type) {
     const container = document.getElementById('screensaver-container');
     const settingsContainer = document.getElementById('screensaver-settings');
+    const brightnessContainer = document.getElementById('brightness-settings');
 
-    // Очищаем контейнер
+    // Очищаем контейнеры
     container.innerHTML = '';
+    brightnessContainer.innerHTML = '';
 
     // Получаем класс компонента
     let componentClass;
@@ -426,8 +568,14 @@ function switchScreensaver(type) {
     // Добавляем компонент в контейнер
     container.appendChild(component);
 
+    // Добавляем настройки яркости
+    addBrightnessControl(brightnessContainer);
+
     // Создаем динамические элементы управления
     createSettingsControls(componentClass, settingsContainer);
+
+    // Применяем настройки яркости
+    updateBrightness();
 
     // Сохраняем выбор в localStorage
     localStorage.setItem('selectedScreensaver', type);
@@ -439,12 +587,17 @@ screensaverSelect.addEventListener('sl-change', (event) => {
     switchScreensaver(selectedValue);
 });
 
+// Обработчик изменения switch яркости будет добавлен в addBrightnessControl
+
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     // Ждем инициализации Shoelace компонентов
     Promise.all([
         customElements.whenDefined('sl-select'),
-        customElements.whenDefined('sl-option')
+        customElements.whenDefined('sl-option'),
+        customElements.whenDefined('sl-switch'),
+        customElements.whenDefined('sl-range'),
+        customElements.whenDefined('sl-input')
     ]).then(() => {
         // Получаем сохраненную заставку или используем значение по умолчанию
         const savedScreensaver = localStorage.getItem('selectedScreensaver') || 'linear-gradient';
