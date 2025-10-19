@@ -120,7 +120,7 @@ class ConicGradientScreensaver extends HTMLElement {
         width: 100%;
         height: 100%;
         background: conic-gradient(from var(--gradient-angle, 90deg) at var(--offset-x, 0%) var(--offset-y, 30%), ${colorStops});
-        z-index: -1;
+        z-index: 0;
       }
     `;
 
@@ -158,6 +158,7 @@ class ConicGradientScreensaver extends HTMLElement {
       lastTime = currentTime;
       this.animationId = requestAnimationFrame(animateGradient);
     };
+
     this.animationId = requestAnimationFrame(animateGradient);
   }
 

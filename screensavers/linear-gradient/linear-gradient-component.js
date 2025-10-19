@@ -92,7 +92,7 @@ class LinearGradientScreensaver extends HTMLElement {
         width: 100%;
         height: 100%;
         background: linear-gradient(var(--angle, 90deg), ${colorStops});
-        z-index: -1;
+        z-index: 0;
       }
     `;
 

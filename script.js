@@ -76,7 +76,9 @@ function updateBrightness() {
     const screensaverContainer = document.getElementById('screensaver-container');
     const body = document.body;
 
-    if (!brightnessSwitch || !screensaverContainer) return;
+    if (!brightnessSwitch || !screensaverContainer) {
+        return;
+    }
 
     const isEnabled = brightnessSwitch.checked;
     const brightness = getBrightnessSetting();
@@ -568,11 +570,11 @@ function switchScreensaver(type) {
     // Добавляем компонент в контейнер
     container.appendChild(component);
 
-    // Добавляем настройки яркости
-    addBrightnessControl(brightnessContainer);
-
     // Создаем динамические элементы управления
     createSettingsControls(componentClass, settingsContainer);
+
+    // Добавляем настройки яркости ПОСЛЕ создания основных настроек
+    addBrightnessControl(brightnessContainer);
 
     // Применяем настройки яркости
     updateBrightness();
@@ -589,23 +591,56 @@ screensaverSelect.addEventListener('sl-change', (event) => {
 
 // Обработчик изменения switch яркости будет добавлен в addBrightnessControl
 
-// Инициализация при загрузке страницы
+// Функция принудительной загрузки заставки из хранилища
+function forceLoadScreensaver() {
+    // Получаем сохраненную заставку или используем значение по умолчанию
+    const savedScreensaver = localStorage.getItem('selectedScreensaver') || 'linear-gradient';
+
+    // Устанавливаем значение в селекте
+    if (screensaverSelect) {
+        screensaverSelect.value = savedScreensaver;
+    }
+
+    // Показываем выбранную заставку
+    switchScreensaver(savedScreensaver);
+}
+
+// Дополнительная инициализация при готовности DOM
 document.addEventListener('DOMContentLoaded', () => {
-    // Ждем инициализации Shoelace компонентов
-    Promise.all([
+    // Если основные компоненты уже зарегистрированы, загружаем заставку
+    const checkComponentsReady = () => {
+        const components = [
+            'sl-select', 'sl-option',
+            'linear-gradient-screensaver', 'conic-gradient-screensaver',
+            'color-transition-screensaver', 'solid-color-screensaver'
+        ];
+
+        const ready = components.every(name => customElements.get(name));
+        if (ready) {
+            forceLoadScreensaver();
+        }
+    };
+
+    checkComponentsReady();
+});
+
+// Инициализация при загрузке страницы
+window.addEventListener('load', () => {
+    // Ждем инициализации основных Shoelace компонентов и компонентов заставок
+    const componentPromises = [
         customElements.whenDefined('sl-select'),
         customElements.whenDefined('sl-option'),
-        customElements.whenDefined('sl-switch'),
-        customElements.whenDefined('sl-range'),
-        customElements.whenDefined('sl-input')
-    ]).then(() => {
-        // Получаем сохраненную заставку или используем значение по умолчанию
-        const savedScreensaver = localStorage.getItem('selectedScreensaver') || 'linear-gradient';
+        // Ждем регистрации компонентов заставок
+        customElements.whenDefined('linear-gradient-screensaver'),
+        customElements.whenDefined('conic-gradient-screensaver'),
+        customElements.whenDefined('color-transition-screensaver'),
+        customElements.whenDefined('solid-color-screensaver')
+    ];
 
-        // Устанавливаем значение в селекте
-        screensaverSelect.value = savedScreensaver;
-
-        // Показываем выбранную заставку (это также создаст динамические элементы управления)
-        switchScreensaver(savedScreensaver);
+    Promise.all(componentPromises).then(() => {
+        forceLoadScreensaver();
+    }).catch((error) => {
+        // Даже при ошибке пытаемся загрузить заставку
+        forceLoadScreensaver();
     });
 });

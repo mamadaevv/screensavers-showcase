@@ -80,7 +80,7 @@ class ColorTransitionScreensaver extends HTMLElement {
         height: 100%;
         background-color: var(--current-color, #ff0000);
         transition: background-color var(--transition-duration, 3s) ease-in-out;
-        z-index: -1;
+        z-index: 0;
       }
     `;
 

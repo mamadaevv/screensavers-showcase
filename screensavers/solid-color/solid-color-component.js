@@ -39,7 +39,7 @@ class SolidColorScreensaver extends HTMLElement {
         width: 100%;
         height: 100%;
         background-color: var(--background-color, #ff0000);
-        z-index: -1;
+        z-index: 0;
       }
     `;
 
