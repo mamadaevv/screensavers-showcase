@@ -43,8 +43,12 @@ function createSettingsControls(componentClass, container) {
     const componentName = componentClass.name.replace('Screensaver', '');
     const componentTagName = componentName.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '') + '-screensaver';
 
-    // Создаем элементы управления для каждой настройки
-    settings.forEach(setting => {
+    // Группируем настройки по типу
+    const rangeSettings = settings.filter(setting => setting.type === 'range');
+    const colorSettings = settings.filter(setting => setting.type === 'color');
+
+    // Создаем элементы управления для range настроек
+    rangeSettings.forEach(setting => {
         const settingDiv = document.createElement('div');
 
         // Создаем лейбл
@@ -89,13 +93,50 @@ function createSettingsControls(componentClass, container) {
         settingDiv.appendChild(range);
         container.appendChild(settingDiv);
     });
+
+    // Создаем блок для цветовых настроек
+    if (colorSettings.length > 0) {
+        const colorsDiv = document.createElement('div');
+
+        // Создаем заголовок для блока цветов
+        const colorsLabel = document.createElement('label');
+        colorsLabel.textContent = 'Цвета';
+        colorsLabel.style.display = 'block';
+        colorsLabel.style.marginBottom = 'var(--sl-spacing-small)';
+        colorsLabel.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+        colorsLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
+        colorsLabel.style.color = 'var(--sl-input-label-color)';
+
+        // Создаем контейнер для цветовых пикеров
+        const colorPickersContainer = document.createElement('div');
+        colorPickersContainer.style.display = 'flex';
+        colorPickersContainer.style.gap = 'var(--sl-spacing-medium)';
+        colorPickersContainer.style.flexWrap = 'wrap';
+
+        colorSettings.forEach(setting => {
+            // Создаем sl-color-picker
+            const colorPicker = document.createElement('sl-color-picker');
+            colorPicker.value = getSavedSetting(componentTagName, setting.name, setting.default);
+
+            colorPicker.addEventListener('sl-input', (e) => {
+                saveSetting(componentTagName, setting.name, e.target.value);
+                updateCurrentScreensaver();
+            });
+
+            colorPickersContainer.appendChild(colorPicker);
+        });
+
+        colorsDiv.appendChild(colorsLabel);
+        colorsDiv.appendChild(colorPickersContainer);
+        container.appendChild(colorsDiv);
+    }
 }
 
 // Функция получения сохраненной настройки
 function getSavedSetting(componentName, settingName, defaultValue) {
     const key = `screensaver-${componentName}-${settingName}`;
     const saved = localStorage.getItem(key);
-    return saved !== null ? parseInt(saved, 10) : defaultValue;
+    return saved !== null ? saved : defaultValue;
 }
 
 // Функция сохранения настройки
@@ -132,6 +173,16 @@ function updateCurrentScreensaver() {
                 currentElement.updateSpeed(value);
             } else if (setting.name === 'angle' && typeof currentElement.updateAngleValue === 'function') {
                 currentElement.updateAngleValue(value);
+            } else if (setting.name === 'color1' && typeof currentElement.updateColor1 === 'function') {
+                currentElement.updateColor1(value);
+            } else if (setting.name === 'color2' && typeof currentElement.updateColor2 === 'function') {
+                currentElement.updateColor2(value);
+            } else if (setting.name === 'color3' && typeof currentElement.updateColor3 === 'function') {
+                currentElement.updateColor3(value);
+            } else if (setting.name === 'color4' && typeof currentElement.updateColor4 === 'function') {
+                currentElement.updateColor4(value);
+            } else if (setting.name === 'color5' && typeof currentElement.updateColor5 === 'function') {
+                currentElement.updateColor5(value);
             } else if (setting.name === 'offsetX' && typeof currentElement.updateOffsetX === 'function') {
                 currentElement.updateOffsetX(value);
             } else if (setting.name === 'offsetY' && typeof currentElement.updateOffsetY === 'function') {

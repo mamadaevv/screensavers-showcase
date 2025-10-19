@@ -18,6 +18,24 @@ class LinearGradientScreensaver extends HTMLElement {
         max: 360,
         default: 90,
         step: 1
+      },
+      {
+        name: 'color1',
+        label: 'Цвет 1',
+        type: 'color',
+        default: '#ff0000'
+      },
+      {
+        name: 'color2',
+        label: 'Цвет 2',
+        type: 'color',
+        default: '#ffff00'
+      },
+      {
+        name: 'color3',
+        label: 'Цвет 3',
+        type: 'color',
+        default: '#0000ff'
       }
     ];
   }
@@ -29,6 +47,9 @@ class LinearGradientScreensaver extends HTMLElement {
     this.offset = 0; // смещение позиций цветов
     this.speed = 50; // значение по умолчанию
     this.angle = 90; // значение по умолчанию
+    this.color1 = '#ff0000'; // значение по умолчанию
+    this.color2 = '#ffff00'; // значение по умолчанию
+    this.color3 = '#0000ff'; // значение по умолчанию
   }
 
   connectedCallback() {
@@ -41,6 +62,21 @@ class LinearGradientScreensaver extends HTMLElement {
     const angleAttr = this.getAttribute('data-angle');
     if (angleAttr !== null) {
       this.angle = parseInt(angleAttr, 10);
+    }
+
+    const color1Attr = this.getAttribute('data-color1');
+    if (color1Attr !== null) {
+      this.color1 = color1Attr;
+    }
+
+    const color2Attr = this.getAttribute('data-color2');
+    if (color2Attr !== null) {
+      this.color2 = color2Attr;
+    }
+
+    const color3Attr = this.getAttribute('data-color3');
+    if (color3Attr !== null) {
+      this.color3 = color3Attr;
     }
 
     this.render();
@@ -62,9 +98,9 @@ class LinearGradientScreensaver extends HTMLElement {
         height: 100%;
         background: repeating-linear-gradient(
           var(--angle, 90deg),
-          #ff0000 0px, #ff0000 20px,
-          #ffff00 20px, #ffff00 40px,
-          #0000ff 40px, #0000ff 60px
+          var(--color1, #ff0000) 0px, var(--color1, #ff0000) 20px,
+          var(--color2, #ffff00) 20px, var(--color2, #ffff00) 40px,
+          var(--color3, #0000ff) 40px, var(--color3, #0000ff) 60px
         );
         background-size: 60px 100%;
         transform: translateX(var(--offset, 0px));
@@ -79,8 +115,9 @@ class LinearGradientScreensaver extends HTMLElement {
     this.shadowRoot.appendChild(container);
     this.gradientElement = container;
 
-    // Устанавливаем начальный угол
+    // Устанавливаем начальные значения
     this.updateAngle();
+    this.updateColors();
   }
 
   startAnimation() {
@@ -125,6 +162,12 @@ class LinearGradientScreensaver extends HTMLElement {
     this.gradientElement.style.setProperty('--angle', this.angle + 'deg');
   }
 
+  // Метод для обновления цветов
+  updateColors() {
+    this.gradientElement.style.setProperty('--color1', this.color1);
+    this.gradientElement.style.setProperty('--color2', this.color2);
+    this.gradientElement.style.setProperty('--color3', this.color3);
+  }
 
   // Метод для обновления скорости
   updateSpeed(newSpeed) {
@@ -138,6 +181,22 @@ class LinearGradientScreensaver extends HTMLElement {
   updateAngleValue(newAngle) {
     this.angle = newAngle;
     this.updateAngle();
+  }
+
+  // Методы для обновления цветов
+  updateColor1(newColor) {
+    this.color1 = newColor;
+    this.updateColors();
+  }
+
+  updateColor2(newColor) {
+    this.color2 = newColor;
+    this.updateColors();
+  }
+
+  updateColor3(newColor) {
+    this.color3 = newColor;
+    this.updateColors();
   }
 }
 

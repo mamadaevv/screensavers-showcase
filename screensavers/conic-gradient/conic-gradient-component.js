@@ -27,6 +27,36 @@ class ConicGradientScreensaver extends HTMLElement {
         max: 100,
         default: 30,
         step: 1
+      },
+      {
+        name: 'color1',
+        label: 'Цвет 1',
+        type: 'color',
+        default: '#0084ff'
+      },
+      {
+        name: 'color2',
+        label: 'Цвет 2',
+        type: 'color',
+        default: '#04ff00'
+      },
+      {
+        name: 'color3',
+        label: 'Цвет 3',
+        type: 'color',
+        default: '#ff00ea'
+      },
+      {
+        name: 'color4',
+        label: 'Цвет 4',
+        type: 'color',
+        default: '#ff9100'
+      },
+      {
+        name: 'color5',
+        label: 'Цвет 5',
+        type: 'color',
+        default: '#7300ff'
       }
     ];
   }
@@ -39,6 +69,11 @@ class ConicGradientScreensaver extends HTMLElement {
     this.speed = 50; // значение по умолчанию
     this.offsetX = 0; // значение по умолчанию
     this.offsetY = 30; // значение по умолчанию
+    this.color1 = '#0084ff'; // значение по умолчанию
+    this.color2 = '#04ff00'; // значение по умолчанию
+    this.color3 = '#ff00ea'; // значение по умолчанию
+    this.color4 = '#ff9100'; // значение по умолчанию
+    this.color5 = '#7300ff'; // значение по умолчанию
   }
 
   connectedCallback() {
@@ -58,6 +93,31 @@ class ConicGradientScreensaver extends HTMLElement {
       this.offsetY = parseInt(offsetYAttr, 10);
     }
 
+    const color1Attr = this.getAttribute('data-color1');
+    if (color1Attr !== null) {
+      this.color1 = color1Attr;
+    }
+
+    const color2Attr = this.getAttribute('data-color2');
+    if (color2Attr !== null) {
+      this.color2 = color2Attr;
+    }
+
+    const color3Attr = this.getAttribute('data-color3');
+    if (color3Attr !== null) {
+      this.color3 = color3Attr;
+    }
+
+    const color4Attr = this.getAttribute('data-color4');
+    if (color4Attr !== null) {
+      this.color4 = color4Attr;
+    }
+
+    const color5Attr = this.getAttribute('data-color5');
+    if (color5Attr !== null) {
+      this.color5 = color5Attr;
+    }
+
     this.render();
     this.startAnimation();
   }
@@ -75,7 +135,7 @@ class ConicGradientScreensaver extends HTMLElement {
         left: 0;
         width: 100%;
         height: 100%;
-        background: conic-gradient(from var(--gradient-angle, 90deg) at var(--offset-x, 0%) var(--offset-y, 30%), #0084ff 0%, #04ff00 20%, #ff00ea 40%, #ff9100 60%, #7300ff 80%, #0084ff 100%);
+        background: conic-gradient(from var(--gradient-angle, 90deg) at var(--offset-x, 0%) var(--offset-y, 30%), var(--color1, #0084ff) 0%, var(--color2, #04ff00) 20%, var(--color3, #ff00ea) 40%, var(--color4, #ff9100) 60%, var(--color5, #7300ff) 80%, var(--color1, #0084ff) 100%);
         z-index: -1;
       }
     `;
@@ -87,8 +147,9 @@ class ConicGradientScreensaver extends HTMLElement {
     this.shadowRoot.appendChild(container);
     this.gradientElement = container;
 
-    // Устанавливаем начальные значения смещений
+    // Устанавливаем начальные значения
     this.updateOffset();
+    this.updateColors();
   }
 
   startAnimation() {
@@ -137,6 +198,15 @@ class ConicGradientScreensaver extends HTMLElement {
     this.gradientElement.style.setProperty('--offset-y', this.offsetY + '%');
   }
 
+  // Метод для обновления цветов
+  updateColors() {
+    this.gradientElement.style.setProperty('--color1', this.color1);
+    this.gradientElement.style.setProperty('--color2', this.color2);
+    this.gradientElement.style.setProperty('--color3', this.color3);
+    this.gradientElement.style.setProperty('--color4', this.color4);
+    this.gradientElement.style.setProperty('--color5', this.color5);
+  }
+
   // Метод для обновления смещения по X
   updateOffsetX(newOffsetX) {
     this.offsetX = newOffsetX;
@@ -147,6 +217,32 @@ class ConicGradientScreensaver extends HTMLElement {
   updateOffsetY(newOffsetY) {
     this.offsetY = newOffsetY;
     this.updateOffset();
+  }
+
+  // Методы для обновления цветов
+  updateColor1(newColor) {
+    this.color1 = newColor;
+    this.updateColors();
+  }
+
+  updateColor2(newColor) {
+    this.color2 = newColor;
+    this.updateColors();
+  }
+
+  updateColor3(newColor) {
+    this.color3 = newColor;
+    this.updateColors();
+  }
+
+  updateColor4(newColor) {
+    this.color4 = newColor;
+    this.updateColors();
+  }
+
+  updateColor5(newColor) {
+    this.color5 = newColor;
+    this.updateColors();
   }
 }
 
