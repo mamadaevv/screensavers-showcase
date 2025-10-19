@@ -1,14 +1,18 @@
 # Gradient Screensavers PWA
 
-Progressive Web App (PWA) с анимированными градиентными заставками на базе веб-компонентов. Поддерживает переключаемые варианты заставок с динамически генерируемыми настройками. Можно установить как нативное приложение.
+Progressive Web App (PWA) с анимированными заставками экрана на базе веб-компонентов. Поддерживает переключаемые варианты заставок с динамически генерируемыми настройками. Можно установить как нативное приложение.
 
 ## Возможности
 
 - **Линейный градиент**: Плавно вращающийся линейный градиент от красного к синему через желтый
 - **Конический градиент**: Цветной конический градиент с плавным вращением
-- **Динамические настройки**: Скорость вращения (0-100°/сек) с сохранением в localStorage
+- **Переход цветов**: Плавная смена между несколькими цветами с настраиваемой скоростью
+- **Сплошной цвет**: Статический фон с выбранным цветом
+- **Динамические настройки**: Скорость вращения/смены (0-100°/сек или 1-10) с сохранением в localStorage
 - **Веб-компоненты**: Каждая заставка - самодостаточный веб-компонент с инкапсуляцией
 - **Адаптивный интерфейс**: Боковая панель настроек с кнопкой ⚙️
+- **Настройки яркости**: Глобальная регулировка яркости экрана (-100 до +100)
+- **Оффлайн работа**: Кэширование через Service Worker
 
 ## Структура проекта
 
@@ -29,6 +33,17 @@ Progressive Web App (PWA) с анимированными градиентным
 ├── package.json                       # Конфигурация проекта
 └── README.md                          # Эта документация
 ```
+
+## Технологии
+
+- **HTML5**: Семантическая разметка и структура приложения
+- **CSS3**: Стилизация компонентов, CSS Variables, Animations, Grid
+- **JavaScript (ES6+)**: Классы, модули, асинхронные функции, Web Components API
+- **Web Components**: Shadow DOM, Custom Elements, инкапсуляция компонентов
+- **Shoelace UI**: Компоненты интерфейса (@shoelace-style/shoelace v2.20.1)
+- **Progressive Web App (PWA)**: Web App Manifest, Service Worker для оффлайн работы
+- **localStorage**: Сохранение пользовательских настроек
+- **npm**: Управление зависимостями
 
 ## Архитектура
 
@@ -66,17 +81,19 @@ Progressive Web App (PWA) с анимированными градиентным
 
 ## Добавление новой заставки
 
-1. **Создайте папку** в `screensavers/` (например, `new-gradient/`)
+Для добавления новой заставки следуйте этим шагам:
 
-2. **Создайте веб-компонент** со следующей структурой:
+### 1. Создайте компонент заставки
+
+Создайте папку в `screensavers/` (например, `new-effect/`) и файл `new-effect-component.js`:
 
 ```javascript
-class NewGradientScreensaver extends HTMLElement {
+class NewEffectScreensaver extends HTMLElement {
   static getSettings() {
     return [
       {
         name: 'speed',
-        label: 'Скорость вращения',
+        label: 'Скорость эффекта',
         type: 'range',
         min: 0,
         max: 100,
@@ -91,7 +108,6 @@ class NewGradientScreensaver extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.animationId = null;
-    this.gradientAngle = 0;
     this.speed = 50;
   }
 
@@ -113,43 +129,39 @@ class NewGradientScreensaver extends HTMLElement {
   render() {
     const style = document.createElement('style');
     style.textContent = `
-      .gradient-background {
+      .effect-background {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: /* ваш градиент */;
+        background: /* ваш эффект */;
         z-index: -1;
       }
     `;
 
     const container = document.createElement('div');
-    container.className = 'gradient-background';
+    container.className = 'effect-background';
 
     this.shadowRoot.appendChild(style);
     this.shadowRoot.appendChild(container);
-    this.gradientElement = container;
+    this.effectElement = container;
   }
 
   startAnimation() {
     if (this.speed === 0) return;
 
     let lastTime = 0;
-    const animateGradient = (currentTime) => {
+    const animate = (currentTime) => {
       if (lastTime === 0) lastTime = currentTime;
 
       const deltaTime = currentTime - lastTime;
-      const degreesPerSecond = this.speed;
-      const degreesToAdd = (degreesPerSecond * deltaTime) / 1000;
-
-      this.gradientAngle = (this.gradientAngle + degreesToAdd) % 360;
-      this.gradientElement.style.setProperty('--gradient-angle', Math.round(this.gradientAngle) + 'deg');
+      // Ваша логика анимации здесь
 
       lastTime = currentTime;
-      this.animationId = requestAnimationFrame(animateGradient);
+      this.animationId = requestAnimationFrame(animate);
     };
-    this.animationId = requestAnimationFrame(animateGradient);
+    this.animationId = requestAnimationFrame(animate);
   }
 
   stopAnimation() {
@@ -166,28 +178,65 @@ class NewGradientScreensaver extends HTMLElement {
   }
 }
 
-customElements.define('new-gradient-screensaver', NewGradientScreensaver);
+customElements.define('new-effect-screensaver', NewEffectScreensaver);
 ```
 
-3. **Подключите компонент** в `index.html`:
+### 2. Подключите компонент в `index.html`
+
+Добавьте в конец `<head>`:
 
 ```html
-<script src="screensavers/new-gradient/new-gradient-component.js"></script>
+<script src="screensavers/new-effect/new-effect-component.js"></script>
 ```
 
-4. **Добавьте вариант** в селект в `index.html`:
+### 3. Добавьте вариант в селектор в `index.html`
+
+Найдите `<sl-select>` и добавьте:
 
 ```html
-<sl-option value="new-gradient">Новый градиент</sl-option>
+<sl-option value="new-effect">Новый эффект</sl-option>
 ```
 
-5. **Добавьте обработчик** в `script.js` в функции `switchScreensaver`:
+### 4. Обновите `script.js`
 
+**В функции `getComponentClass`:**
 ```javascript
-case 'new-gradient':
-  componentClass = NewGradientScreensaver;
-  break;
+case 'new-effect-screensaver':
+    return NewEffectScreensaver;
 ```
+
+**В функции `switchScreensaver`:**
+```javascript
+case 'new-effect':
+    componentClass = NewEffectScreensaver;
+    break;
+```
+
+**В `DOMContentLoaded` обработчике:**
+```javascript
+const components = [
+    // ... существующие компоненты
+    'new-effect-screensaver'
+];
+```
+
+**В `window.addEventListener('load')`:**
+```javascript
+const componentPromises = [
+    // ... существующие промисы
+    customElements.whenDefined('new-effect-screensaver')
+];
+```
+
+### 5. Поддержка специальных настроек
+
+Для цветовых настроек с массивом цветов:
+- Реализуйте методы `updateColor(index, color)`, `addColor(color)`, `removeColor(index)`
+- Сохраняйте цвета в localStorage с ключом `screensaver-{tagName}-colors`
+
+Для одиночных цветовых настроек:
+- Реализуйте метод `updateColor(color)`
+- Сохраняйте цвет в localStorage с ключом `screensaver-{tagName}-color`
 
 Компонент автоматически получит динамически сгенерированные настройки на основе метода `getSettings()`.
 
@@ -217,15 +266,6 @@ case 'new-gradient':
 2. Нажмите кнопку "Установить" в адресной строке
 
 После установки приложение будет работать в полноэкранном режиме без браузерных элементов управления.
-
-## Технологии
-
-- HTML5
-- CSS3 (CSS Variables, Animations, Grid)
-- JavaScript (ES6 Classes, Modules, Service Workers)
-- Web App Manifest для PWA
-- Service Worker для кэширования
-- localStorage для сохранения настроек
 
 ## Совместимость
 

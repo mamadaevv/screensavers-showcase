@@ -63,7 +63,7 @@ function saveBrightnessSetting(value) {
 
 function getBrightnessSwitchSetting() {
     const saved = localStorage.getItem('brightness-switch-enabled');
-    return saved !== null ? saved === 'true' : true; // По умолчанию включено
+    return saved !== null ? saved === 'true' : false; // По умолчанию выключено
 }
 
 function saveBrightnessSwitchSetting(enabled) {

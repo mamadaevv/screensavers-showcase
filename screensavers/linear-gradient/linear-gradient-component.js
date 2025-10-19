@@ -2,16 +2,6 @@ class LinearGradientScreensaver extends HTMLElement {
   static getSettings() {
     const settings = [
       {
-        name: 'speed',
-        label: 'Скорость анимации (отключена)',
-        type: 'range',
-        min: 0,
-        max: 100,
-        default: 50,
-        step: 1,
-        disabled: true
-      },
-      {
         name: 'angle',
         label: 'Угол поворота (°)',
         type: 'range',
