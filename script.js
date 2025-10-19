@@ -28,6 +28,26 @@ drawer.addEventListener('sl-after-hide', () => {
     // Drawer закрыт
 });
 
+// Обработчик для кнопки полноэкранного режима в header drawer'а
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.fullscreen-button')) {
+        toggleFullscreen();
+    }
+});
+
+// Функция переключения полноэкранного режима
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.warn('Не удалось перейти в полноэкранный режим:', err);
+        });
+    } else {
+        document.exitFullscreen().catch(err => {
+            console.warn('Не удалось выйти из полноэкранного режима:', err);
+        });
+    }
+}
+
 // Получаем селект для выбора заставки
 const screensaverSelect = document.querySelector('sl-select');
 
@@ -77,9 +97,27 @@ function createSettingsControls(componentClass, container) {
         input.step = setting.step;
         input.value = range.value;
 
+        // Отключаем элементы управления, если настройка отключена
+        if (setting.disabled) {
+            range.disabled = true;
+            input.disabled = true;
+        }
+
         // Синхронизируем значения между range и input в реальном времени
+        range.addEventListener('input', (e) => {
+            input.value = e.target.value;
+            saveSetting(componentTagName, setting.name, e.target.value);
+            updateCurrentScreensaver();
+        });
+
         range.addEventListener('sl-input', (e) => {
             input.value = e.target.value;
+            saveSetting(componentTagName, setting.name, e.target.value);
+            updateCurrentScreensaver();
+        });
+
+        input.addEventListener('input', (e) => {
+            range.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
             updateCurrentScreensaver();
         });
@@ -134,8 +172,8 @@ function createSettingsControls(componentClass, container) {
             colorPicker.addEventListener('sl-input', (e) => {
                 const newHex = e.target.value;
 
-                // Для конического градиента обновляем массив цветов в компоненте
-                if (componentTagName === 'conic-gradient-screensaver') {
+                // Для конического и линейного градиентов обновляем массив цветов в компоненте
+                if (componentTagName === 'conic-gradient-screensaver' || componentTagName === 'linear-gradient-screensaver') {
                     const currentElement = document.querySelector(`${componentTagName}`);
                     if (currentElement && typeof currentElement.updateColor === 'function') {
                         const colorIndex = parseInt(setting.name.replace('color', '')) - 1;
@@ -144,8 +182,8 @@ function createSettingsControls(componentClass, container) {
                 } else {
                     // Для других компонентов сохраняем обычным способом
                     saveSetting(componentTagName, setting.name, newHex);
+                    updateCurrentScreensaver();
                 }
-                updateCurrentScreensaver();
             });
 
             const currentColor = getSavedSetting(componentTagName, setting.name, setting.default);
@@ -271,6 +309,11 @@ function updateCurrentScreensaver() {
 
         settings.forEach(setting => {
             const value = getSavedSetting(componentName, setting.name, setting.default);
+
+            // Пропускаем отключенные настройки
+            if (setting.disabled) {
+                return;
+            }
 
             if (setting.name === 'speed') {
                 currentElement.updateSpeed(value);

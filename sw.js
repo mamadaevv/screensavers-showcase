@@ -1,4 +1,8 @@
-const CACHE_NAME = 'screensavers-v1.0.0';
+// Service Worker отключен для разработки
+// Раскомментируйте код ниже для продакшена
+
+/*
+const CACHE_NAME = 'screensavers-v1.0.1';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -12,18 +16,22 @@ const urlsToCache = [
 
 // Установка Service Worker
 self.addEventListener('install', (event) => {
-  // Пропускаем кэширование, сразу активируем
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(urlsToCache))
+  );
   self.skipWaiting();
 });
 
 // Активация Service Worker
 self.addEventListener('activate', (event) => {
-  // Очищаем весь кэш
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          return caches.delete(cacheName);
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
         })
       );
     }).then(() => {
@@ -32,8 +40,14 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Обработка запросов - всегда сеть, без кэша
+// Обработка запросов с кэшем
 self.addEventListener('fetch', (event) => {
-  // Для всех запросов используем только сеть, игнорируя кэш
-  event.respondWith(fetch(event.request));
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        // Возвращаем кэшированную версию или загружаем из сети
+        return response || fetch(event.request);
+      })
+  );
 });
+*/

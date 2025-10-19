@@ -58,6 +58,7 @@ main {
     box-shadow: var(--sl-shadow-small);
 }
 
+
 /* Стили для кнопки автора в footer drawer'а */
 sl-drawer .author-button {
     width: 100%;
