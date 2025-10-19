@@ -142,8 +142,6 @@ class LinearGradientScreensaver extends HTMLElement {
 
       this.gradientElement.style.setProperty('--offset', this.offset + 'px');
 
-      console.log(`LinearGradient: offset = ${Math.round(this.offset)}px`);
-
       lastTime = currentTime;
       this.animationId = requestAnimationFrame(animateGradient);
     };

@@ -18,22 +18,10 @@ window.addEventListener('appinstalled', (evt) => {
 const drawer = document.querySelector('.drawer-placement-start');
 const mainContainer = document.querySelector('main');
 
-console.log('Drawer найден:', drawer);
-console.log('Main container найден:', mainContainer);
-
 // Обработчик клика для открытия drawer
-if (mainContainer) {
-    mainContainer.addEventListener('click', () => {
-        console.log('Клик по main контейнеру, открываем drawer');
-        if (drawer) {
-            drawer.show();
-        } else {
-            console.log('Drawer не найден');
-        }
-    });
-} else {
-    console.log('Main container не найден');
-}
+mainContainer.addEventListener('click', () => {
+    drawer.show();
+});
 
 // Обработчик события закрытия drawer (опционально)
 drawer.addEventListener('sl-after-hide', () => {
