@@ -130,6 +130,8 @@ function updateCurrentScreensaver() {
 
             if (setting.name === 'speed') {
                 currentElement.updateSpeed(value);
+            } else if (setting.name === 'angle' && typeof currentElement.updateAngleValue === 'function') {
+                currentElement.updateAngleValue(value);
             } else if (setting.name === 'offsetX' && typeof currentElement.updateOffsetX === 'function') {
                 currentElement.updateOffsetX(value);
             } else if (setting.name === 'offsetY' && typeof currentElement.updateOffsetY === 'function') {
