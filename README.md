@@ -242,7 +242,25 @@ const componentPromises = [
 
 ## Запуск
 
+### Локальный запуск
 Откройте `index.html` в современном браузере с поддержкой ES6 модулей и Service Workers.
+
+### Развертывание на GitHub Pages
+
+Проект настроен для автоматического развертывания на GitHub Pages:
+
+1. **Создайте репозиторий** на GitHub
+2. **Загрузите код** в репозиторий:
+   ```bash
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+   git push -u origin main
+   ```
+3. **Включите GitHub Pages** в настройках репозитория:
+   - Перейдите в Settings → Pages
+   - Выберите "GitHub Actions" как источник
+4. **Дождитесь развертывания** - GitHub Actions автоматически опубликует приложение
+
+Приложение будет доступно по адресу: `https://YOUR_USERNAME.github.io/YOUR_REPO/`
 
 ## Установка как PWA
 
