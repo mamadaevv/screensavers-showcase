@@ -16,9 +16,10 @@ sl-drawer::part(overlay) {
     background-color: transparent;
 }
 
-/* Отступ между лейблом селекта и самим селектом */
-sl-drawer sl-select {
-    margin-top: var(--sl-spacing-small);
+/* Переопределение spacing для лейблов форм в drawer */
+sl-drawer sl-select::part(form-control-label),
+sl-drawer sl-input::part(form-control-label) {
+    margin-bottom: var(--sl-spacing-small);
 }
 
 /* Вертикальное расположение элементов настроек */
