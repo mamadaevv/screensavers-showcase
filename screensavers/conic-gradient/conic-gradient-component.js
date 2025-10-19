@@ -245,8 +245,19 @@ class ConicGradientScreensaver extends HTMLElement {
     }
   }
 
+  // Метод для генерации случайного цвета
+  generateRandomColor() {
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = Math.floor(Math.random() * 30) + 70; // 70-100%
+    const lightness = Math.floor(Math.random() * 30) + 35; // 35-65%
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  }
+
   // Метод для добавления нового цвета
-  addColor(color = '#ff0000') {
+  addColor(color) {
+    if (!color) {
+      color = this.generateRandomColor();
+    }
     this.colors.push(color);
     this.updateColors();
     this.saveColorsToStorage();
