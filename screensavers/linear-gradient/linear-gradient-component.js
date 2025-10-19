@@ -18,24 +18,6 @@ class LinearGradientScreensaver extends HTMLElement {
         max: 360,
         default: 90,
         step: 1
-      },
-      {
-        name: 'color1',
-        label: 'Цвет 1',
-        type: 'color',
-        default: '#ff0000'
-      },
-      {
-        name: 'color2',
-        label: 'Цвет 2',
-        type: 'color',
-        default: '#ffff00'
-      },
-      {
-        name: 'color3',
-        label: 'Цвет 3',
-        type: 'color',
-        default: '#0000ff'
       }
     ];
   }

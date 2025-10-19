@@ -1,6 +1,6 @@
 class ConicGradientScreensaver extends HTMLElement {
   static getSettings() {
-    return [
+    const settings = [
       {
         name: 'speed',
         label: 'Скорость вращения',
@@ -27,38 +27,37 @@ class ConicGradientScreensaver extends HTMLElement {
         max: 100,
         default: 30,
         step: 1
-      },
-      {
-        name: 'color1',
-        label: 'Цвет 1',
-        type: 'color',
-        default: '#0084ff'
-      },
-      {
-        name: 'color2',
-        label: 'Цвет 2',
-        type: 'color',
-        default: '#04ff00'
-      },
-      {
-        name: 'color3',
-        label: 'Цвет 3',
-        type: 'color',
-        default: '#ff00ea'
-      },
-      {
-        name: 'color4',
-        label: 'Цвет 4',
-        type: 'color',
-        default: '#ff9100'
-      },
-      {
-        name: 'color5',
-        label: 'Цвет 5',
-        type: 'color',
-        default: '#7300ff'
       }
     ];
+
+    // Загружаем цвета из localStorage для создания настроек
+    const tagName = 'conic-gradient-screensaver';
+    const key = `screensaver-${tagName}-colors`;
+    const saved = localStorage.getItem(key);
+    let colors = ['#0084ff', '#04ff00', '#ff00ea']; // значения по умолчанию
+
+    if (saved) {
+      try {
+        const parsedColors = JSON.parse(saved);
+        if (Array.isArray(parsedColors) && parsedColors.length > 0) {
+          colors = parsedColors;
+        }
+      } catch (e) {
+        console.warn('Failed to parse saved colors for settings:', e);
+      }
+    }
+
+    // Добавляем настройки цветов динамически
+    colors.forEach((color, index) => {
+      settings.push({
+        name: `color${index + 1}`,
+        label: `Цвет ${index + 1}`,
+        type: 'color',
+        default: color
+      });
+    });
+
+    return settings;
   }
 
   constructor() {
@@ -69,11 +68,7 @@ class ConicGradientScreensaver extends HTMLElement {
     this.speed = 50; // значение по умолчанию
     this.offsetX = 0; // значение по умолчанию
     this.offsetY = 30; // значение по умолчанию
-    this.color1 = '#0084ff'; // значение по умолчанию
-    this.color2 = '#04ff00'; // значение по умолчанию
-    this.color3 = '#ff00ea'; // значение по умолчанию
-    this.color4 = '#ff9100'; // значение по умолчанию
-    this.color5 = '#7300ff'; // значение по умолчанию
+    this.colors = ['#0084ff', '#04ff00', '#ff00ea', '#ff9100', '#7300ff']; // массив цветов
   }
 
   connectedCallback() {
@@ -93,30 +88,8 @@ class ConicGradientScreensaver extends HTMLElement {
       this.offsetY = parseInt(offsetYAttr, 10);
     }
 
-    const color1Attr = this.getAttribute('data-color1');
-    if (color1Attr !== null) {
-      this.color1 = color1Attr;
-    }
-
-    const color2Attr = this.getAttribute('data-color2');
-    if (color2Attr !== null) {
-      this.color2 = color2Attr;
-    }
-
-    const color3Attr = this.getAttribute('data-color3');
-    if (color3Attr !== null) {
-      this.color3 = color3Attr;
-    }
-
-    const color4Attr = this.getAttribute('data-color4');
-    if (color4Attr !== null) {
-      this.color4 = color4Attr;
-    }
-
-    const color5Attr = this.getAttribute('data-color5');
-    if (color5Attr !== null) {
-      this.color5 = color5Attr;
-    }
+    // Загружаем цвета из localStorage
+    this.loadColorsFromStorage();
 
     this.render();
     this.startAnimation();
@@ -127,6 +100,17 @@ class ConicGradientScreensaver extends HTMLElement {
   }
 
   render() {
+    // Создаем динамический CSS для градиента на основе количества цветов
+    let colorStops = this.colors.map((color, index) => {
+      const percentage = (index / this.colors.length) * 100;
+      return `var(--color${index + 1}, ${color}) ${percentage}%`;
+    }).join(', ');
+
+    // Добавляем последний цвет для замыкания градиента
+    if (this.colors.length > 0) {
+      colorStops += `, var(--color1, ${this.colors[0]}) 100%`;
+    }
+
     const style = document.createElement('style');
     style.textContent = `
       .gradient-background {
@@ -135,7 +119,7 @@ class ConicGradientScreensaver extends HTMLElement {
         left: 0;
         width: 100%;
         height: 100%;
-        background: conic-gradient(from var(--gradient-angle, 90deg) at var(--offset-x, 0%) var(--offset-y, 30%), var(--color1, #0084ff) 0%, var(--color2, #04ff00) 20%, var(--color3, #ff00ea) 40%, var(--color4, #ff9100) 60%, var(--color5, #7300ff) 80%, var(--color1, #0084ff) 100%);
+        background: conic-gradient(from var(--gradient-angle, 90deg) at var(--offset-x, 0%) var(--offset-y, 30%), ${colorStops});
         z-index: -1;
       }
     `;
@@ -200,11 +184,9 @@ class ConicGradientScreensaver extends HTMLElement {
 
   // Метод для обновления цветов
   updateColors() {
-    this.gradientElement.style.setProperty('--color1', this.color1);
-    this.gradientElement.style.setProperty('--color2', this.color2);
-    this.gradientElement.style.setProperty('--color3', this.color3);
-    this.gradientElement.style.setProperty('--color4', this.color4);
-    this.gradientElement.style.setProperty('--color5', this.color5);
+    this.colors.forEach((color, index) => {
+      this.gradientElement.style.setProperty(`--color${index + 1}`, color);
+    });
   }
 
   // Метод для обновления смещения по X
@@ -219,30 +201,88 @@ class ConicGradientScreensaver extends HTMLElement {
     this.updateOffset();
   }
 
-  // Методы для обновления цветов
-  updateColor1(newColor) {
-    this.color1 = newColor;
-    this.updateColors();
+  // Метод для обновления цвета по индексу
+  updateColor(index, newColor) {
+    if (index >= 0 && index < this.colors.length) {
+      this.colors[index] = newColor;
+      this.updateColors();
+      // Сохраняем массив цветов в localStorage
+      this.saveColorsToStorage();
+      // Перерисовываем компонент чтобы обновить CSS с новым количеством цветов
+      this.shadowRoot.innerHTML = '';
+      this.render();
+    }
   }
 
-  updateColor2(newColor) {
-    this.color2 = newColor;
-    this.updateColors();
+  // Методы для обратной совместимости
+  updateColor1(newColor) { this.updateColor(0, newColor); }
+  updateColor2(newColor) { this.updateColor(1, newColor); }
+  updateColor3(newColor) { this.updateColor(2, newColor); }
+  updateColor4(newColor) { this.updateColor(3, newColor); }
+  updateColor5(newColor) { this.updateColor(4, newColor); }
+
+  // Метод для сохранения массива цветов в localStorage
+  saveColorsToStorage() {
+    const tagName = this.tagName.toLowerCase();
+    const key = `screensaver-${tagName}-colors`;
+    localStorage.setItem(key, JSON.stringify(this.colors));
   }
 
-  updateColor3(newColor) {
-    this.color3 = newColor;
-    this.updateColors();
+  // Метод для загрузки массива цветов из localStorage
+  loadColorsFromStorage() {
+    const tagName = this.tagName.toLowerCase();
+    const key = `screensaver-${tagName}-colors`;
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      try {
+        const parsedColors = JSON.parse(saved);
+        if (Array.isArray(parsedColors) && parsedColors.length > 0) {
+          this.colors = parsedColors;
+        }
+      } catch (e) {
+        console.warn('Failed to parse saved colors:', e);
+      }
+    }
   }
 
-  updateColor4(newColor) {
-    this.color4 = newColor;
+  // Метод для добавления нового цвета
+  addColor(color = '#ff0000') {
+    this.colors.push(color);
     this.updateColors();
+    this.saveColorsToStorage();
+    // Перерисовываем компонент чтобы обновить CSS с новым количеством цветов
+    this.shadowRoot.innerHTML = '';
+    this.render();
+    // Обновляем настройки в drawer
+    this.updateSettingsInDrawer();
   }
 
-  updateColor5(newColor) {
-    this.color5 = newColor;
-    this.updateColors();
+  // Метод для удаления цвета по индексу
+  removeColor(index) {
+    if (this.colors.length > 1 && index >= 0 && index < this.colors.length) {
+      this.colors.splice(index, 1);
+      this.updateColors();
+      this.saveColorsToStorage();
+      // Перерисовываем компонент чтобы обновить CSS с новым количеством цветов
+      this.shadowRoot.innerHTML = '';
+      this.render();
+      // Обновляем настройки в drawer
+      this.updateSettingsInDrawer();
+    }
+  }
+
+  // Метод для обновления настроек в drawer
+  updateSettingsInDrawer() {
+    // Находим контейнер настроек и обновляем их
+    const settingsContainer = document.getElementById('screensaver-settings');
+    if (settingsContainer) {
+      // Получаем текущий компонент
+      const componentClass = this.constructor;
+      // Пересоздаем настройки
+      if (window.createSettingsControls) {
+        window.createSettingsControls(componentClass, settingsContainer);
+      }
+    }
   }
 }
 

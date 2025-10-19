@@ -33,6 +33,8 @@ const screensaverSelect = document.querySelector('sl-select');
 
 // Функция создания элементов управления настройками
 function createSettingsControls(componentClass, container) {
+  // Делаем функцию глобальной для доступа из компонентов
+  window.createSettingsControls = createSettingsControls;
     // Очищаем контейнер
     container.innerHTML = '';
 
@@ -107,33 +109,133 @@ function createSettingsControls(componentClass, container) {
         colorsLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
         colorsLabel.style.color = 'var(--sl-input-label-color)';
 
-        // Создаем контейнер для цветовых пикеров
-        const colorPickersContainer = document.createElement('div');
-        colorPickersContainer.style.display = 'flex';
-        colorPickersContainer.style.gap = 'var(--sl-spacing-medium)';
-        colorPickersContainer.style.flexWrap = 'wrap';
+        // Создаем контейнер для цветовых строк
+        const colorsContainer = document.createElement('div');
+        colorsContainer.className = 'colors-container';
 
-        colorSettings.forEach(setting => {
-            // Создаем sl-color-picker
+        colorSettings.forEach((setting, index) => {
+            // Создаем строку для каждого цвета
+            const colorRow = document.createElement('div');
+            colorRow.className = 'color-row';
+            colorRow.style.display = 'flex';
+            colorRow.style.alignItems = 'center';
+            colorRow.style.gap = 'var(--sl-spacing-medium)';
+            colorRow.style.marginBottom = 'var(--sl-spacing-small)';
+            colorRow.style.padding = 'var(--sl-spacing-small)';
+            colorRow.style.border = '1px solid var(--sl-color-neutral-200)';
+            colorRow.style.borderRadius = 'var(--sl-border-radius-medium)';
+
+            // Цветовой пикер (swatch)
             const colorPicker = document.createElement('sl-color-picker');
             colorPicker.value = getSavedSetting(componentTagName, setting.name, setting.default);
+            colorPicker.size = 'small';
 
             colorPicker.addEventListener('sl-input', (e) => {
-                saveSetting(componentTagName, setting.name, e.target.value);
+                const newHex = e.target.value;
+
+                // Для конического градиента обновляем массив цветов в компоненте
+                if (componentTagName === 'conic-gradient-screensaver') {
+                    const currentElement = document.querySelector(`${componentTagName}`);
+                    if (currentElement && typeof currentElement.updateColor === 'function') {
+                        const colorIndex = parseInt(setting.name.replace('color', '')) - 1;
+                        currentElement.updateColor(colorIndex, newHex);
+                    }
+                } else {
+                    // Для других компонентов сохраняем обычным способом
+                    saveSetting(componentTagName, setting.name, newHex);
+                }
                 updateCurrentScreensaver();
             });
 
-            colorPickersContainer.appendChild(colorPicker);
+            const currentColor = getSavedSetting(componentTagName, setting.name, setting.default);
+
+            // Кнопка дублировать цвет
+            const duplicateButton = document.createElement('sl-button');
+            duplicateButton.variant = 'default';
+            duplicateButton.size = 'small';
+            duplicateButton.innerHTML = '<sl-icon name="copy"></sl-icon>';
+            duplicateButton.title = 'Дублировать цвет';
+
+            duplicateButton.addEventListener('click', () => {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.addColor === 'function') {
+                    currentElement.addColor(currentColor);
+                }
+            });
+
+            // Кнопка удалить цвет
+            const deleteButton = document.createElement('sl-button');
+            deleteButton.variant = 'danger';
+            deleteButton.size = 'small';
+            deleteButton.innerHTML = '<sl-icon name="trash"></sl-icon>';
+            deleteButton.title = 'Удалить цвет';
+
+            deleteButton.addEventListener('click', () => {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.removeColor === 'function') {
+                    currentElement.removeColor(index);
+                }
+            });
+
+            // Отключаем кнопку удаления, если только один цвет
+            if (colorSettings.length <= 1) {
+                deleteButton.disabled = true;
+            }
+
+            // Добавляем элементы в строку
+            colorRow.appendChild(colorPicker);
+            colorRow.appendChild(duplicateButton);
+            colorRow.appendChild(deleteButton);
+
+            colorsContainer.appendChild(colorRow);
         });
 
+        // Кнопка "Добавить цвет" на всю ширину
+        const addColorRow = document.createElement('div');
+        addColorRow.style.marginTop = 'var(--sl-spacing-medium)';
+
+        const addColorButton = document.createElement('sl-button');
+        addColorButton.variant = 'default';
+        addColorButton.outline = true;
+        addColorButton.size = 'medium';
+        addColorButton.style.width = '100%';
+        addColorButton.innerHTML = '<sl-icon name="plus" slot="prefix"></sl-icon>Добавить цвет';
+
+        addColorButton.addEventListener('click', () => {
+            const currentElement = document.querySelector(`${componentTagName}`);
+            if (currentElement && typeof currentElement.addColor === 'function') {
+                currentElement.addColor();
+            }
+        });
+
+        addColorRow.appendChild(addColorButton);
+
         colorsDiv.appendChild(colorsLabel);
-        colorsDiv.appendChild(colorPickersContainer);
+        colorsDiv.appendChild(colorsContainer);
+        colorsDiv.appendChild(addColorRow);
         container.appendChild(colorsDiv);
     }
 }
 
 // Функция получения сохраненной настройки
 function getSavedSetting(componentName, settingName, defaultValue) {
+    // Для цветовых настроек конического градиента получаем из массива цветов
+    if (componentName === 'conic-gradient-screensaver' && settingName.startsWith('color')) {
+        const colorsKey = `screensaver-${componentName}-colors`;
+        const savedColors = localStorage.getItem(colorsKey);
+        if (savedColors) {
+            try {
+                const colors = JSON.parse(savedColors);
+                const colorIndex = parseInt(settingName.replace('color', '')) - 1;
+                if (colorIndex >= 0 && colorIndex < colors.length) {
+                    return colors[colorIndex];
+                }
+            } catch (e) {
+                console.warn('Failed to parse colors for setting:', e);
+            }
+        }
+    }
+
     const key = `screensaver-${componentName}-${settingName}`;
     const saved = localStorage.getItem(key);
     return saved !== null ? saved : defaultValue;
@@ -221,8 +323,12 @@ function switchScreensaver(type) {
     const settings = componentClass.getSettings();
     const componentTagName = `${type}-screensaver`;
     settings.forEach(setting => {
-        const value = getSavedSetting(componentTagName, setting.name, setting.default);
-        component.setAttribute(`data-${setting.name}`, value);
+        // Для цветовых настроек конического градиента не устанавливаем атрибуты,
+        // поскольку цвета загружаются из localStorage в connectedCallback
+        if (!(componentTagName === 'conic-gradient-screensaver' && setting.type === 'color')) {
+            const value = getSavedSetting(componentTagName, setting.name, setting.default);
+            component.setAttribute(`data-${setting.name}`, value);
+        }
     });
 
     // Добавляем компонент в контейнер
