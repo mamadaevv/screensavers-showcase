@@ -1,7 +1,3 @@
-// Service Worker отключен для разработки
-// Раскомментируйте код ниже для продакшена
-
-/*
 const CACHE_NAME = 'screensavers-v1.0.1';
 const urlsToCache = [
   '/',
@@ -10,6 +6,12 @@ const urlsToCache = [
   '/script.js',
   '/manifest.json',
   '/favicon.ico',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/screensavers/linear-gradient/linear-gradient-component.js',
+  '/screensavers/conic-gradient/conic-gradient-component.js',
+  '/screensavers/color-transition/color-transition-component.js',
+  '/screensavers/solid-color/solid-color-component.js',
   'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css',
   'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js'
 ];
@@ -50,4 +52,3 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
-*/
