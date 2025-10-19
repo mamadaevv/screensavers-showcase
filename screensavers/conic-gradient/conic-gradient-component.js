@@ -16,7 +16,7 @@ class ConicGradientScreensaver extends HTMLElement {
         type: 'range',
         min: 0,
         max: 100,
-        default: 0,
+        default: 100,
         step: 1
       },
       {
@@ -25,7 +25,7 @@ class ConicGradientScreensaver extends HTMLElement {
         type: 'range',
         min: 0,
         max: 100,
-        default: 30,
+        default: 0,
         step: 1
       }
     ];
@@ -34,7 +34,7 @@ class ConicGradientScreensaver extends HTMLElement {
     const tagName = 'conic-gradient-screensaver';
     const key = `screensaver-${tagName}-colors`;
     const saved = localStorage.getItem(key);
-    let colors = ['#0084ff', '#04ff00', '#ff00ea']; // значения по умолчанию
+    let colors = ['#ff0000', '#0000ff']; // значения по умолчанию: красный и синий
 
     if (saved) {
       try {
@@ -66,9 +66,9 @@ class ConicGradientScreensaver extends HTMLElement {
     this.animationId = null;
     this.gradientAngle = 0;
     this.speed = 50; // значение по умолчанию
-    this.offsetX = 0; // значение по умолчанию
-    this.offsetY = 30; // значение по умолчанию
-    this.colors = ['#0084ff', '#04ff00', '#ff00ea', '#ff9100', '#7300ff']; // массив цветов
+    this.offsetX = 100; // значение по умолчанию - верхний правый угол
+    this.offsetY = 0; // значение по умолчанию - верхний правый угол
+    this.colors = ['#ff0000', '#0000ff']; // массив цветов по умолчанию: красный и синий
   }
 
   connectedCallback() {

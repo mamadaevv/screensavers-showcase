@@ -129,6 +129,7 @@ function createSettingsControls(componentClass, container) {
             const colorPicker = document.createElement('sl-color-picker');
             colorPicker.value = getSavedSetting(componentTagName, setting.name, setting.default);
             colorPicker.size = 'small';
+            colorPicker.swatches = '#ff0000;#ff8000;#ffff00;#80ff00;#00ff80;#0080ff;#8000ff;#ffffff;#c0c0c0;#808080;#404040;#000000';
 
             colorPicker.addEventListener('sl-input', (e) => {
                 const newHex = e.target.value;

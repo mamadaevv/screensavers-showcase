@@ -57,3 +57,26 @@ main {
     border-color: var(--sl-color-neutral-300);
     box-shadow: var(--sl-shadow-small);
 }
+
+/* Стили для кнопки автора в footer drawer'а */
+sl-drawer .author-button {
+    width: 100%;
+}
+
+/* Более нейтральный цвет для text button с поддержкой тем */
+sl-drawer .author-button::part(label) {
+    color: var(--sl-color-gray-600);
+}
+
+sl-drawer .author-button:hover::part(label) {
+    color: var(--sl-color-gray-700);
+}
+
+/* В темной теме используем более светлые оттенки */
+.sl-theme-dark sl-drawer .author-button::part(label) {
+    color: var(--sl-color-gray-400);
+}
+
+.sl-theme-dark sl-drawer .author-button:hover::part(label) {
+    color: var(--sl-color-gray-300);
+}
