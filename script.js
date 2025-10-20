@@ -24,11 +24,9 @@ if ('serviceWorker' in navigator) {
         const environment = getEnvironmentType();
         const swPath = environment === 'local' ? '/sw.js' : '/sw.prod.js';
 
-        console.log(`Регистрация Service Worker для окружения: ${environment} (${swPath})`);
-
         navigator.serviceWorker.register(swPath)
             .then(registration => {
-                console.log('Service Worker зарегистрирован успешно:', registration);
+                // Service Worker зарегистрирован успешно
             })
             .catch(error => {
                 console.error('Ошибка регистрации Service Worker:', error);
@@ -546,6 +544,10 @@ function updateCurrentScreensaver() {
                 currentElement.updateOffsetX(value);
             } else if (setting.name === 'offsetY' && typeof currentElement.updateOffsetY === 'function') {
                 currentElement.updateOffsetY(value);
+            } else if (setting.name === 'updateInterval' && typeof currentElement.updateUpdateInterval === 'function') {
+                currentElement.updateUpdateInterval(value);
+            } else if (setting.name === 'updateStep' && typeof currentElement.updateUpdateStep === 'function') {
+                currentElement.updateUpdateStep(value);
             }
             // Здесь можно добавить другие настройки
         });
@@ -554,14 +556,13 @@ function updateCurrentScreensaver() {
 
 // Функция переключения заставок
 function switchScreensaver(type) {
-    // Выводим в консоль информацию о текущей заставке
+    // Информация о текущей заставке
     const screensaverNames = {
         'linear-gradient': 'Линейный градиент',
         'conic-gradient': 'Конический градиент',
         'color-transition': 'Смена цветов',
         'solid-color': 'Сплошной цвет'
     };
-    console.log(`Заставка: ${screensaverNames[type] || type}`);
 
     const container = document.getElementById('screensaver-container');
     const settingsContainer = document.getElementById('screensaver-settings');

@@ -9,6 +9,24 @@ class LinearGradientScreensaver extends HTMLElement {
         max: 360,
         default: 90,
         step: 1
+      },
+      {
+        name: 'updateInterval',
+        label: 'Период обновления (мс)',
+        type: 'range',
+        min: 10,
+        max: 1000,
+        default: 100,
+        step: 10
+      },
+      {
+        name: 'updateStep',
+        label: 'Шаг обновления (%)',
+        type: 'range',
+        min: 0.1,
+        max: 10,
+        default: 1,
+        step: 0.1
       }
     ];
 
@@ -16,7 +34,7 @@ class LinearGradientScreensaver extends HTMLElement {
     const tagName = 'linear-gradient-screensaver';
     const key = `screensaver-${tagName}-colors`;
     const saved = localStorage.getItem(key);
-    let colors = ['#ff0000', '#ffff00', '#0000ff']; // значения по умолчанию: красный, желтый, синий
+    let colors = ['#ff0000', '#0000ff', '#00ff00', '#ffff00']; // значения по умолчанию: красный, синий, зеленый, желтый
 
     if (saved) {
       try {
@@ -46,7 +64,11 @@ class LinearGradientScreensaver extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.angle = 90; // значение по умолчанию в градусах
-    this.colors = ['#ff0000', '#ffff00', '#0000ff']; // массив цветов по умолчанию: красный, желтый, синий
+    this.updateInterval = Math.max(10, Math.min(1000, 100)); // период обновления в мс (с проверкой)
+    this.updateStep = Math.max(0.1, Math.min(10, 1)); // шаг обновления в процентах (с проверкой)
+    this.colors = ['#ff0000', '#0000ff', '#00ff00', '#ffff00']; // массив цветов по умолчанию: красный, синий, зеленый, желтый
+    this.animationOffset = 0; // смещение для анимации в процентах
+    this.animationTimer = null; // таймер для анимации
   }
 
   connectedCallback() {
@@ -55,23 +77,29 @@ class LinearGradientScreensaver extends HTMLElement {
     if (angleAttr !== null) {
       this.angle = parseInt(angleAttr, 10);
     }
+    const intervalAttr = this.getAttribute('data-updateInterval');
+    if (intervalAttr !== null) {
+      this.updateInterval = Math.max(10, Math.min(1000, parseInt(intervalAttr, 10)));
+    }
+    const stepAttr = this.getAttribute('data-updateStep');
+    if (stepAttr !== null) {
+      this.updateStep = Math.max(0.1, Math.min(10, parseFloat(stepAttr)));
+    }
 
     // Загружаем цвета из localStorage
     this.loadColorsFromStorage();
 
     this.render();
+    this.startAnimation();
   }
 
   disconnectedCallback() {
-    // CSS анимация не требует остановки
+    this.stopAnimation();
   }
 
   render() {
-    // Создаем динамический CSS для градиента на основе количества цветов
-    let colorStops = this.colors.map((color, index) => {
-      const percentage = (index / (this.colors.length - 1)) * 100;
-      return `var(--color${index + 1}, ${color}) ${percentage}%`;
-    }).join(', ');
+    // Создаем фиксированный градиент с анимацией через background-position
+    const colorStops = this.colors.join(', ');
 
     const style = document.createElement('style');
     style.textContent = `
@@ -82,6 +110,8 @@ class LinearGradientScreensaver extends HTMLElement {
         width: 100%;
         height: 100%;
         background: linear-gradient(var(--angle, 90deg), ${colorStops});
+        background-size: 200% 100%;
+        background-position: var(--position, 0% 0%);
         z-index: 0;
       }
     `;
@@ -93,9 +123,11 @@ class LinearGradientScreensaver extends HTMLElement {
     this.shadowRoot.appendChild(container);
     this.gradientElement = container;
 
-    // Устанавливаем начальные значения
-    this.updateAngleValue();
-    this.updateColors();
+    // Устанавливаем начальную позицию
+    this.updatePosition();
+
+    // Отладка: выводим текущую позицию
+    console.log(`Linear Gradient position: ${this.animationOffset}%`);
   }
 
 
@@ -109,25 +141,45 @@ class LinearGradientScreensaver extends HTMLElement {
     this.gradientElement.offsetHeight;
   }
 
-  // Метод для обновления цветов
-  updateColors() {
-    this.colors.forEach((color, index) => {
-      this.gradientElement.style.setProperty(`--color${index + 1}`, color);
-    });
+  // Метод для обновления периода обновления
+  updateUpdateInterval(newInterval) {
+    if (newInterval !== undefined) {
+      // Ограничиваем период обновления в допустимых пределах
+      this.updateInterval = Math.max(10, Math.min(1000, parseInt(newInterval)));
+      // Перезапускаем анимацию с новым интервалом
+      this.startAnimation();
+    }
+  }
+
+  // Метод для обновления шага обновления
+  updateUpdateStep(newStep) {
+    if (newStep !== undefined) {
+      // Ограничиваем шаг обновления в допустимых пределах
+      this.updateStep = Math.max(0.1, Math.min(10, parseFloat(newStep)));
+      // Перезапускаем анимацию с новым шагом
+      this.startAnimation();
+    }
+  }
+
+  // Метод для обновления позиции фона для анимации
+  updatePosition() {
+    // Анимируем background-position от 0% до 200%
+    const positionX = this.animationOffset;
+    this.gradientElement.style.setProperty('--position', `${positionX}% 0%`);
   }
 
   // Метод для обновления конкретного цвета
   updateColor(index, newColor) {
     if (index >= 0 && index < this.colors.length) {
       this.colors[index] = newColor;
-      this.updateColors();
       // Сохраняем массив цветов в localStorage
       this.saveColorsToStorage();
-      // Перерисовываем компонент чтобы обновить CSS с новым количеством цветов
+      // Перерисовываем компонент чтобы обновить градиент
       this.shadowRoot.innerHTML = '';
       this.render();
     }
   }
+
 
 
   // Метод для сохранения массива цветов в localStorage
@@ -155,17 +207,19 @@ class LinearGradientScreensaver extends HTMLElement {
     }
   }
 
+
   // Метод для добавления нового цвета
   addColor(color) {
     if (!color) {
       color = this.generateRandomColor();
     }
     this.colors.push(color);
-    this.updateColors();
+    this.animationOffset = 0; // сбрасываем смещение при изменении количества цветов
     this.saveColorsToStorage();
-    // Перерисовываем компонент чтобы обновить CSS с новым количеством цветов
+    // Перерисовываем компонент чтобы обновить градиент
     this.shadowRoot.innerHTML = '';
     this.render();
+    this.updatePosition(); // принудительно обновляем позицию после перерисовки
     // Обновляем настройки в drawer
     this.updateSettingsInDrawer();
   }
@@ -174,11 +228,12 @@ class LinearGradientScreensaver extends HTMLElement {
   removeColor(index) {
     if (this.colors.length > 1 && index >= 0 && index < this.colors.length) {
       this.colors.splice(index, 1);
-      this.updateColors();
+      this.animationOffset = 0; // сбрасываем смещение при изменении количества цветов
       this.saveColorsToStorage();
-      // Перерисовываем компонент чтобы обновить CSS с новым количеством цветов
+      // Перерисовываем компонент чтобы обновить градиент
       this.shadowRoot.innerHTML = '';
       this.render();
+      this.updatePosition(); // принудительно обновляем позицию после перерисовки
       // Обновляем настройки в drawer
       this.updateSettingsInDrawer();
     }
@@ -187,7 +242,20 @@ class LinearGradientScreensaver extends HTMLElement {
   // Метод для генерации случайного цвета
   generateRandomColor() {
     const hue = Math.floor(Math.random() * 360);
-    return `hsl(${hue}, 70%, 50%)`;
+    // Возвращаем HEX вместо HSL для совместимости
+    const hslToHex = (h, s, l) => {
+      h /= 360;
+      s /= 100;
+      l /= 100;
+      const a = s * Math.min(l, 1 - l);
+      const f = n => {
+        const k = (n + h * 12) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+      };
+      return `#${f(0)}${f(8)}${f(4)}`;
+    };
+    return hslToHex(hue, 70, 50);
   }
 
   // Метод для обновления настроек в drawer
@@ -201,6 +269,39 @@ class LinearGradientScreensaver extends HTMLElement {
       if (window.createSettingsControls) {
         window.createSettingsControls(componentClass, settingsContainer);
       }
+    }
+  }
+
+  // Метод для запуска анимации
+  startAnimation() {
+    if (this.animationTimer) {
+      this.stopAnimation(); // останавливаем предыдущую анимацию, если она была
+    }
+    this.animationTimer = setInterval(() => {
+      this.updateAnimation();
+    }, this.updateInterval);
+  }
+
+  // Метод для остановки анимации
+  stopAnimation() {
+    if (this.animationTimer) {
+      clearInterval(this.animationTimer);
+      this.animationTimer = null;
+    }
+  }
+
+  // Метод для обновления анимации
+  updateAnimation() {
+    // Проверяем что updateStep корректный
+    if (isNaN(this.updateStep) || this.updateStep <= 0) {
+      this.updateStep = 1; // сбрасываем на значение по умолчанию
+    }
+    this.animationOffset = (this.animationOffset + this.updateStep) % 201; // увеличиваем на заданный шаг от 0% до 200%
+    this.updatePosition(); // обновляем позицию фона
+
+    // Отладка: выводим текущую позицию каждые 10 обновлений
+    if (Math.floor(this.animationOffset / this.updateStep) % 10 === 0) {
+      console.log(`Linear Gradient position: ${this.animationOffset.toFixed(1)}%`);
     }
   }
 }
