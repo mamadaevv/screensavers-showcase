@@ -20,6 +20,16 @@ class ConicGradientScreensaver extends HTMLElement {
         step: 1
       },
       {
+        name: 'offsetXPresets',
+        label: 'Пресеты смещения X',
+        type: 'button-group',
+        options: [
+          { value: 0, label: '0%' },
+          { value: 50, label: '50%' },
+          { value: 100, label: '100%' }
+        ]
+      },
+      {
         name: 'offsetY',
         label: 'Смещение по Y (%)',
         type: 'range',
@@ -27,6 +37,16 @@ class ConicGradientScreensaver extends HTMLElement {
         max: 100,
         default: 0,
         step: 1
+      },
+      {
+        name: 'offsetYPresets',
+        label: 'Пресеты смещения Y',
+        type: 'button-group',
+        options: [
+          { value: 0, label: '0%' },
+          { value: 50, label: '50%' },
+          { value: 100, label: '100%' }
+        ]
       }
     ];
 

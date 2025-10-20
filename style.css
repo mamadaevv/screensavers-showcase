@@ -41,6 +41,21 @@ sl-drawer sl-select[label="Выберите заставку"] {
     margin-bottom: 0;
 }
 
+/* Растягиваем button-group по ширине */
+#screensaver-settings sl-button-group {
+    width: 100%;
+}
+
+#screensaver-settings sl-button-group::part(base) {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#screensaver-settings sl-button-group sl-button {
+    flex: 1;
+}
+
 
 /* Отступ между input и range в настройках */
 #brightness-settings sl-input {

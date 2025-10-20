@@ -513,8 +513,6 @@ function createSettingsControls(componentClass, container) {
 
         // Добавляем button-group для globalRotation между input и range
         if (setting.name === 'globalRotation') {
-            const buttonGroupDiv = document.createElement('div');
-
             // Создаем button-group
             const buttonGroup = document.createElement('sl-button-group');
 
@@ -541,8 +539,69 @@ function createSettingsControls(componentClass, container) {
                 buttonGroup.appendChild(button);
             });
 
-            buttonGroupDiv.appendChild(buttonGroup);
-            settingDiv.appendChild(buttonGroupDiv);
+            settingDiv.appendChild(buttonGroup);
+        }
+
+        // Добавляем button-group для offsetX в коническом градиенте
+        if (setting.name === 'offsetX' && componentTagName === 'conic-gradient-screensaver') {
+            // Создаем button-group
+            const buttonGroup = document.createElement('sl-button-group');
+
+            // Добавляем button элементы
+            const presets = [0, 50, 100];
+            presets.forEach(value => {
+                const button = document.createElement('sl-button');
+                button.textContent = value + '%';
+                button.value = value;
+                button.size = 'small';
+
+                // Обработчик клика на кнопку
+                button.addEventListener('click', () => {
+                    input.value = value;
+                    range.value = value;
+                    saveSetting(componentTagName, setting.name, value);
+
+                    const currentElement = document.querySelector(`${componentTagName}`);
+                    if (currentElement && typeof currentElement.updateOffsetX === 'function') {
+                        currentElement.updateOffsetX(value);
+                    }
+                });
+
+                buttonGroup.appendChild(button);
+            });
+
+            settingDiv.appendChild(buttonGroup);
+        }
+
+        // Добавляем button-group для offsetY в коническом градиенте
+        if (setting.name === 'offsetY' && componentTagName === 'conic-gradient-screensaver') {
+            // Создаем button-group
+            const buttonGroup = document.createElement('sl-button-group');
+
+            // Добавляем button элементы
+            const presets = [0, 50, 100];
+            presets.forEach(value => {
+                const button = document.createElement('sl-button');
+                button.textContent = value + '%';
+                button.value = value;
+                button.size = 'small';
+
+                // Обработчик клика на кнопку
+                button.addEventListener('click', () => {
+                    input.value = value;
+                    range.value = value;
+                    saveSetting(componentTagName, setting.name, value);
+
+                    const currentElement = document.querySelector(`${componentTagName}`);
+                    if (currentElement && typeof currentElement.updateOffsetY === 'function') {
+                        currentElement.updateOffsetY(value);
+                    }
+                });
+
+                buttonGroup.appendChild(button);
+            });
+
+            settingDiv.appendChild(buttonGroup);
         }
 
         settingDiv.appendChild(range);
