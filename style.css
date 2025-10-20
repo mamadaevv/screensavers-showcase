@@ -4,6 +4,7 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: var(--sl-font-sans);
+  overflow: hidden;
 }
 
 /* Кастомные стили приложения */

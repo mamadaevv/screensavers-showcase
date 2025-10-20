@@ -99,6 +99,7 @@ function saveBrightnessSwitchSetting(enabled) {
     localStorage.setItem('brightness-switch-enabled', enabled);
 }
 
+
 // Функция обновления яркости
 function updateBrightness() {
     const brightnessSwitch = document.getElementById('brightness-switch');
@@ -139,6 +140,126 @@ function updateBrightness() {
         screensaverContainer.style.opacity = '';
         body.style.backgroundColor = '';
     }
+}
+
+
+// Функция добавления глобальных настроек трансформации
+function addTransformControl(container) {
+    console.log('addTransformControl called, container:', container);
+
+    // Настройка поворота
+    const rotationDiv = document.createElement('div');
+    rotationDiv.style.marginBottom = 'var(--sl-spacing-medium)';
+
+    const rotationLabel = document.createElement('label');
+    rotationLabel.textContent = 'Поворот (°)';
+    rotationLabel.style.display = 'block';
+    rotationLabel.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+    rotationLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
+    rotationLabel.style.color = 'var(--sl-input-label-color)';
+    rotationLabel.style.marginBottom = 'var(--sl-spacing-small)';
+
+    const rotationRange = document.createElement('sl-range');
+    rotationRange.min = -180;
+    rotationRange.max = 180;
+    rotationRange.step = 1;
+    rotationRange.value = getRotationSetting();
+
+    const rotationInput = document.createElement('sl-input');
+    rotationInput.type = 'number';
+    rotationInput.min = -180;
+    rotationInput.max = 180;
+    rotationInput.step = 1;
+    rotationInput.value = rotationRange.value;
+    rotationInput.style.marginLeft = 'var(--sl-spacing-small)';
+
+    // Синхронизируем значения между range и input
+    rotationRange.addEventListener('input', (e) => {
+        rotationInput.value = e.target.value;
+        saveRotationSetting(e.target.value);
+        updateTransform();
+    });
+
+    rotationRange.addEventListener('sl-input', (e) => {
+        rotationInput.value = e.target.value;
+        saveRotationSetting(e.target.value);
+        updateTransform();
+    });
+
+    rotationInput.addEventListener('input', (e) => {
+        rotationRange.value = e.target.value;
+        saveRotationSetting(e.target.value);
+        updateTransform();
+    });
+
+    rotationInput.addEventListener('sl-input', (e) => {
+        rotationRange.value = e.target.value;
+        saveRotationSetting(e.target.value);
+        updateTransform();
+    });
+
+    rotationDiv.appendChild(rotationLabel);
+    rotationDiv.appendChild(rotationRange);
+    rotationDiv.appendChild(rotationInput);
+
+    // Настройка масштаба
+    const scaleDiv = document.createElement('div');
+
+    const scaleLabel = document.createElement('label');
+    scaleLabel.textContent = 'Масштаб';
+    scaleLabel.style.display = 'block';
+    scaleLabel.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+    scaleLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
+    scaleLabel.style.color = 'var(--sl-input-label-color)';
+    scaleLabel.style.marginBottom = 'var(--sl-spacing-small)';
+
+    const scaleRange = document.createElement('sl-range');
+    scaleRange.min = 0.1;
+    scaleRange.max = 3.0;
+    scaleRange.step = 0.1;
+    scaleRange.value = getScaleSetting();
+
+    const scaleInput = document.createElement('sl-input');
+    scaleInput.type = 'number';
+    scaleInput.min = 0.1;
+    scaleInput.max = 3.0;
+    scaleInput.step = 0.1;
+    scaleInput.value = scaleRange.value;
+    scaleInput.style.marginLeft = 'var(--sl-spacing-small)';
+
+    // Синхронизируем значения между range и input
+    scaleRange.addEventListener('input', (e) => {
+        scaleInput.value = e.target.value;
+        saveScaleSetting(e.target.value);
+        updateTransform();
+    });
+
+    scaleRange.addEventListener('sl-input', (e) => {
+        scaleInput.value = e.target.value;
+        saveScaleSetting(e.target.value);
+        updateTransform();
+    });
+
+    scaleInput.addEventListener('input', (e) => {
+        scaleRange.value = e.target.value;
+        saveScaleSetting(e.target.value);
+        updateTransform();
+    });
+
+    scaleInput.addEventListener('sl-input', (e) => {
+        scaleRange.value = e.target.value;
+        saveScaleSetting(e.target.value);
+        updateTransform();
+    });
+
+    scaleDiv.appendChild(scaleLabel);
+    scaleDiv.appendChild(scaleRange);
+    scaleDiv.appendChild(scaleInput);
+
+    container.appendChild(rotationDiv);
+    container.appendChild(scaleDiv);
+
+    console.log('Transform controls added to container');
 }
 
 // Функция добавления глобальной настройки яркости
@@ -239,6 +360,7 @@ function createSettingsControls(componentClass, container) {
     // Группируем настройки по типу
     const rangeSettings = settings.filter(setting => setting.type === 'range');
     const colorSettings = settings.filter(setting => setting.type === 'color');
+    const radioSettings = settings.filter(setting => setting.type === 'radio');
 
     // Специальная обработка для solid-color (inline color picker)
     if (componentTagName === 'solid-color-screensaver' && colorSettings.length === 1) {
@@ -312,25 +434,77 @@ function createSettingsControls(componentClass, container) {
         range.addEventListener('input', (e) => {
             input.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
-            updateCurrentScreensaver();
+
+            // Специальная обработка для настроек компонента
+            if (setting.name === 'globalRotation' || setting.name === 'globalScale') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement) {
+                    if (setting.name === 'globalRotation' && typeof currentElement.updateGlobalRotation === 'function') {
+                        currentElement.updateGlobalRotation(e.target.value);
+                    } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
+                        currentElement.updateGlobalScale(e.target.value);
+                    }
+                }
+            } else {
+                updateCurrentScreensaver();
+            }
         });
 
         range.addEventListener('sl-input', (e) => {
             input.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
-            updateCurrentScreensaver();
+
+            // Специальная обработка для настроек компонента
+            if (setting.name === 'globalRotation' || setting.name === 'globalScale') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement) {
+                    if (setting.name === 'globalRotation' && typeof currentElement.updateGlobalRotation === 'function') {
+                        currentElement.updateGlobalRotation(e.target.value);
+                    } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
+                        currentElement.updateGlobalScale(e.target.value);
+                    }
+                }
+            } else {
+                updateCurrentScreensaver();
+            }
         });
 
         input.addEventListener('input', (e) => {
             range.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
-            updateCurrentScreensaver();
+
+            // Специальная обработка для настроек компонента
+            if (setting.name === 'globalRotation' || setting.name === 'globalScale') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement) {
+                    if (setting.name === 'globalRotation' && typeof currentElement.updateGlobalRotation === 'function') {
+                        currentElement.updateGlobalRotation(e.target.value);
+                    } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
+                        currentElement.updateGlobalScale(e.target.value);
+                    }
+                }
+            } else {
+                updateCurrentScreensaver();
+            }
         });
 
         input.addEventListener('sl-input', (e) => {
             range.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
-            updateCurrentScreensaver();
+
+            // Специальная обработка для настроек компонента
+            if (setting.name === 'globalRotation' || setting.name === 'globalScale') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement) {
+                    if (setting.name === 'globalRotation' && typeof currentElement.updateGlobalRotation === 'function') {
+                        currentElement.updateGlobalRotation(e.target.value);
+                    } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
+                        currentElement.updateGlobalScale(e.target.value);
+                    }
+                }
+            } else {
+                updateCurrentScreensaver();
+            }
         });
 
         settingDiv.appendChild(label);
@@ -338,6 +512,85 @@ function createSettingsControls(componentClass, container) {
         settingDiv.appendChild(range);
         container.appendChild(settingDiv);
     });
+
+    // Создаем блок для radio настроек
+    if (radioSettings.length > 0) {
+        radioSettings.forEach(setting => {
+            const radioDiv = document.createElement('div');
+
+            // Создаем контейнер для заголовка и switch (как у яркости)
+            const headerDiv = document.createElement('div');
+            headerDiv.style.display = 'flex';
+            headerDiv.style.alignItems = 'center';
+            headerDiv.style.justifyContent = 'space-between';
+            headerDiv.style.marginBottom = 'var(--sl-spacing-small)';
+
+            // Создаем лейбл
+            const label = document.createElement('label');
+            label.textContent = setting.label;
+            label.style.display = 'block';
+            label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+            label.style.fontWeight = 'var(--sl-input-label-font-weight)';
+            label.style.color = 'var(--sl-input-label-color)';
+
+            // Создаем switch для включения/выключения настройки
+            const radioSwitch = document.createElement('sl-switch');
+            radioSwitch.checked = getSavedSetting(componentTagName, setting.name + '_enabled', false);
+
+            // Обработчик изменения switch
+            radioSwitch.addEventListener('sl-change', (event) => {
+                const isEnabled = event.target.checked;
+                saveSetting(componentTagName, setting.name + '_enabled', isEnabled);
+                updateRadioGroupVisibility(radioDiv, setting, componentTagName, isEnabled);
+
+                // Если switch выключается, сбрасываем цветовое пространство
+                if (!isEnabled) {
+                    const currentElement = document.querySelector(`${componentTagName}`);
+                    if (currentElement && typeof currentElement.updateColorSpace === 'function') {
+                        currentElement.updateColorSpace(null);
+                    }
+                }
+            });
+
+            headerDiv.appendChild(label);
+            headerDiv.appendChild(radioSwitch);
+
+            // Создаем radio-group
+            const radioGroup = document.createElement('sl-radio-group');
+            radioGroup.name = setting.name;
+            radioGroup.value = getSavedSetting(componentTagName, setting.name, setting.default);
+
+            // Добавляем radio элементы
+            setting.options.forEach(option => {
+                const radio = document.createElement('sl-radio');
+                radio.value = option.value;
+                radio.innerText = option.label;
+                radio.style.marginBottom = 'var(--sl-spacing-2x-small)';
+                radioGroup.appendChild(radio);
+            });
+
+            // Обработчик изменения radio-group
+            radioGroup.addEventListener('sl-change', (e) => {
+                const value = e.target.value;
+                saveSetting(componentTagName, setting.name, value);
+
+                // Применяем цветовое пространство только если switch включен
+                const isEnabled = getSavedSetting(componentTagName, setting.name + '_enabled', false);
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateColorSpace === 'function') {
+                    currentElement.updateColorSpace(isEnabled ? value : null);
+                }
+            });
+
+            radioDiv.appendChild(headerDiv);
+            radioDiv.appendChild(radioGroup);
+
+            // Управляем видимостью radio-group
+            updateRadioGroupVisibility(radioDiv, setting, componentTagName, radioSwitch.checked);
+
+            container.appendChild(radioDiv);
+        });
+    }
 
     // Создаем блок для цветовых настроек
     if (colorSettings.length > 0) {
@@ -461,6 +714,14 @@ function createSettingsControls(componentClass, container) {
     }
 }
 
+// Функция для управления видимостью radio-group
+function updateRadioGroupVisibility(container, setting, componentTagName, isEnabled) {
+    const radioGroup = container.querySelector('sl-radio-group');
+    if (radioGroup) {
+        radioGroup.style.display = isEnabled ? '' : 'none';
+    }
+}
+
 // Функция получения сохраненной настройки
 function getSavedSetting(componentName, settingName, defaultValue) {
     // Для solid-color получаем одиночный цвет
@@ -533,8 +794,6 @@ function updateCurrentScreensaver() {
 
             if (setting.name === 'speed') {
                 currentElement.updateSpeed(value);
-            } else if (setting.name === 'angle' && typeof currentElement.updateAngleValue === 'function') {
-                currentElement.updateAngleValue(value);
             } else if (setting.name === 'color' && componentName === 'solid-color-screensaver' && typeof currentElement.updateColor === 'function') {
                 currentElement.updateColor(value);
             } else if (setting.name.startsWith('color') && typeof currentElement.updateColor === 'function') {
@@ -548,8 +807,13 @@ function updateCurrentScreensaver() {
                 currentElement.updateUpdateInterval(value);
             } else if (setting.name === 'updateStep' && typeof currentElement.updateUpdateStep === 'function') {
                 currentElement.updateUpdateStep(value);
+            } else if (setting.name === 'colorSpace' && typeof currentElement.updateColorSpace === 'function') {
+                currentElement.updateColorSpace(value);
+            } else if (setting.name === 'globalRotation' && typeof currentElement.updateGlobalRotation === 'function') {
+                currentElement.updateGlobalRotation(value);
+            } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
+                currentElement.updateGlobalScale(value);
             }
-            // Здесь можно добавить другие настройки
         });
     }
 }
