@@ -171,6 +171,7 @@ function addTransformControl(container) {
     rotationInput.max = 180;
     rotationInput.step = 1;
     rotationInput.value = rotationRange.value;
+    rotationInput.size = 'small';
     rotationInput.style.marginLeft = 'var(--sl-spacing-small)';
 
     // Синхронизируем значения между range и input
@@ -225,6 +226,7 @@ function addTransformControl(container) {
     scaleInput.max = 3.0;
     scaleInput.step = 0.1;
     scaleInput.value = scaleRange.value;
+    scaleInput.size = 'small';
     scaleInput.style.marginLeft = 'var(--sl-spacing-small)';
 
     // Синхронизируем значения между range и input
@@ -371,7 +373,6 @@ function createSettingsControls(componentClass, container) {
         const label = document.createElement('label');
         label.textContent = setting.label;
         label.style.display = 'block';
-        label.style.marginBottom = 'var(--sl-spacing-small)';
         label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
         label.style.fontWeight = 'var(--sl-input-label-font-weight)';
         label.style.color = 'var(--sl-input-label-color)';
@@ -404,7 +405,6 @@ function createSettingsControls(componentClass, container) {
         const label = document.createElement('label');
         label.textContent = setting.label;
         label.style.display = 'block';
-        label.style.marginBottom = 'var(--sl-spacing-small)';
         label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
         label.style.fontWeight = 'var(--sl-input-label-font-weight)';
         label.style.color = 'var(--sl-input-label-color)';
@@ -423,6 +423,7 @@ function createSettingsControls(componentClass, container) {
         input.max = setting.max;
         input.step = setting.step;
         input.value = range.value;
+        input.size = 'small';
 
         // Отключаем элементы управления, если настройка отключена
         if (setting.disabled) {
@@ -509,6 +510,41 @@ function createSettingsControls(componentClass, container) {
 
         settingDiv.appendChild(label);
         settingDiv.appendChild(input);
+
+        // Добавляем button-group для globalRotation между input и range
+        if (setting.name === 'globalRotation') {
+            const buttonGroupDiv = document.createElement('div');
+
+            // Создаем button-group
+            const buttonGroup = document.createElement('sl-button-group');
+
+            // Добавляем button элементы
+            const presets = [-90, -45, 0, 45, 90, 180];
+            presets.forEach(value => {
+                const button = document.createElement('sl-button');
+                button.textContent = value + '°';
+                button.value = value;
+                button.size = 'small';
+
+                // Обработчик клика на кнопку
+                button.addEventListener('click', () => {
+                    input.value = value;
+                    range.value = value;
+                    saveSetting(componentTagName, setting.name, value);
+
+                    const currentElement = document.querySelector(`${componentTagName}`);
+                    if (currentElement && typeof currentElement.updateGlobalRotation === 'function') {
+                        currentElement.updateGlobalRotation(value);
+                    }
+                });
+
+                buttonGroup.appendChild(button);
+            });
+
+            buttonGroupDiv.appendChild(buttonGroup);
+            settingDiv.appendChild(buttonGroupDiv);
+        }
+
         settingDiv.appendChild(range);
         container.appendChild(settingDiv);
     });
@@ -592,6 +628,7 @@ function createSettingsControls(componentClass, container) {
         });
     }
 
+
     // Создаем блок для цветовых настроек
     if (colorSettings.length > 0) {
         const colorsDiv = document.createElement('div');
@@ -600,7 +637,6 @@ function createSettingsControls(componentClass, container) {
         const colorsLabel = document.createElement('label');
         colorsLabel.textContent = 'Цвета';
         colorsLabel.style.display = 'block';
-        colorsLabel.style.marginBottom = 'var(--sl-spacing-small)';
         colorsLabel.style.fontSize = 'var(--sl-input-label-font-size-medium)';
         colorsLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
         colorsLabel.style.color = 'var(--sl-input-label-color)';
@@ -616,7 +652,6 @@ function createSettingsControls(componentClass, container) {
             colorRow.style.display = 'flex';
             colorRow.style.alignItems = 'center';
             colorRow.style.gap = 'var(--sl-spacing-medium)';
-            colorRow.style.marginBottom = 'var(--sl-spacing-small)';
             colorRow.style.padding = 'var(--sl-spacing-small)';
             colorRow.style.border = '1px solid var(--sl-color-neutral-200)';
             colorRow.style.borderRadius = 'var(--sl-border-radius-medium)';
@@ -689,12 +724,11 @@ function createSettingsControls(componentClass, container) {
 
         // Кнопка "Добавить цвет" на всю ширину
         const addColorRow = document.createElement('div');
-        addColorRow.style.marginTop = 'var(--sl-spacing-medium)';
 
         const addColorButton = document.createElement('sl-button');
         addColorButton.variant = 'default';
         addColorButton.outline = true;
-        addColorButton.size = 'medium';
+        addColorButton.size = 'small';
         addColorButton.style.width = '100%';
         addColorButton.innerHTML = '<sl-icon name="plus" slot="prefix"></sl-icon>Добавить цвет';
 

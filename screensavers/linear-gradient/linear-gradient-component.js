@@ -123,15 +123,22 @@ class LinearGradientScreensaver extends HTMLElement {
     this.loadSettingsFromStorage();
 
     this.render();
+    this.updateContainerSizeAndPosition();
     this.startAnimation();
   }
 
   disconnectedCallback() {
     this.stopAnimation();
-    // Сбрасываем трансформацию при отключении компонента
+    // Сбрасываем трансформацию и размеры при отключении компонента
     const container = document.getElementById('screensaver-container');
     if (container) {
       container.style.transform = '';
+      container.style.width = '';
+      container.style.height = '';
+      container.style.position = '';
+      container.style.left = '';
+      container.style.top = '';
+      container.style.transformOrigin = '';
     }
   }
 
@@ -219,8 +226,44 @@ class LinearGradientScreensaver extends HTMLElement {
   updateTransform() {
     const container = document.getElementById('screensaver-container');
     if (container) {
+      // Рассчитываем размеры и позицию контейнера для полного покрытия экрана при повороте
+      this.updateContainerSizeAndPosition();
+
       container.style.transform = `rotate(${this.globalRotation}deg) scale(${this.globalScale})`;
     }
+  }
+
+  // Метод для расчета размера и позиции контейнера чтобы он всегда покрывал всю область экрана
+  updateContainerSizeAndPosition() {
+    const container = document.getElementById('screensaver-container');
+    if (!container) return;
+
+    // Получаем размеры viewport
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Угол поворота в радианах
+    const angleRad = (this.globalRotation * Math.PI) / 180;
+
+    // Рассчитываем bounding box для повернутого прямоугольника
+    const cos = Math.abs(Math.cos(angleRad));
+    const sin = Math.abs(Math.sin(angleRad));
+
+    // Ширина и высота bounding box с учетом масштаба
+    const boundingWidth = Math.ceil((viewportWidth * this.globalScale) * cos + (viewportHeight * this.globalScale) * sin);
+    const boundingHeight = Math.ceil((viewportWidth * this.globalScale) * sin + (viewportHeight * this.globalScale) * cos);
+
+    // Устанавливаем размеры контейнера
+    container.style.width = `${boundingWidth}px`;
+    container.style.height = `${boundingHeight}px`;
+
+    // Центрируем контейнер
+    container.style.position = 'absolute';
+    container.style.left = `${Math.ceil((viewportWidth - boundingWidth) / 2)}px`;
+    container.style.top = `${Math.ceil((viewportHeight - boundingHeight) / 2)}px`;
+
+    // Точка поворота должна быть в центре viewport (поскольку bounding box центрирован)
+    container.style.transformOrigin = '50% 50%';
   }
 
   // Метод для получения параметра цветового пространства для linear-gradient
