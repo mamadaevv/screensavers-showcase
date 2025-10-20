@@ -1,7 +1,38 @@
+// Функция определения типа окружения
+function getEnvironmentType() {
+    const hostname = location.hostname;
+    const protocol = location.protocol;
+
+    // Локальные окружения
+    if (protocol === 'file:' ||
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '0.0.0.0' ||
+        hostname.startsWith('192.168.') ||
+        hostname.startsWith('10.') ||
+        (hostname.startsWith('172.') && parseInt(hostname.split('.')[1]) >= 16 && parseInt(hostname.split('.')[1]) <= 31)) {
+        return 'local';
+    }
+
+    // Все остальные считаем продакшеном
+    return 'production';
+}
+
 // Регистрация Service Worker для PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
+        const environment = getEnvironmentType();
+        const swPath = environment === 'local' ? '/sw.js' : '/sw.prod.js';
+
+        console.log(`Регистрация Service Worker для окружения: ${environment} (${swPath})`);
+
+        navigator.serviceWorker.register(swPath)
+            .then(registration => {
+                console.log('Service Worker зарегистрирован успешно:', registration);
+            })
+            .catch(error => {
+                console.error('Ошибка регистрации Service Worker:', error);
+            });
     });
 }
 
@@ -523,6 +554,15 @@ function updateCurrentScreensaver() {
 
 // Функция переключения заставок
 function switchScreensaver(type) {
+    // Выводим в консоль информацию о текущей заставке
+    const screensaverNames = {
+        'linear-gradient': 'Линейный градиент',
+        'conic-gradient': 'Конический градиент',
+        'color-transition': 'Смена цветов',
+        'solid-color': 'Сплошной цвет'
+    };
+    console.log(`Заставка: ${screensaverNames[type] || type}`);
+
     const container = document.getElementById('screensaver-container');
     const settingsContainer = document.getElementById('screensaver-settings');
     const brightnessContainer = document.getElementById('brightness-settings');
