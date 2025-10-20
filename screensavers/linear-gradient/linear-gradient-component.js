@@ -54,7 +54,7 @@ class LinearGradientScreensaver extends HTMLElement {
     const tagName = 'linear-gradient-screensaver';
     const key = `screensaver-${tagName}-colors`;
     const saved = localStorage.getItem(key);
-    let colors = ['#ff0000', '#0000ff', '#00ff00', '#ffff00']; // значения по умолчанию: красный, синий, зеленый, желтый
+    let colors = ['#ff0000', '#0080ff', '#80ff00', '#ffff00', '#ff0000']; // цвета из swatches: красный, синий, салатовый, желтый, красный
 
     if (saved) {
       try {
@@ -88,7 +88,7 @@ class LinearGradientScreensaver extends HTMLElement {
     this.colorSpace = 'oklab'; // цветовое пространство по умолчанию
     this.globalRotation = 0; // глобальный поворот в градусах
     this.globalScale = 1.0; // глобальный масштаб
-    this.colors = ['#ff0000', '#0000ff', '#00ff00', '#ffff00']; // массив цветов по умолчанию: красный, синий, зеленый, желтый
+    this.colors = ['#ff0000', '#0080ff', '#80ff00', '#ffff00', '#ff0000']; // цвета из swatches: красный, синий, салатовый, желтый, красный
     this.animationOffset = 0; // смещение для анимации в процентах
     this.animationTimer = null; // таймер для анимации
   }

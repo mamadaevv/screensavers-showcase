@@ -68,7 +68,7 @@ class ConicGradientScreensaver extends HTMLElement {
     this.speed = 50; // значение по умолчанию
     this.offsetX = 100; // значение по умолчанию - верхний правый угол
     this.offsetY = 0; // значение по умолчанию - верхний правый угол
-    this.colors = ['#ff0000', '#0000ff']; // массив цветов по умолчанию: красный и синий
+    this.colors = ['#ff0000', '#0080ff']; // цвета из swatches: красный, синий
   }
 
   connectedCallback() {

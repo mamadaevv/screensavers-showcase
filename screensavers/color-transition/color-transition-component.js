@@ -46,7 +46,7 @@ class ColorTransitionScreensaver extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.speed = 5; // значение по умолчанию (1-10, где 10 = быстро)
-    this.colors = ['#ff0000', '#ffff00', '#00ff00']; // массив цветов по умолчанию: красный, желтый, зеленый
+    this.colors = ['#ff0000', '#ffff00', '#80ff00']; // цвета из swatches: красный, желтый, салатовый
     this.currentColorIndex = 0;
     this.animationId = null;
   }
