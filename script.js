@@ -856,6 +856,42 @@ function createSettingsControls(componentClass, container) {
                 }
             });
 
+            // Группа кнопок перемещения
+            const moveButtonGroup = document.createElement('sl-button-group');
+            moveButtonGroup.label = 'Перемещение цвета';
+
+            // Кнопка переместить цвет вверх
+            const moveUpButton = document.createElement('sl-button');
+            moveUpButton.variant = 'default';
+            moveUpButton.size = 'small';
+            moveUpButton.innerHTML = '<sl-icon name="arrow-up"></sl-icon>';
+            moveUpButton.title = 'Переместить цвет вверх';
+
+            moveUpButton.addEventListener('click', () => {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.moveColorUp === 'function') {
+                    currentElement.moveColorUp(index);
+                }
+            });
+
+            // Кнопка переместить цвет вниз
+            const moveDownButton = document.createElement('sl-button');
+            moveDownButton.variant = 'default';
+            moveDownButton.size = 'small';
+            moveDownButton.innerHTML = '<sl-icon name="arrow-down"></sl-icon>';
+            moveDownButton.title = 'Переместить цвет вниз';
+
+            moveDownButton.addEventListener('click', () => {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.moveColorDown === 'function') {
+                    currentElement.moveColorDown(index);
+                }
+            });
+
+            // Добавляем кнопки в группу
+            moveButtonGroup.appendChild(moveUpButton);
+            moveButtonGroup.appendChild(moveDownButton);
+
             // Кнопка удалить цвет
             const deleteButton = document.createElement('sl-button');
             deleteButton.variant = 'danger';
@@ -870,13 +906,26 @@ function createSettingsControls(componentClass, container) {
                 }
             });
 
-            // Отключаем кнопку удаления, если только один цвет
+            // Отключаем кнопки в зависимости от позиции цвета
             if (colorSettings.length <= 1) {
+                // Для solid-color или единственного цвета отключаем все кнопки управления
+                moveUpButton.disabled = true;
+                moveDownButton.disabled = true;
                 deleteButton.disabled = true;
+            } else {
+                // Отключаем кнопку "вверх" для первого цвета
+                if (index === 0) {
+                    moveUpButton.disabled = true;
+                }
+                // Отключаем кнопку "вниз" для последнего цвета
+                if (index === colorSettings.length - 1) {
+                    moveDownButton.disabled = true;
+                }
             }
 
             // Добавляем элементы в строку
             colorRow.appendChild(colorPicker);
+            colorRow.appendChild(moveButtonGroup);
             colorRow.appendChild(duplicateButton);
             colorRow.appendChild(deleteButton);
 

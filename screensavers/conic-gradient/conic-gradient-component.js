@@ -252,6 +252,36 @@ class ConicGradientScreensaver extends HTMLElement {
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }
 
+  // Метод для перемещения цвета вверх
+  moveColorUp(index) {
+    if (index > 0 && index < this.colors.length) {
+      // Меняем местами цвета
+      [this.colors[index - 1], this.colors[index]] = [this.colors[index], this.colors[index - 1]];
+      this.updateColors();
+      this.saveColorsToStorage();
+      // Перерисовываем компонент чтобы обновить CSS с новым количеством цветов
+      this.shadowRoot.innerHTML = '';
+      this.render();
+      // Обновляем настройки в drawer
+      this.updateSettingsInDrawer();
+    }
+  }
+
+  // Метод для перемещения цвета вниз
+  moveColorDown(index) {
+    if (index >= 0 && index < this.colors.length - 1) {
+      // Меняем местами цвета
+      [this.colors[index], this.colors[index + 1]] = [this.colors[index + 1], this.colors[index]];
+      this.updateColors();
+      this.saveColorsToStorage();
+      // Перерисовываем компонент чтобы обновить CSS с новым количеством цветов
+      this.shadowRoot.innerHTML = '';
+      this.render();
+      // Обновляем настройки в drawer
+      this.updateSettingsInDrawer();
+    }
+  }
+
   // Метод для добавления нового цвета
   addColor(color) {
     if (!color) {

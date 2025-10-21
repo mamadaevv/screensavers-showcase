@@ -408,6 +408,34 @@ class LinearGradientScreensaver extends HTMLElement {
     return hslToHex(hue, 70, 50);
   }
 
+  // Метод для перемещения цвета вверх
+  moveColorUp(index) {
+    if (index > 0 && index < this.colors.length) {
+      // Меняем местами цвета
+      [this.colors[index - 1], this.colors[index]] = [this.colors[index], this.colors[index - 1]];
+      this.saveColorsToStorage();
+      // Перерисовываем компонент чтобы обновить градиент
+      this.shadowRoot.innerHTML = '';
+      this.render();
+      // Обновляем настройки в drawer
+      this.updateSettingsInDrawer();
+    }
+  }
+
+  // Метод для перемещения цвета вниз
+  moveColorDown(index) {
+    if (index >= 0 && index < this.colors.length - 1) {
+      // Меняем местами цвета
+      [this.colors[index], this.colors[index + 1]] = [this.colors[index + 1], this.colors[index]];
+      this.saveColorsToStorage();
+      // Перерисовываем компонент чтобы обновить градиент
+      this.shadowRoot.innerHTML = '';
+      this.render();
+      // Обновляем настройки в drawer
+      this.updateSettingsInDrawer();
+    }
+  }
+
   // Метод для обновления настроек в drawer
   updateSettingsInDrawer() {
     // Находим контейнер настроек и обновляем их
