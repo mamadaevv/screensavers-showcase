@@ -28,9 +28,9 @@ class ColorTransitionScreensaver extends HTMLElement {
       }
     }
 
-    // Добавляем настройки цветов динамически в начало
+    // Добавляем настройки цветов динамически в конец
     colors.forEach((color, index) => {
-      settings.splice(1, 0, {
+      settings.push({
         name: `color${index + 1}`,
         label: `Цвет ${index + 1}`,
         type: 'color',
@@ -224,6 +224,30 @@ class ColorTransitionScreensaver extends HTMLElement {
   generateRandomColor() {
     const hue = Math.floor(Math.random() * 360);
     return `hsl(${hue}, 70%, 50%)`;
+  }
+
+  // Метод для перемещения цвета вверх
+  moveColorUp(index) {
+    if (index > 0 && index < this.colors.length) {
+      // Меняем местами цвета
+      [this.colors[index - 1], this.colors[index]] = [this.colors[index], this.colors[index - 1]];
+      this.updateColors();
+      this.saveColorsToStorage();
+      // Обновляем настройки в drawer
+      this.updateSettingsInDrawer();
+    }
+  }
+
+  // Метод для перемещения цвета вниз
+  moveColorDown(index) {
+    if (index >= 0 && index < this.colors.length - 1) {
+      // Меняем местами цвета
+      [this.colors[index], this.colors[index + 1]] = [this.colors[index + 1], this.colors[index]];
+      this.updateColors();
+      this.saveColorsToStorage();
+      // Обновляем настройки в drawer
+      this.updateSettingsInDrawer();
+    }
   }
 
   // Метод для обновления настроек в drawer

@@ -46,9 +46,9 @@ class ConicGradientScreensaver extends HTMLElement {
       }
     }
 
-    // Добавляем настройки цветов динамически в начало
+    // Добавляем настройки цветов динамически в конец
     colors.forEach((color, index) => {
-      settings.splice(1, 0, {
+      settings.push({
         name: `color${index + 1}`,
         label: `Цвет ${index + 1}`,
         type: 'color',
