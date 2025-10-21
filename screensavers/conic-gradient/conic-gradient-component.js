@@ -78,7 +78,7 @@ class ConicGradientScreensaver extends HTMLElement {
     this.speed = 50; // значение по умолчанию
     this.offsetX = 100; // значение по умолчанию - верхний правый угол
     this.offsetY = 0; // значение по умолчанию - верхний правый угол
-    this.colorSpace = 'oklab'; // цветовое пространство по умолчанию
+    this.colorSpace = null; // цветовое пространство по умолчанию (null = отключено)
     this.colors = ['#ff0000', '#8000ff']; // цвета из swatches: красный, фиолетовый
   }
 
@@ -305,9 +305,7 @@ class ConicGradientScreensaver extends HTMLElement {
       // Загружаем выбранное цветовое пространство
       const colorSpaceKey = `screensaver-${tagName}-colorSpace`;
       const savedColorSpace = localStorage.getItem(colorSpaceKey);
-      if (savedColorSpace) {
-        this.colorSpace = savedColorSpace;
-      }
+      this.colorSpace = savedColorSpace || 'oklab'; // используем сохраненное или значение по умолчанию
     } else {
       this.colorSpace = null;
     }

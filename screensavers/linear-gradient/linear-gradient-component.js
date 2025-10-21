@@ -94,7 +94,7 @@ class LinearGradientScreensaver extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.updateInterval = Math.max(10, Math.min(1000, 100)); // период обновления в мс (с проверкой)
     this.updateStep = Math.max(0.1, Math.min(10, 1)); // шаг обновления в процентах (с проверкой)
-    this.colorSpace = 'oklab'; // цветовое пространство по умолчанию
+    this.colorSpace = null; // цветовое пространство по умолчанию (null = отключено)
     this.globalRotation = 0; // глобальный поворот в градусах
     this.globalScale = 1.0; // глобальный масштаб
     this.colors = ['#ff0000', '#0080ff', '#80ff00', '#ffff00', '#ff0000']; // цвета из swatches: красный, синий, салатовый, желтый, красный
@@ -349,9 +349,7 @@ class LinearGradientScreensaver extends HTMLElement {
       // Загружаем выбранное цветовое пространство
       const colorSpaceKey = `screensaver-${tagName}-colorSpace`;
       const savedColorSpace = localStorage.getItem(colorSpaceKey);
-      if (savedColorSpace) {
-        this.colorSpace = savedColorSpace;
-      }
+      this.colorSpace = savedColorSpace || 'oklab'; // используем сохраненное или значение по умолчанию
     } else {
       this.colorSpace = null;
     }

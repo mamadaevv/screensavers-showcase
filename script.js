@@ -732,7 +732,7 @@ function createSettingsControls(componentClass, container) {
             // Создаем switch для включения/выключения настройки
             const radioSwitch = document.createElement('sl-switch');
             radioSwitch.size = 'small';
-            radioSwitch.checked = getSavedSetting(componentTagName, setting.name + '_enabled', false);
+            radioSwitch.checked = getSavedSetting(componentTagName, setting.name + '_enabled', 'false') === 'true';
 
             // Обработчик изменения switch
             radioSwitch.addEventListener('sl-change', (event) => {
