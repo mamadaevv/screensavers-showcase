@@ -40,3 +40,4 @@ build/
 *.tmp
 *.temp
 fiveserver.config.js
+package-lock.json
