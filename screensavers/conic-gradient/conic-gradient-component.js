@@ -27,6 +27,17 @@ class ConicGradientScreensaver extends HTMLElement {
         max: 100,
         default: 0,
         step: 1
+      },
+      {
+        name: 'colorSpace',
+        label: 'Цветовое пространство',
+        type: 'radio',
+        options: [
+          { value: 'oklab', label: 'in oklab' },
+          { value: 'hsl-shorter', label: 'in hsl shorter hue' },
+          { value: 'hsl-longer', label: 'in hsl longer' }
+        ],
+        default: 'oklab'
       }
     ];
 
@@ -67,6 +78,7 @@ class ConicGradientScreensaver extends HTMLElement {
     this.speed = 50; // значение по умолчанию
     this.offsetX = 100; // значение по умолчанию - верхний правый угол
     this.offsetY = 0; // значение по умолчанию - верхний правый угол
+    this.colorSpace = 'oklab'; // цветовое пространство по умолчанию
     this.colors = ['#ff0000', '#8000ff']; // цвета из swatches: красный, фиолетовый
   }
 
@@ -87,8 +99,16 @@ class ConicGradientScreensaver extends HTMLElement {
       this.offsetY = parseInt(offsetYAttr, 10);
     }
 
+    const colorSpaceAttr = this.getAttribute('data-colorSpace');
+    if (colorSpaceAttr !== null) {
+      this.colorSpace = colorSpaceAttr;
+    }
+
     // Загружаем цвета из localStorage
     this.loadColorsFromStorage();
+
+    // Загружаем настройки цветового пространства
+    this.loadSettingsFromStorage();
 
     this.render();
     this.startAnimation();
@@ -110,6 +130,8 @@ class ConicGradientScreensaver extends HTMLElement {
       colorStops += `, var(--color1, ${this.colors[0]}) 100%`;
     }
 
+    const colorSpaceParam = this.getColorSpaceParameter();
+
     const style = document.createElement('style');
     style.textContent = `
       .gradient-background {
@@ -118,7 +140,7 @@ class ConicGradientScreensaver extends HTMLElement {
         left: 0;
         width: 100%;
         height: 100%;
-        background: conic-gradient(from var(--gradient-angle, 90deg) at var(--offset-x, 0%) var(--offset-y, 30%), ${colorStops});
+        background: conic-gradient(${colorSpaceParam}from var(--gradient-angle, 90deg) at var(--offset-x, 0%) var(--offset-y, 30%), ${colorStops});
         z-index: 0;
       }
     `;
@@ -182,6 +204,23 @@ class ConicGradientScreensaver extends HTMLElement {
     this.gradientElement.style.setProperty('--offset-y', this.offsetY + '%');
   }
 
+  // Метод для получения параметра цветового пространства для conic-gradient
+  getColorSpaceParameter() {
+    if (!this.colorSpace) {
+      return '';
+    }
+
+    if (this.colorSpace === 'oklab') {
+      return 'in oklab ';
+    } else if (this.colorSpace === 'hsl-shorter') {
+      return 'in hsl shorter hue ';
+    } else if (this.colorSpace === 'hsl-longer') {
+      return 'in hsl longer hue ';
+    }
+
+    return '';
+  }
+
   // Метод для обновления цветов
   updateColors() {
     this.colors.forEach((color, index) => {
@@ -199,6 +238,16 @@ class ConicGradientScreensaver extends HTMLElement {
   updateOffsetY(newOffsetY) {
     this.offsetY = newOffsetY;
     this.updateOffset();
+  }
+
+  // Метод для обновления цветового пространства
+  updateColorSpace(newColorSpace) {
+    if (newColorSpace !== undefined) {
+      this.colorSpace = newColorSpace || null; // Если пустое значение, устанавливаем null
+      // Перерисовываем компонент с новым цветовыми пространством
+      this.shadowRoot.innerHTML = '';
+      this.render();
+    }
   }
 
   // Метод для обновления цвета по индексу
@@ -241,6 +290,26 @@ class ConicGradientScreensaver extends HTMLElement {
         }
       } catch (e) {
       }
+    }
+  }
+
+  // Метод для загрузки настроек из localStorage
+  loadSettingsFromStorage() {
+    const tagName = this.tagName.toLowerCase();
+
+    // Загружаем состояние switch цветового пространства
+    const colorSpaceEnabledKey = `screensaver-${tagName}-colorSpace_enabled`;
+    const isEnabled = localStorage.getItem(colorSpaceEnabledKey) === 'true';
+
+    if (isEnabled) {
+      // Загружаем выбранное цветовое пространство
+      const colorSpaceKey = `screensaver-${tagName}-colorSpace`;
+      const savedColorSpace = localStorage.getItem(colorSpaceKey);
+      if (savedColorSpace) {
+        this.colorSpace = savedColorSpace;
+      }
+    } else {
+      this.colorSpace = null;
     }
   }
 
