@@ -145,6 +145,7 @@ function updateBrightness() {
 
 // Функция добавления глобальных настроек трансформации
 function addTransformControl(container) {
+    console.log('Создание глобальных настроек трансформации');
     console.log('addTransformControl called, container:', container);
 
     // Настройка поворота
@@ -265,6 +266,7 @@ function addTransformControl(container) {
 
 // Функция добавления глобальной настройки яркости
 function addBrightnessControl(container) {
+    console.log('Создание глобальной настройки яркости');
     const brightnessDiv = document.createElement('div');
 
     // Создаем контейнер для заголовка и switch
@@ -369,6 +371,7 @@ function createSettingsControls(componentClass, container) {
     // Специальная обработка для solid-color (inline color picker)
     if (componentTagName === 'solid-color-screensaver' && colorSettings.length === 1) {
         const setting = colorSettings[0];
+        console.log(`Создание специальной inline цветовой настройки: ${setting.label} (${setting.name})`);
         const colorDiv = document.createElement('div');
 
         // Создаем лейбл
@@ -401,6 +404,7 @@ function createSettingsControls(componentClass, container) {
 
     // Создаем элементы управления для range настроек
     rangeSettings.forEach(setting => {
+        console.log(`Создание range настройки: ${setting.label} (${setting.name})`);
         const settingDiv = document.createElement('div');
 
         // Создаем лейбл
@@ -516,6 +520,7 @@ function createSettingsControls(componentClass, container) {
 
         // Добавляем button-group для globalRotation между input и range
         if (setting.name === 'globalRotation') {
+            console.log('Добавление button-group для globalRotation');
             // Создаем button-group
             const buttonGroup = document.createElement('sl-button-group');
 
@@ -548,6 +553,7 @@ function createSettingsControls(componentClass, container) {
 
         // Добавляем button-group для offsetX в коническом градиенте
         if (setting.name === 'offsetX' && componentTagName === 'conic-gradient-screensaver') {
+            console.log('Добавление button-group для offsetX (conic-gradient)');
             // Создаем button-group
             const buttonGroup = document.createElement('sl-button-group');
 
@@ -579,6 +585,7 @@ function createSettingsControls(componentClass, container) {
 
         // Добавляем button-group для offsetY в коническом градиенте
         if (setting.name === 'offsetY' && componentTagName === 'conic-gradient-screensaver') {
+            console.log('Добавление button-group для offsetY (conic-gradient)');
             // Создаем button-group
             const buttonGroup = document.createElement('sl-button-group');
 
@@ -614,6 +621,7 @@ function createSettingsControls(componentClass, container) {
 
     // Создаем элементы управления для button-group настроек
     buttonGroupSettings.forEach(setting => {
+        console.log(`Создание button-group настройки: ${setting.label} (${setting.name})`);
         const settingDiv = document.createElement('div');
 
         // Создаем лейбл
@@ -719,6 +727,7 @@ function createSettingsControls(componentClass, container) {
     // Создаем блок для radio настроек
     if (radioSettings.length > 0) {
         radioSettings.forEach(setting => {
+            console.log(`Создание radio настройки: ${setting.label} (${setting.name})`);
             const radioDiv = document.createElement('div');
 
             // Создаем контейнер для заголовка и switch (как у яркости)
@@ -813,6 +822,7 @@ function createSettingsControls(componentClass, container) {
         colorsContainer.className = 'colors-container';
 
         colorSettings.forEach((setting, index) => {
+            console.log(`Создание цветовой настройки: ${setting.label} (${setting.name})`);
             // Создаем строку для каждого цвета
             const colorRow = document.createElement('div');
             colorRow.className = 'color-row';
@@ -1097,6 +1107,18 @@ screensaverSelect.addEventListener('sl-change', (event) => {
 
 // Обработчик изменения switch яркости будет добавлен в addBrightnessControl
 
+// Функция обновления размера текущей заставки
+function updateCurrentScreensaverSize() {
+    const container = document.getElementById('screensaver-container');
+    if (container && container.firstElementChild) {
+        const component = container.firstElementChild;
+        // Проверяем, есть ли метод updateTransform у компонента
+        if (component.updateTransform) {
+            component.updateTransform();
+        }
+    }
+}
+
 // Функция принудительной загрузки заставки из хранилища
 function forceLoadScreensaver() {
     // Получаем сохраненную заставку или используем значение по умолчанию
@@ -1145,6 +1167,11 @@ window.addEventListener('load', () => {
 
     Promise.all(componentPromises).then(() => {
         forceLoadScreensaver();
+
+        // Настраиваем обработчик изменения размера окна для обновления заставки
+        window.addEventListener('resize', () => {
+            updateCurrentScreensaverSize();
+        });
     }).catch((error) => {
         // Даже при ошибке пытаемся загрузить заставку
         forceLoadScreensaver();
