@@ -2,6 +2,16 @@ class LinearGradientScreensaver extends HTMLElement {
   static getSettings() {
     const settings = [
       {
+        name: 'speedPresets',
+        label: 'Скорость смещения',
+        type: 'button-group',
+        options: [
+          { value: 'slow', label: 'Медленно' },
+          { value: 'normal', label: 'Нормально' },
+          { value: 'fast', label: 'Быстро' }
+        ]
+      },
+      {
         name: 'updateInterval',
         label: 'Период обновления (мс)',
         type: 'range',
@@ -67,15 +77,22 @@ class LinearGradientScreensaver extends HTMLElement {
       }
     }
 
-    // Добавляем настройки цветов динамически
+    // Добавляем настройки цветов динамически в начало
+    console.log('Начальный порядок настроек:', settings.map(s => s.name));
+
+    // Вставляем цвета перед speedPresets
     colors.forEach((color, index) => {
-      settings.push({
+      const colorSetting = {
         name: `color${index + 1}`,
         label: `Цвет ${index + 1}`,
         type: 'color',
         default: color
-      });
+      };
+      settings.splice(0, 0, colorSetting);
+      console.log(`Добавлен цвет ${index + 1}:`, colorSetting);
     });
+
+    console.log('Итоговый порядок настроек:', settings.map(s => ({ name: s.name, type: s.type })));
 
     return settings;
   }

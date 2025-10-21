@@ -29,9 +29,9 @@ class ColorTransitionScreensaver extends HTMLElement {
       }
     }
 
-    // Добавляем настройки цветов динамически
+    // Добавляем настройки цветов динамически в начало
     colors.forEach((color, index) => {
-      settings.push({
+      settings.splice(1, 0, {
         name: `color${index + 1}`,
         label: `Цвет ${index + 1}`,
         type: 'color',

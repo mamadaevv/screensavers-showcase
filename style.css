@@ -17,28 +17,19 @@ sl-drawer::part(overlay) {
     background-color: transparent;
 }
 
-/* Переопределение spacing для лейблов форм в drawer */
-sl-drawer sl-select::part(form-control-label),
-sl-drawer sl-input::part(form-control-label) {
-    margin-bottom: var(--sl-spacing-small);
-}
-
-/* Отступ для селекта "Выберите заставку" */
-sl-drawer sl-select[label="Выберите заставку"] {
-    margin-bottom: var(--sl-spacing-medium);
-}
-
 /* Вертикальное расположение элементов настроек */
+#brightness-settings > div,
+#screensaver-select > div,
 #screensaver-settings > div {
-    margin-bottom: var(--sl-spacing-large);
     display: flex;
     flex-direction: column;
-    gap: var(--sl-spacing-2x-small);
+    gap: var(--sl-spacing-x-small);
 }
 
-/* Убираем margin-bottom у всех вложенных элементов */
-#screensaver-settings > div * {
-    margin-bottom: 0;
+#screensaver-settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sl-spacing-large);
 }
 
 /* Растягиваем button-group по ширине */
@@ -57,10 +48,6 @@ sl-drawer sl-select[label="Выберите заставку"] {
 }
 
 
-/* Отступ между input и range в настройках */
-#brightness-settings sl-input {
-    margin-bottom: var(--sl-spacing-small);
-}
 
 /* Стили для main контейнера - занимает всю высоту и кликабелен */
 main {

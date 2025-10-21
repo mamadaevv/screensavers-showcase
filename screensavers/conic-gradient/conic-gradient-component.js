@@ -20,16 +20,6 @@ class ConicGradientScreensaver extends HTMLElement {
         step: 1
       },
       {
-        name: 'offsetXPresets',
-        label: 'Пресеты смещения X',
-        type: 'button-group',
-        options: [
-          { value: 0, label: '0%' },
-          { value: 50, label: '50%' },
-          { value: 100, label: '100%' }
-        ]
-      },
-      {
         name: 'offsetY',
         label: 'Смещение по Y (%)',
         type: 'range',
@@ -37,16 +27,6 @@ class ConicGradientScreensaver extends HTMLElement {
         max: 100,
         default: 0,
         step: 1
-      },
-      {
-        name: 'offsetYPresets',
-        label: 'Пресеты смещения Y',
-        type: 'button-group',
-        options: [
-          { value: 0, label: '0%' },
-          { value: 50, label: '50%' },
-          { value: 100, label: '100%' }
-        ]
       }
     ];
 
@@ -54,7 +34,7 @@ class ConicGradientScreensaver extends HTMLElement {
     const tagName = 'conic-gradient-screensaver';
     const key = `screensaver-${tagName}-colors`;
     const saved = localStorage.getItem(key);
-    let colors = ['#ff0000', '#0000ff']; // значения по умолчанию: красный и синий
+    let colors = ['#ff0000', '#8000ff']; // значения по умолчанию: красный и фиолетовый
 
     if (saved) {
       try {
@@ -67,9 +47,9 @@ class ConicGradientScreensaver extends HTMLElement {
       }
     }
 
-    // Добавляем настройки цветов динамически
+    // Добавляем настройки цветов динамически в начало
     colors.forEach((color, index) => {
-      settings.push({
+      settings.splice(1, 0, {
         name: `color${index + 1}`,
         label: `Цвет ${index + 1}`,
         type: 'color',
@@ -88,7 +68,7 @@ class ConicGradientScreensaver extends HTMLElement {
     this.speed = 50; // значение по умолчанию
     this.offsetX = 100; // значение по умолчанию - верхний правый угол
     this.offsetY = 0; // значение по умолчанию - верхний правый угол
-    this.colors = ['#ff0000', '#0080ff']; // цвета из swatches: красный, синий
+    this.colors = ['#ff0000', '#8000ff']; // цвета из swatches: красный, фиолетовый
   }
 
   connectedCallback() {

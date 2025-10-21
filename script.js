@@ -149,17 +149,16 @@ function addTransformControl(container) {
 
     // Настройка поворота
     const rotationDiv = document.createElement('div');
-    rotationDiv.style.marginBottom = 'var(--sl-spacing-medium)';
 
     const rotationLabel = document.createElement('label');
     rotationLabel.textContent = 'Поворот (°)';
     rotationLabel.style.display = 'block';
-    rotationLabel.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+    rotationLabel.style.fontSize = 'var(--sl-input-label-font-size-small)';
     rotationLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
     rotationLabel.style.color = 'var(--sl-input-label-color)';
-    rotationLabel.style.marginBottom = 'var(--sl-spacing-small)';
 
     const rotationRange = document.createElement('sl-range');
+    rotationRange.style.setProperty('--thumb-size', '12px');
     rotationRange.min = -180;
     rotationRange.max = 180;
     rotationRange.step = 1;
@@ -209,12 +208,12 @@ function addTransformControl(container) {
     const scaleLabel = document.createElement('label');
     scaleLabel.textContent = 'Масштаб';
     scaleLabel.style.display = 'block';
-    scaleLabel.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+    scaleLabel.style.fontSize = 'var(--sl-input-label-font-size-small)';
     scaleLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
     scaleLabel.style.color = 'var(--sl-input-label-color)';
-    scaleLabel.style.marginBottom = 'var(--sl-spacing-small)';
 
     const scaleRange = document.createElement('sl-range');
+    scaleRange.style.setProperty('--thumb-size', '12px');
     scaleRange.min = 0.1;
     scaleRange.max = 3.0;
     scaleRange.step = 0.1;
@@ -273,19 +272,19 @@ function addBrightnessControl(container) {
     headerDiv.style.display = 'flex';
     headerDiv.style.alignItems = 'center';
     headerDiv.style.justifyContent = 'space-between';
-    headerDiv.style.marginBottom = 'var(--sl-spacing-small)';
 
     // Создаем лейбл
     const label = document.createElement('label');
     label.textContent = 'Яркость';
     label.style.display = 'block';
-    label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+    label.style.fontSize = 'var(--sl-input-label-font-size-small)';
     label.style.fontWeight = 'var(--sl-input-label-font-weight)';
     label.style.color = 'var(--sl-input-label-color)';
 
     // Создаем switch без лейбла
     const brightnessSwitch = document.createElement('sl-switch');
     brightnessSwitch.id = 'brightness-switch';
+    brightnessSwitch.size = 'small';
     brightnessSwitch.checked = getBrightnessSwitchSetting();
 
     // Обработчик изменения switch яркости
@@ -300,6 +299,7 @@ function addBrightnessControl(container) {
 
     // Создаем sl-range с custom track offset
     const range = document.createElement('sl-range');
+    range.style.setProperty('--thumb-size', '12px');
     range.min = -100;
     range.max = 100;
     range.step = 1;
@@ -308,6 +308,7 @@ function addBrightnessControl(container) {
 
     // Создаем sl-input для числового ввода
     const input = document.createElement('sl-input');
+    input.size = 'small';
     input.type = 'number';
     input.min = -100;
     input.max = 100;
@@ -363,6 +364,7 @@ function createSettingsControls(componentClass, container) {
     const rangeSettings = settings.filter(setting => setting.type === 'range');
     const colorSettings = settings.filter(setting => setting.type === 'color');
     const radioSettings = settings.filter(setting => setting.type === 'radio');
+    const buttonGroupSettings = settings.filter(setting => setting.type === 'button-group');
 
     // Специальная обработка для solid-color (inline color picker)
     if (componentTagName === 'solid-color-screensaver' && colorSettings.length === 1) {
@@ -373,7 +375,7 @@ function createSettingsControls(componentClass, container) {
         const label = document.createElement('label');
         label.textContent = setting.label;
         label.style.display = 'block';
-        label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+        label.style.fontSize = 'var(--sl-input-label-font-size-small)';
         label.style.fontWeight = 'var(--sl-input-label-font-weight)';
         label.style.color = 'var(--sl-input-label-color)';
 
@@ -405,12 +407,13 @@ function createSettingsControls(componentClass, container) {
         const label = document.createElement('label');
         label.textContent = setting.label;
         label.style.display = 'block';
-        label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+        label.style.fontSize = 'var(--sl-input-label-font-size-small)';
         label.style.fontWeight = 'var(--sl-input-label-font-weight)';
         label.style.color = 'var(--sl-input-label-color)';
 
         // Создаем sl-range без лейбла
         const range = document.createElement('sl-range');
+        range.style.setProperty('--thumb-size', '12px');
         range.min = setting.min;
         range.max = setting.max;
         range.step = setting.step;
@@ -542,6 +545,7 @@ function createSettingsControls(componentClass, container) {
             settingDiv.appendChild(buttonGroup);
         }
 
+
         // Добавляем button-group для offsetX в коническом градиенте
         if (setting.name === 'offsetX' && componentTagName === 'conic-gradient-screensaver') {
             // Создаем button-group
@@ -608,6 +612,110 @@ function createSettingsControls(componentClass, container) {
         container.appendChild(settingDiv);
     });
 
+    // Создаем элементы управления для button-group настроек
+    buttonGroupSettings.forEach(setting => {
+        const settingDiv = document.createElement('div');
+
+        // Создаем лейбл
+        const label = document.createElement('label');
+        label.textContent = setting.label;
+        label.style.display = 'block';
+        label.style.fontSize = 'var(--sl-input-label-font-size-small)';
+        label.style.fontWeight = 'var(--sl-input-label-font-weight)';
+        label.style.color = 'var(--sl-input-label-color)';
+
+        settingDiv.appendChild(label);
+
+        // Добавляем button-group для speedPresets в линейном градиенте
+        if (setting.name === 'speedPresets' && componentTagName === 'linear-gradient-screensaver') {
+            // Создаем button-group
+            const buttonGroup = document.createElement('sl-button-group');
+
+            // Добавляем button элементы
+            const presets = [
+                { value: 'slow', label: 'Медленно', interval: 500, step: 1 },
+                { value: 'normal', label: 'Нормально', interval: 100, step: 1 },
+                { value: 'fast', label: 'Быстро', interval: 10, step: 1 }
+            ];
+            presets.forEach(preset => {
+                const button = document.createElement('sl-button');
+                button.textContent = preset.label;
+                button.value = preset.value;
+                button.size = 'small';
+
+                // Обработчик клика на кнопку
+                button.addEventListener('click', () => {
+                    // Устанавливаем значения периода и шага
+                    saveSetting(componentTagName, 'updateInterval', preset.interval);
+                    saveSetting(componentTagName, 'updateStep', preset.step);
+
+                    // Обновляем соответствующие элементы управления
+                    // Находим элементы по их положению в DOM
+                    const allSettingDivs = container.querySelectorAll('#screensaver-settings > div');
+                    let intervalDiv, stepDiv;
+
+                    for (let i = 0; i < allSettingDivs.length; i++) {
+                        const div = allSettingDivs[i];
+                        const inputs = div.querySelectorAll('sl-input');
+                        const ranges = div.querySelectorAll('sl-range');
+
+                        if (inputs.length > 0 && ranges.length > 0) {
+                            if (!intervalDiv) {
+                                intervalDiv = div; // первый div с input/range - updateInterval
+                            } else {
+                                stepDiv = div; // второй div с input/range - updateStep
+                                break;
+                            }
+                        }
+                    }
+
+                    const intervalInput = intervalDiv?.querySelector('sl-input');
+                    const intervalRange = intervalDiv?.querySelector('sl-range');
+                    const stepInput = stepDiv?.querySelector('sl-input');
+                    const stepRange = stepDiv?.querySelector('sl-range');
+
+                    if (intervalInput) {
+                        intervalInput.value = preset.interval;
+                        const inputEvent = new Event('input', { bubbles: true });
+                        intervalInput.dispatchEvent(inputEvent);
+                    }
+                    if (intervalRange) {
+                        intervalRange.value = preset.interval;
+                        const rangeEvent = new Event('input', { bubbles: true });
+                        intervalRange.dispatchEvent(rangeEvent);
+                    }
+                    if (stepInput) {
+                        stepInput.value = preset.step;
+                        const stepInputEvent = new Event('input', { bubbles: true });
+                        stepInput.dispatchEvent(stepInputEvent);
+                    }
+                    if (stepRange) {
+                        stepRange.value = preset.step;
+                        const stepRangeEvent = new Event('input', { bubbles: true });
+                        stepRange.dispatchEvent(stepRangeEvent);
+                    }
+
+                    const currentElement = document.querySelector(`${componentTagName}`);
+                    if (currentElement) {
+                        if (typeof currentElement.updateUpdateInterval === 'function') {
+                            currentElement.updateUpdateInterval(preset.interval);
+                        }
+                        if (typeof currentElement.updateUpdateStep === 'function') {
+                            currentElement.updateUpdateStep(preset.step);
+                        }
+                    }
+                });
+
+                buttonGroup.appendChild(button);
+            });
+
+            settingDiv.appendChild(buttonGroup);
+        }
+
+
+        container.appendChild(settingDiv);
+    });
+
     // Создаем блок для radio настроек
     if (radioSettings.length > 0) {
         radioSettings.forEach(setting => {
@@ -618,18 +726,18 @@ function createSettingsControls(componentClass, container) {
             headerDiv.style.display = 'flex';
             headerDiv.style.alignItems = 'center';
             headerDiv.style.justifyContent = 'space-between';
-            headerDiv.style.marginBottom = 'var(--sl-spacing-small)';
 
             // Создаем лейбл
             const label = document.createElement('label');
             label.textContent = setting.label;
             label.style.display = 'block';
-            label.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+            label.style.fontSize = 'var(--sl-input-label-font-size-small)';
             label.style.fontWeight = 'var(--sl-input-label-font-weight)';
             label.style.color = 'var(--sl-input-label-color)';
 
             // Создаем switch для включения/выключения настройки
             const radioSwitch = document.createElement('sl-switch');
+            radioSwitch.size = 'small';
             radioSwitch.checked = getSavedSetting(componentTagName, setting.name + '_enabled', false);
 
             // Обработчик изменения switch
@@ -654,13 +762,13 @@ function createSettingsControls(componentClass, container) {
             const radioGroup = document.createElement('sl-radio-group');
             radioGroup.name = setting.name;
             radioGroup.value = getSavedSetting(componentTagName, setting.name, setting.default);
+            radioGroup.size = 'small';
 
             // Добавляем radio элементы
             setting.options.forEach(option => {
                 const radio = document.createElement('sl-radio');
                 radio.value = option.value;
                 radio.innerText = option.label;
-                radio.style.marginBottom = 'var(--sl-spacing-2x-small)';
                 radioGroup.appendChild(radio);
             });
 
@@ -696,7 +804,7 @@ function createSettingsControls(componentClass, container) {
         const colorsLabel = document.createElement('label');
         colorsLabel.textContent = 'Цвета';
         colorsLabel.style.display = 'block';
-        colorsLabel.style.fontSize = 'var(--sl-input-label-font-size-medium)';
+        colorsLabel.style.fontSize = 'var(--sl-input-label-font-size-small)';
         colorsLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
         colorsLabel.style.color = 'var(--sl-input-label-color)';
 

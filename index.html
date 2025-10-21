@@ -27,14 +27,20 @@
         <!-- Drawer -->
         <sl-drawer label="Настройки" placement="start" class="drawer-placement-start" style="--size: 320px;">
             <sl-icon-button slot="header-actions" name="arrows-fullscreen" class="fullscreen-button" title="Развернуть на весь экран"></sl-icon-button>
-            <sl-select label="Выберите заставку" value="linear-gradient">
-                <sl-option value="linear-gradient">Линейный градиент</sl-option>
-                <sl-option value="conic-gradient">Конический градиент</sl-option>
-                <sl-option value="color-transition">Смена цветов</sl-option>
-                <sl-option value="solid-color">Сплошной цвет</sl-option>
-            </sl-select>
+            
+            <div id= "screensaver-select" style="margin-bottom: var(--sl-spacing-large);">
+                <div>
+                    <label style="display: block; font-size: var(--sl-input-label-font-size-small); font-weight: var(--sl-input-label-font-weight); color: var(--sl-input-label-color);">Выберите заставку</label>
+                    <sl-select value="linear-gradient" size="small">
+                        <sl-option value="linear-gradient">Линейный градиент</sl-option>
+                        <sl-option value="conic-gradient">Конический градиент</sl-option>
+                        <sl-option value="color-transition">Смена цветов</sl-option>
+                        <sl-option value="solid-color">Сплошной цвет</sl-option>
+                    </sl-select>
+                </div>
+            </div>
 
-            <div id="brightness-settings" style="margin-bottom: var(--sl-spacing-medium);">
+            <div id="brightness-settings">
                 <!-- Настройки яркости будут добавлены сюда -->
             </div>
 
