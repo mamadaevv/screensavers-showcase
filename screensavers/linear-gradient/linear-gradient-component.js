@@ -73,12 +73,10 @@ class LinearGradientScreensaver extends HTMLElement {
           colors = parsedColors;
         }
       } catch (e) {
-        console.warn('Failed to parse saved colors for settings:', e);
       }
     }
 
     // Добавляем настройки цветов динамически в начало
-    console.log('Начальный порядок настроек:', settings.map(s => s.name));
 
     // Вставляем цвета перед speedPresets
     colors.forEach((color, index) => {
@@ -89,10 +87,7 @@ class LinearGradientScreensaver extends HTMLElement {
         default: color
       };
       settings.splice(0, 0, colorSetting);
-      console.log(`Добавлен цвет ${index + 1}:`, colorSetting);
     });
-
-    console.log('Итоговый порядок настроек:', settings.map(s => ({ name: s.name, type: s.type })));
 
     return settings;
   }
@@ -341,7 +336,6 @@ class LinearGradientScreensaver extends HTMLElement {
           this.colors = parsedColors;
         }
       } catch (e) {
-        console.warn('Failed to load colors from storage:', e);
       }
     }
   }

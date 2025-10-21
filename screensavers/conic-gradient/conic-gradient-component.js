@@ -43,7 +43,6 @@ class ConicGradientScreensaver extends HTMLElement {
           colors = parsedColors;
         }
       } catch (e) {
-        console.warn('Failed to parse saved colors for settings:', e);
       }
     }
 
@@ -241,7 +240,6 @@ class ConicGradientScreensaver extends HTMLElement {
           this.colors = parsedColors;
         }
       } catch (e) {
-        console.warn('Failed to parse saved colors:', e);
       }
     }
   }

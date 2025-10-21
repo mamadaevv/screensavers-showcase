@@ -25,7 +25,6 @@ class ColorTransitionScreensaver extends HTMLElement {
           colors = parsedColors;
         }
       } catch (e) {
-        console.warn('Failed to parse saved colors for settings:', e);
       }
     }
 
@@ -190,7 +189,6 @@ class ColorTransitionScreensaver extends HTMLElement {
           this.colors = parsedColors;
         }
       } catch (e) {
-        console.warn('Failed to load colors from storage:', e);
       }
     }
   }
