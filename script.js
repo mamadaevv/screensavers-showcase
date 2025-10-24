@@ -1129,10 +1129,14 @@ function createSettingsControls(componentClass, container) {
                 saveSetting(componentTagName, setting.name + '_enabled', isEnabled);
                 updateRadioGroupVisibility(radioDiv, setting, componentTagName, isEnabled);
 
-                // Если switch выключается, сбрасываем цветовое пространство
-                if (!isEnabled) {
-                    const currentElement = document.querySelector(`${componentTagName}`);
-                    if (currentElement && typeof currentElement.updateColorSpace === 'function') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateColorSpace === 'function') {
+                    if (isEnabled) {
+                        // При включении применяем сохраненное цветовое пространство
+                        const savedColorSpace = localStorage.getItem(`screensaver-${componentTagName}-${setting.name}`);
+                        currentElement.updateColorSpace(savedColorSpace || setting.default);
+                    } else {
+                        // При выключении сбрасываем цветовое пространство
                         currentElement.updateColorSpace(null);
                     }
                 }
@@ -1160,11 +1164,17 @@ function createSettingsControls(componentClass, container) {
                 const value = e.target.value;
                 saveSetting(componentTagName, setting.name, value);
 
-                // Применяем цветовое пространство только если switch включен
-                const isEnabled = getSavedSetting(componentTagName, setting.name + '_enabled', false);
+                // При выборе опции в radio-group автоматически включаем switch
+                if (!radioSwitch.checked) {
+                    radioSwitch.checked = true;
+                    saveSetting(componentTagName, setting.name + '_enabled', true);
+                    updateRadioGroupVisibility(radioDiv, setting, componentTagName, true);
+                }
+
+                // Применяем цветовое пространство
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement && typeof currentElement.updateColorSpace === 'function') {
-                    currentElement.updateColorSpace(isEnabled ? value : null);
+                    currentElement.updateColorSpace(value);
                 }
             });
 
