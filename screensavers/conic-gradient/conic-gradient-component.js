@@ -11,8 +11,8 @@ class ConicGradientScreensaver extends HTMLElement {
         name: 'speed',
         label: 'Скорость вращения',
         type: 'range',
-        min: 0,
-        max: 100,
+        min: 1,
+        max: 1000,
         default: 50,
         step: 1
       },

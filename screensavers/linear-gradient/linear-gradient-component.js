@@ -62,7 +62,7 @@ class LinearGradientScreensaver extends HTMLElement {
         min: 0.1,
         max: 3.0,
         default: 1.0,
-        step: 0.1
+        step: 0.01
       },
       {
         name: 'backgroundSize',

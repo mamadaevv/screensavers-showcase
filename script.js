@@ -540,6 +540,26 @@ function createSettingsControls(componentClass, container) {
                 if (currentElement && typeof currentElement.updateUpdateStep === 'function') {
                     currentElement.updateUpdateStep(e.target.value);
                 }
+            } else if (setting.name === 'speed' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateSpeed === 'function') {
+                    currentElement.updateSpeed(e.target.value);
+                }
+            } else if (setting.name === 'offsetX' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateOffsetX === 'function') {
+                    currentElement.updateOffsetX(e.target.value);
+                }
+            } else if (setting.name === 'offsetY' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateOffsetY === 'function') {
+                    currentElement.updateOffsetY(e.target.value);
+                }
+            } else if (setting.name === 'speed' && componentTagName === 'color-transition-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateSpeed === 'function') {
+                    currentElement.updateSpeed(e.target.value);
+                }
             } else {
                 updateCurrentScreensaver();
             }
@@ -573,6 +593,26 @@ function createSettingsControls(componentClass, container) {
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement && typeof currentElement.updateUpdateStep === 'function') {
                     currentElement.updateUpdateStep(e.target.value);
+                }
+            } else if (setting.name === 'speed' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateSpeed === 'function') {
+                    currentElement.updateSpeed(e.target.value);
+                }
+            } else if (setting.name === 'offsetX' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateOffsetX === 'function') {
+                    currentElement.updateOffsetX(e.target.value);
+                }
+            } else if (setting.name === 'offsetY' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateOffsetY === 'function') {
+                    currentElement.updateOffsetY(e.target.value);
+                }
+            } else if (setting.name === 'speed' && componentTagName === 'color-transition-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateSpeed === 'function') {
+                    currentElement.updateSpeed(e.target.value);
                 }
             } else {
                 updateCurrentScreensaver();
@@ -608,6 +648,26 @@ function createSettingsControls(componentClass, container) {
                 if (currentElement && typeof currentElement.updateUpdateStep === 'function') {
                     currentElement.updateUpdateStep(e.target.value);
                 }
+            } else if (setting.name === 'speed' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateSpeed === 'function') {
+                    currentElement.updateSpeed(e.target.value);
+                }
+            } else if (setting.name === 'offsetX' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateOffsetX === 'function') {
+                    currentElement.updateOffsetX(e.target.value);
+                }
+            } else if (setting.name === 'offsetY' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateOffsetY === 'function') {
+                    currentElement.updateOffsetY(e.target.value);
+                }
+            } else if (setting.name === 'speed' && componentTagName === 'color-transition-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateSpeed === 'function') {
+                    currentElement.updateSpeed(e.target.value);
+                }
             } else {
                 updateCurrentScreensaver();
             }
@@ -641,6 +701,26 @@ function createSettingsControls(componentClass, container) {
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement && typeof currentElement.updateUpdateStep === 'function') {
                     currentElement.updateUpdateStep(e.target.value);
+                }
+            } else if (setting.name === 'speed' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateSpeed === 'function') {
+                    currentElement.updateSpeed(e.target.value);
+                }
+            } else if (setting.name === 'offsetX' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateOffsetX === 'function') {
+                    currentElement.updateOffsetX(e.target.value);
+                }
+            } else if (setting.name === 'offsetY' && componentTagName === 'conic-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateOffsetY === 'function') {
+                    currentElement.updateOffsetY(e.target.value);
+                }
+            } else if (setting.name === 'speed' && componentTagName === 'color-transition-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateSpeed === 'function') {
+                    currentElement.updateSpeed(e.target.value);
                 }
             } else {
                 updateCurrentScreensaver();
