@@ -1443,10 +1443,10 @@ function updateCurrentScreensaver() {
                 currentElement.updateColorSpace(value);
             } else if (setting.name === 'positionCenter' && typeof currentElement.updatePositionCenter === 'function') {
                 currentElement.updatePositionCenter(value);
-            } else if (setting.name === 'globalRotation' && typeof currentElement.updateGlobalRotation === 'function') {
-                currentElement.updateGlobalRotation(value);
             } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
                 currentElement.updateGlobalScale(value);
+            } else if (setting.name === 'globalRotation' && typeof currentElement.updateGlobalRotation === 'function') {
+                currentElement.updateGlobalRotation(value);
             } else if (setting.name === 'backgroundSize' && componentName === 'linear-gradient-screensaver' && typeof currentElement.updateBackgroundSize === 'function') {
                 currentElement.updateBackgroundSize(value);
             } else if (setting.name === 'animationEnabled' && typeof currentElement.updateAnimationEnabled === 'function') {

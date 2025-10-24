@@ -41,6 +41,15 @@ class ConicGradientScreensaver extends HTMLElement {
         default: 'center'
       },
       {
+        name: 'globalScale',
+        label: 'Глобальный масштаб',
+        type: 'range',
+        min: 0.1,
+        max: 3.0,
+        default: 1.0,
+        step: 0.01
+      },
+      {
         name: 'colorSpace',
         label: 'Цветовое пространство',
         type: 'radio',
@@ -92,6 +101,7 @@ class ConicGradientScreensaver extends HTMLElement {
     this.offsetX = 100; // значение по умолчанию - верхний правый угол
     this.offsetY = 0; // значение по умолчанию - верхний правый угол
     this.positionCenter = 'center'; // значение по умолчанию - центр
+    this.globalScale = 1.0; // глобальный масштаб
     this.colorSpace = null; // цветовое пространство по умолчанию (null = отключено)
     this.colors = ['#ff0000', '#8000ff']; // цвета из swatches: красный, фиолетовый
   }
@@ -128,6 +138,11 @@ class ConicGradientScreensaver extends HTMLElement {
       this.positionCenter = positionCenterAttr;
     }
 
+    const globalScaleAttr = this.getAttribute('data-globalScale');
+    if (globalScaleAttr !== null) {
+      this.globalScale = Math.max(0.1, Math.min(3.0, parseFloat(globalScaleAttr)));
+    }
+
     // Загружаем цвета из localStorage
     this.loadColorsFromStorage();
 
@@ -142,6 +157,11 @@ class ConicGradientScreensaver extends HTMLElement {
 
   disconnectedCallback() {
     this.stopAnimation();
+    // Сбрасываем трансформацию при отключении компонента
+    const container = document.getElementById('screensaver-container');
+    if (container) {
+      container.style.transform = '';
+    }
   }
 
   render() {
@@ -181,6 +201,7 @@ class ConicGradientScreensaver extends HTMLElement {
     // Устанавливаем начальные значения
     this.updateOffset();
     this.updateColors();
+    this.updateTransform();
   }
 
   startAnimation() {
@@ -298,6 +319,22 @@ class ConicGradientScreensaver extends HTMLElement {
       this.offsetX = coords.x;
       this.offsetY = coords.y;
       this.updateOffset();
+    }
+  }
+
+  // Метод для обновления глобального масштаба
+  updateGlobalScale(newScale) {
+    if (newScale !== undefined) {
+      this.globalScale = Math.max(0.1, Math.min(3.0, parseFloat(newScale)));
+      this.updateTransform();
+    }
+  }
+
+  // Метод для обновления трансформации контейнера
+  updateTransform() {
+    const container = document.getElementById('screensaver-container');
+    if (container) {
+      container.style.transform = `scale(${this.globalScale})`;
     }
   }
 
