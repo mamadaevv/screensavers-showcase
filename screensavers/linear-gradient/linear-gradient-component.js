@@ -2,6 +2,12 @@ class LinearGradientScreensaver extends HTMLElement {
   static getSettings() {
     const settings = [
       {
+        name: 'animationEnabled',
+        label: 'Анимация',
+        type: 'switch',
+        default: true
+      },
+      {
         name: 'speedPresets',
         label: 'Скорость смещения',
         type: 'button-group',
@@ -101,6 +107,7 @@ class LinearGradientScreensaver extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this.animationEnabled = true; // анимация включена по умолчанию
     this.updateInterval = Math.max(10, Math.min(1000, 100)); // период обновления в мс (с проверкой)
     this.updateStep = Math.max(0.1, Math.min(10, 1)); // шаг обновления в процентах (с проверкой)
     this.colorSpace = null; // цветовое пространство по умолчанию (null = отключено)
@@ -138,6 +145,10 @@ class LinearGradientScreensaver extends HTMLElement {
     if (backgroundSizeAttr !== null) {
       this.backgroundSize = Math.max(100, Math.min(500, parseInt(backgroundSizeAttr, 10)));
     }
+    const animationEnabledAttr = this.getAttribute('data-animationEnabled');
+    if (animationEnabledAttr !== null) {
+      this.animationEnabled = animationEnabledAttr === 'true';
+    }
 
     // Загружаем цвета из localStorage
     this.loadColorsFromStorage();
@@ -147,7 +158,9 @@ class LinearGradientScreensaver extends HTMLElement {
 
     this.render();
     this.updateContainerSizeAndPosition();
-    this.startAnimation();
+    if (this.animationEnabled) {
+      this.startAnimation();
+    }
   }
 
   disconnectedCallback() {
@@ -252,6 +265,25 @@ class LinearGradientScreensaver extends HTMLElement {
       this.backgroundSize = Math.max(100, Math.min(500, parseInt(newSize, 10)));
       // Обновляем CSS переменную для размера фона
       this.style.setProperty('--background-size', `${this.backgroundSize}% 100%`);
+    }
+  }
+
+  // Метод для обновления состояния анимации
+  updateAnimationEnabled(enabled) {
+    if (enabled !== undefined) {
+      console.log(`[Отладка] LinearGradient: updateAnimationEnabled вызван с enabled=${enabled}`);
+      this.animationEnabled = enabled;
+      console.log(`[Отладка] LinearGradient: анимация ${enabled ? 'ВКЛЮЧЕНА' : 'ВЫКЛЮЧЕНА'}`);
+      if (this.animationEnabled) {
+        this.startAnimation();
+      } else {
+        this.stopAnimation();
+      }
+      // Обновляем настройки в drawer с небольшой задержкой
+      setTimeout(() => {
+        console.log(`[Отладка] LinearGradient: вызываю updateSettingsInDrawer`);
+        this.updateSettingsInDrawer();
+      }, 10);
     }
   }
 

@@ -42,13 +42,22 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Обработка запросов с кэшем
+// Обработка запросов с network-first стратегией для разработки
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then((response) => {
-        // Возвращаем кэшированную версию или загружаем из сети
-        return response || fetch(event.request);
+        // Если запрос успешен, обновляем кэш
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        // При ошибке сети возвращаем кэшированную версию
+        console.log('Service Worker: Загружаю кэшированную версию для:', event.request.url);
+        return caches.match(event.request);
       })
   );
 });

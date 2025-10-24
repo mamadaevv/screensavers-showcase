@@ -2,6 +2,12 @@ class ConicGradientScreensaver extends HTMLElement {
   static getSettings() {
     const settings = [
       {
+        name: 'animationEnabled',
+        label: 'Анимация',
+        type: 'switch',
+        default: true
+      },
+      {
         name: 'speed',
         label: 'Скорость вращения',
         type: 'range',
@@ -73,6 +79,7 @@ class ConicGradientScreensaver extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this.animationEnabled = true; // анимация включена по умолчанию
     this.animationId = null;
     this.gradientAngle = 0;
     this.speed = 50; // значение по умолчанию
@@ -104,6 +111,11 @@ class ConicGradientScreensaver extends HTMLElement {
       this.colorSpace = colorSpaceAttr;
     }
 
+    const animationEnabledAttr = this.getAttribute('data-animationEnabled');
+    if (animationEnabledAttr !== null) {
+      this.animationEnabled = animationEnabledAttr === 'true';
+    }
+
     // Загружаем цвета из localStorage
     this.loadColorsFromStorage();
 
@@ -111,7 +123,9 @@ class ConicGradientScreensaver extends HTMLElement {
     this.loadSettingsFromStorage();
 
     this.render();
-    this.startAnimation();
+    if (this.animationEnabled) {
+      this.startAnimation();
+    }
   }
 
   disconnectedCallback() {
@@ -247,6 +261,23 @@ class ConicGradientScreensaver extends HTMLElement {
       // Перерисовываем компонент с новым цветовыми пространством
       this.shadowRoot.innerHTML = '';
       this.render();
+    }
+  }
+
+  // Метод для обновления состояния анимации
+  updateAnimationEnabled(enabled) {
+    if (enabled !== undefined) {
+      console.log(`[Отладка] ConicGradient: анимация ${enabled ? 'ВКЛЮЧЕНА' : 'ВЫКЛЮЧЕНА'}`);
+      this.animationEnabled = enabled;
+      if (this.animationEnabled) {
+        this.startAnimation();
+      } else {
+        this.stopAnimation();
+      }
+      // Обновляем настройки в drawer с небольшой задержкой
+      setTimeout(() => {
+        this.updateSettingsInDrawer();
+      }, 10);
     }
   }
 

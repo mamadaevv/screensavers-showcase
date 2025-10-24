@@ -2,6 +2,12 @@ class ColorTransitionScreensaver extends HTMLElement {
   static getSettings() {
     const settings = [
       {
+        name: 'animationEnabled',
+        label: 'Анимация',
+        type: 'switch',
+        default: true
+      },
+      {
         name: 'speed',
         label: 'Скорость смены цветов',
         type: 'range',
@@ -44,6 +50,7 @@ class ColorTransitionScreensaver extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this.animationEnabled = true; // анимация включена по умолчанию
     this.speed = 5; // значение по умолчанию (1-10, где 10 = быстро)
     this.colors = ['#ff0000', '#ffff00', '#80ff00']; // цвета из swatches: красный, желтый, салатовый
     this.currentColorIndex = 0;
@@ -57,11 +64,18 @@ class ColorTransitionScreensaver extends HTMLElement {
       this.speed = parseFloat(speedAttr);
     }
 
+    const animationEnabledAttr = this.getAttribute('data-animationEnabled');
+    if (animationEnabledAttr !== null) {
+      this.animationEnabled = animationEnabledAttr === 'true';
+    }
+
     // Загружаем цвета из localStorage
     this.loadColorsFromStorage();
 
     this.render();
-    this.startAnimation();
+    if (this.animationEnabled) {
+      this.startAnimation();
+    }
   }
 
   disconnectedCallback() {
@@ -139,6 +153,23 @@ class ColorTransitionScreensaver extends HTMLElement {
     // Перезапускаем анимацию с новой скоростью
     this.stopAnimation();
     this.startAnimation();
+  }
+
+  // Метод для обновления состояния анимации
+  updateAnimationEnabled(enabled) {
+    if (enabled !== undefined) {
+      console.log(`[Отладка] ColorTransition: анимация ${enabled ? 'ВКЛЮЧЕНА' : 'ВЫКЛЮЧЕНА'}`);
+      this.animationEnabled = enabled;
+      if (this.animationEnabled) {
+        this.startAnimation();
+      } else {
+        this.stopAnimation();
+      }
+      // Обновляем настройки в drawer с небольшой задержкой
+      setTimeout(() => {
+        this.updateSettingsInDrawer();
+      }, 10);
+    }
   }
 
   // Метод для обновления текущего цвета

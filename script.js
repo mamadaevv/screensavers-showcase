@@ -354,11 +354,90 @@ function createSettingsControls(componentClass, container) {
     const componentName = componentClass.name.replace('Screensaver', '');
     const componentTagName = componentName.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '') + '-screensaver';
 
+    // Проверяем состояние анимации
+    const isAnimationEnabled = getSavedSetting(componentTagName, 'animationEnabled', 'true') === 'true';
+    console.log(`[Отладка] Создание настроек для ${componentTagName}, анимация: ${isAnimationEnabled ? 'ВКЛ' : 'ВЫКЛ'}`);
+
+    // Функция для проверки, должна ли настройка быть отключена
+    const shouldDisableSetting = (settingName) => {
+        if (isAnimationEnabled) return false;
+
+        // Настройки, которые отключаются когда анимация выключена
+        const animationSettings = {
+            'linear-gradient-screensaver': ['speedPresets', 'updateInterval', 'updateStep'],
+            'conic-gradient-screensaver': ['speed'],
+            'color-transition-screensaver': ['speed']
+        };
+
+        const shouldDisable = animationSettings[componentTagName]?.includes(settingName) || false;
+        if (shouldDisable) {
+            console.log(`[Отладка] Отключение настройки ${settingName} для ${componentTagName} (анимация выключена)`);
+        }
+        return shouldDisable;
+    };
+
     // Группируем настройки по типу
     const rangeSettings = settings.filter(setting => setting.type === 'range');
     const colorSettings = settings.filter(setting => setting.type === 'color');
     const radioSettings = settings.filter(setting => setting.type === 'radio');
     const buttonGroupSettings = settings.filter(setting => setting.type === 'button-group');
+    const switchSettings = settings.filter(setting => setting.type === 'switch');
+
+    // Создаем элементы управления для switch настроек (в начале)
+    switchSettings.forEach(setting => {
+        const switchDiv = document.createElement('div');
+
+        // Создаем контейнер для заголовка и switch
+        const headerDiv = document.createElement('div');
+        headerDiv.style.display = 'flex';
+        headerDiv.style.alignItems = 'center';
+        headerDiv.style.justifyContent = 'space-between';
+
+        // Создаем лейбл
+        const label = document.createElement('label');
+        label.textContent = setting.label;
+        label.style.display = 'block';
+        label.style.fontSize = 'var(--sl-input-label-font-size-small)';
+        label.style.fontWeight = 'var(--sl-input-label-font-weight)';
+        label.style.color = 'var(--sl-input-label-color)';
+
+        // Создаем switch
+        const switchElement = document.createElement('sl-switch');
+        switchElement.size = 'small';
+        const savedValue = getSavedSetting(componentTagName, setting.name, setting.default);
+        // Преобразуем строку в boolean
+        const checkedValue = savedValue === 'true' || savedValue === true;
+        switchElement.checked = checkedValue;
+        console.log(`[Отладка] Создание switch ${setting.name} для ${componentTagName}, значение из localStorage: ${savedValue}, checked: ${checkedValue}`);
+
+        // Принудительно обновляем состояние switch
+        requestAnimationFrame(() => {
+            switchElement.checked = checkedValue;
+        });
+
+        // Обработчик изменения switch
+        switchElement.addEventListener('sl-change', (event) => {
+            const isChecked = event.target.checked;
+            console.log(`[Отладка] Switch ${setting.name} изменен на ${isChecked ? 'ВКЛ' : 'ВЫКЛ'} для ${componentTagName}, сохраняю в localStorage`);
+            saveSetting(componentTagName, setting.name, isChecked.toString()); // сохраняем как строку
+
+            // Специальная обработка для animationEnabled
+            if (setting.name === 'animationEnabled') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateAnimationEnabled === 'function') {
+                    currentElement.updateAnimationEnabled(isChecked);
+                }
+            } else {
+                updateCurrentScreensaver();
+            }
+        });
+
+        headerDiv.appendChild(label);
+        headerDiv.appendChild(switchElement);
+
+        switchDiv.appendChild(headerDiv);
+        container.appendChild(switchDiv);
+    });
 
     // Специальная обработка для solid-color (inline color picker)
     if (componentTagName === 'solid-color-screensaver' && colorSettings.length === 1) {
@@ -423,9 +502,12 @@ function createSettingsControls(componentClass, container) {
         input.size = 'small';
 
         // Отключаем элементы управления, если настройка отключена
-        if (setting.disabled) {
+        const isDisabled = setting.disabled || shouldDisableSetting(setting.name);
+        if (isDisabled) {
             range.disabled = true;
             input.disabled = true;
+            range.style.opacity = '0.5';
+            input.style.opacity = '0.5';
         }
 
         // Синхронизируем значения между range и input в реальном времени
@@ -442,6 +524,21 @@ function createSettingsControls(componentClass, container) {
                     } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
                         currentElement.updateGlobalScale(e.target.value);
                     }
+                }
+            } else if (setting.name === 'backgroundSize' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateBackgroundSize === 'function') {
+                    currentElement.updateBackgroundSize(e.target.value);
+                }
+            } else if (setting.name === 'updateInterval' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateUpdateInterval === 'function') {
+                    currentElement.updateUpdateInterval(e.target.value);
+                }
+            } else if (setting.name === 'updateStep' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateUpdateStep === 'function') {
+                    currentElement.updateUpdateStep(e.target.value);
                 }
             } else {
                 updateCurrentScreensaver();
@@ -462,6 +559,21 @@ function createSettingsControls(componentClass, container) {
                         currentElement.updateGlobalScale(e.target.value);
                     }
                 }
+            } else if (setting.name === 'backgroundSize' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateBackgroundSize === 'function') {
+                    currentElement.updateBackgroundSize(e.target.value);
+                }
+            } else if (setting.name === 'updateInterval' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateUpdateInterval === 'function') {
+                    currentElement.updateUpdateInterval(e.target.value);
+                }
+            } else if (setting.name === 'updateStep' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateUpdateStep === 'function') {
+                    currentElement.updateUpdateStep(e.target.value);
+                }
             } else {
                 updateCurrentScreensaver();
             }
@@ -481,6 +593,21 @@ function createSettingsControls(componentClass, container) {
                         currentElement.updateGlobalScale(e.target.value);
                     }
                 }
+            } else if (setting.name === 'backgroundSize' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateBackgroundSize === 'function') {
+                    currentElement.updateBackgroundSize(e.target.value);
+                }
+            } else if (setting.name === 'updateInterval' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateUpdateInterval === 'function') {
+                    currentElement.updateUpdateInterval(e.target.value);
+                }
+            } else if (setting.name === 'updateStep' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateUpdateStep === 'function') {
+                    currentElement.updateUpdateStep(e.target.value);
+                }
             } else {
                 updateCurrentScreensaver();
             }
@@ -499,6 +626,21 @@ function createSettingsControls(componentClass, container) {
                     } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
                         currentElement.updateGlobalScale(e.target.value);
                     }
+                }
+            } else if (setting.name === 'backgroundSize' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateBackgroundSize === 'function') {
+                    currentElement.updateBackgroundSize(e.target.value);
+                }
+            } else if (setting.name === 'updateInterval' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateUpdateInterval === 'function') {
+                    currentElement.updateUpdateInterval(e.target.value);
+                }
+            } else if (setting.name === 'updateStep' && componentTagName === 'linear-gradient-screensaver') {
+                const currentElement = document.querySelector(`${componentTagName}`);
+                if (currentElement && typeof currentElement.updateUpdateStep === 'function') {
+                    currentElement.updateUpdateStep(e.target.value);
                 }
             } else {
                 updateCurrentScreensaver();
@@ -625,6 +767,13 @@ function createSettingsControls(componentClass, container) {
             // Создаем button-group
             const buttonGroup = document.createElement('sl-button-group');
 
+            // Проверяем, должна ли настройка быть отключена
+            const isDisabled = shouldDisableSetting(setting.name);
+            if (isDisabled) {
+                buttonGroup.style.opacity = '0.5';
+                buttonGroup.style.pointerEvents = 'none';
+            }
+
             // Добавляем button элементы
             const presets = [
                 { value: 'slow', label: 'Медленно', interval: 500, step: 1 },
@@ -636,6 +785,9 @@ function createSettingsControls(componentClass, container) {
                 button.textContent = preset.label;
                 button.value = preset.value;
                 button.size = 'small';
+                if (isDisabled) {
+                    button.disabled = true;
+                }
 
                 // Обработчик клика на кнопку
                 button.addEventListener('click', () => {
@@ -1058,6 +1210,9 @@ function updateCurrentScreensaver() {
                 currentElement.updateGlobalScale(value);
             } else if (setting.name === 'backgroundSize' && componentName === 'linear-gradient-screensaver' && typeof currentElement.updateBackgroundSize === 'function') {
                 currentElement.updateBackgroundSize(value);
+            } else if (setting.name === 'animationEnabled' && typeof currentElement.updateAnimationEnabled === 'function') {
+                console.log(`[Отладка] Изменение настройки анимации для ${componentName}: ${value === 'true' ? 'ВКЛ' : 'ВЫКЛ'}`);
+                currentElement.updateAnimationEnabled(value === 'true');
             }
         });
     }
