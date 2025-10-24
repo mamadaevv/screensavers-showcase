@@ -35,6 +35,12 @@ class ConicGradientScreensaver extends HTMLElement {
         step: 1
       },
       {
+        name: 'positionCenter',
+        label: 'Положение центра',
+        type: 'position-center',
+        default: 'center'
+      },
+      {
         name: 'colorSpace',
         label: 'Цветовое пространство',
         type: 'radio',
@@ -85,6 +91,7 @@ class ConicGradientScreensaver extends HTMLElement {
     this.speed = 50; // значение по умолчанию
     this.offsetX = 100; // значение по умолчанию - верхний правый угол
     this.offsetY = 0; // значение по умолчанию - верхний правый угол
+    this.positionCenter = 'center'; // значение по умолчанию - центр
     this.colorSpace = null; // цветовое пространство по умолчанию (null = отключено)
     this.colors = ['#ff0000', '#8000ff']; // цвета из swatches: красный, фиолетовый
   }
@@ -114,6 +121,11 @@ class ConicGradientScreensaver extends HTMLElement {
     const animationEnabledAttr = this.getAttribute('data-animationEnabled');
     if (animationEnabledAttr !== null) {
       this.animationEnabled = animationEnabledAttr === 'true';
+    }
+
+    const positionCenterAttr = this.getAttribute('data-positionCenter');
+    if (positionCenterAttr !== null) {
+      this.positionCenter = positionCenterAttr;
     }
 
     // Загружаем цвета из localStorage
@@ -261,6 +273,31 @@ class ConicGradientScreensaver extends HTMLElement {
       // Перерисовываем компонент с новым цветовыми пространством
       this.shadowRoot.innerHTML = '';
       this.render();
+    }
+  }
+
+  // Метод для обновления положения центра
+  updatePositionCenter(position) {
+    if (position !== undefined) {
+      this.positionCenter = position;
+
+      // Преобразовываем позицию в проценты
+      const positionMap = {
+        'top-left': { x: 0, y: 0 },
+        'top-center': { x: 50, y: 0 },
+        'top-right': { x: 100, y: 0 },
+        'middle-left': { x: 0, y: 50 },
+        'center': { x: 50, y: 50 },
+        'middle-right': { x: 100, y: 50 },
+        'bottom-left': { x: 0, y: 100 },
+        'bottom-center': { x: 50, y: 100 },
+        'bottom-right': { x: 100, y: 100 }
+      };
+
+      const coords = positionMap[position] || positionMap['center'];
+      this.offsetX = coords.x;
+      this.offsetY = coords.y;
+      this.updateOffset();
     }
   }
 

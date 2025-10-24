@@ -95,3 +95,29 @@ sl-drawer .author-button:hover::part(label) {
 .sl-theme-dark sl-drawer .author-button:hover::part(label) {
     color: var(--sl-color-gray-300);
 }
+
+/* Стили для кнопок положения центра */
+.position-top-left::part(base) {
+    border-radius: var(--sl-border-radius-medium) 0 0 0;
+}
+
+.position-top-right::part(base) {
+    border-radius: 0 var(--sl-border-radius-medium) 0 0;
+}
+
+.position-bottom-left::part(base) {
+    border-radius: 0 0 0 var(--sl-border-radius-medium);
+}
+
+.position-bottom-right::part(base) {
+    border-radius: 0 0 var(--sl-border-radius-medium) 0;
+}
+
+.position-no-radius::part(base) {
+    border-radius: 0;
+}
+
+/* Отступы между строками кнопок положения центра */
+.position-row-with-margin {
+    margin-bottom: -1px;
+}

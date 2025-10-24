@@ -382,6 +382,7 @@ function createSettingsControls(componentClass, container) {
     const radioSettings = settings.filter(setting => setting.type === 'radio');
     const buttonGroupSettings = settings.filter(setting => setting.type === 'button-group');
     const switchSettings = settings.filter(setting => setting.type === 'switch');
+    const positionCenterSettings = settings.filter(setting => setting.type === 'position-center');
 
     // Создаем элементы управления для switch настроек (в начале)
     switchSettings.forEach(setting => {
@@ -825,6 +826,162 @@ function createSettingsControls(componentClass, container) {
         }
 
         settingDiv.appendChild(range);
+        container.appendChild(settingDiv);
+    });
+
+    // Создаем элементы управления для position-center настроек
+    positionCenterSettings.forEach(setting => {
+        const settingDiv = document.createElement('div');
+
+        // Создаем лейбл
+        const label = document.createElement('label');
+        label.textContent = setting.label;
+        label.style.display = 'block';
+        label.style.fontSize = 'var(--sl-input-label-font-size-small)';
+        label.style.fontWeight = 'var(--sl-input-label-font-weight)';
+        label.style.color = 'var(--sl-input-label-color)';
+
+        settingDiv.appendChild(label);
+
+        // Контейнер для групп кнопок
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.flexDirection = 'column';
+        buttonContainer.style.gap = '-1px'; // отрицательный отступ для компенсации границ
+
+        // Определяем позиции и иконки
+        const positions = [
+            ['top-left', 'top-center', 'top-right'],
+            ['middle-left', 'center', 'middle-right'],
+            ['bottom-left', 'bottom-center', 'bottom-right']
+        ];
+
+        const icons = {
+            'top-left': 'arrow-up-left',
+            'top-center': 'arrow-up',
+            'top-right': 'arrow-up-right',
+            'middle-left': 'arrow-left',
+            'center': 'dot',
+            'middle-right': 'arrow-right',
+            'bottom-left': 'arrow-down-left',
+            'bottom-center': 'arrow-down',
+            'bottom-right': 'arrow-down-right'
+        };
+
+        positions.forEach((row, rowIndex) => {
+            const rowContainer = document.createElement('div');
+            rowContainer.style.display = 'flex';
+            rowContainer.style.gap = '0';
+
+            // Добавляем классы для CSS Parts кастомизации отступов
+            if (rowIndex < 2) { // первые две строки
+                rowContainer.classList.add('position-row-with-margin');
+            }
+
+            const buttonGroup = document.createElement('sl-button-group');
+            buttonGroup.style.width = '100%';
+
+            row.forEach((position, colIndex) => {
+                const button = document.createElement('sl-button');
+                button.value = position;
+                button.size = 'small';
+                button.style.flex = '1';
+
+                // Добавляем классы для CSS Parts кастомизации
+                const isCorner = (rowIndex === 0 && colIndex === 0) || // top-left
+                                (rowIndex === 0 && colIndex === 2) || // top-right
+                                (rowIndex === 2 && colIndex === 0) || // bottom-left
+                                (rowIndex === 2 && colIndex === 2);   // bottom-right
+
+                const isEdgeCenter = (rowIndex === 0 && colIndex === 1) || // top-center
+                                   (rowIndex === 1 && colIndex === 0) || // middle-left
+                                   (rowIndex === 1 && colIndex === 2) || // middle-right
+                                   (rowIndex === 2 && colIndex === 1);   // bottom-center
+
+                if (isCorner) {
+                    button.classList.add(`position-${position}`);
+                } else if (isEdgeCenter || position === 'center') {
+                    button.classList.add('position-no-radius');
+                }
+
+                // Устанавливаем иконку вместо текста
+                const icon = document.createElement('sl-icon');
+                icon.name = icons[position];
+                icon.slot = 'prefix';
+                button.appendChild(icon);
+
+                // Преобразовываем позицию в проценты
+                const positionToCoords = {
+                    'top-left': { x: 0, y: 0 },
+                    'top-center': { x: 50, y: 0 },
+                    'top-right': { x: 100, y: 0 },
+                    'middle-left': { x: 0, y: 50 },
+                    'center': { x: 50, y: 50 },
+                    'middle-right': { x: 100, y: 50 },
+                    'bottom-left': { x: 0, y: 100 },
+                    'bottom-center': { x: 50, y: 100 },
+                    'bottom-right': { x: 100, y: 100 }
+                };
+
+                // Обработчик клика на кнопку
+                button.addEventListener('click', () => {
+                    const coords = positionToCoords[position];
+
+                    // Обновляем компонент
+                    const currentElement = document.querySelector(`${componentTagName}`);
+                    if (currentElement) {
+                        if (typeof currentElement.updateOffsetX === 'function') {
+                            currentElement.updateOffsetX(coords.x);
+                        }
+                        if (typeof currentElement.updateOffsetY === 'function') {
+                            currentElement.updateOffsetY(coords.y);
+                        }
+
+                        // Обновляем значения в слайдерах UI
+                        // Находим слайдеры offsetX и offsetY
+                        const allSettingDivs = container.querySelectorAll('#screensaver-settings > div');
+                        let offsetXDiv, offsetYDiv;
+
+                        for (let i = 0; i < allSettingDivs.length; i++) {
+                            const div = allSettingDivs[i];
+                            const inputs = div.querySelectorAll('sl-input');
+                            const ranges = div.querySelectorAll('sl-range');
+
+                            if (inputs.length > 0 && ranges.length > 0) {
+                                const label = div.querySelector('label');
+                                if (label && label.textContent.includes('Смещение по X')) {
+                                    offsetXDiv = div;
+                                } else if (label && label.textContent.includes('Смещение по Y')) {
+                                    offsetYDiv = div;
+                                }
+                            }
+                        }
+
+                        // Обновляем слайдеры и инпуты
+                        if (offsetXDiv) {
+                            const offsetXInput = offsetXDiv.querySelector('sl-input');
+                            const offsetXRange = offsetXDiv.querySelector('sl-range');
+                            if (offsetXInput) offsetXInput.value = coords.x;
+                            if (offsetXRange) offsetXRange.value = coords.x;
+                        }
+
+                        if (offsetYDiv) {
+                            const offsetYInput = offsetYDiv.querySelector('sl-input');
+                            const offsetYRange = offsetYDiv.querySelector('sl-range');
+                            if (offsetYInput) offsetYInput.value = coords.y;
+                            if (offsetYRange) offsetYRange.value = coords.y;
+                        }
+                    }
+                });
+
+                buttonGroup.appendChild(button);
+            });
+
+            rowContainer.appendChild(buttonGroup);
+            buttonContainer.appendChild(rowContainer);
+        });
+
+        settingDiv.appendChild(buttonContainer);
         container.appendChild(settingDiv);
     });
 
@@ -1284,6 +1441,8 @@ function updateCurrentScreensaver() {
                 currentElement.updateUpdateStep(value);
             } else if (setting.name === 'colorSpace' && typeof currentElement.updateColorSpace === 'function') {
                 currentElement.updateColorSpace(value);
+            } else if (setting.name === 'positionCenter' && typeof currentElement.updatePositionCenter === 'function') {
+                currentElement.updatePositionCenter(value);
             } else if (setting.name === 'globalRotation' && typeof currentElement.updateGlobalRotation === 'function') {
                 currentElement.updateGlobalRotation(value);
             } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
