@@ -57,6 +57,15 @@ class LinearGradientScreensaver extends HTMLElement {
         max: 3.0,
         default: 1.0,
         step: 0.1
+      },
+      {
+        name: 'backgroundSize',
+        label: 'Размер фона (%)',
+        type: 'range',
+        min: 100,
+        max: 500,
+        default: 200,
+        step: 10
       }
     ];
 
@@ -97,6 +106,7 @@ class LinearGradientScreensaver extends HTMLElement {
     this.colorSpace = null; // цветовое пространство по умолчанию (null = отключено)
     this.globalRotation = 0; // глобальный поворот в градусах
     this.globalScale = 1.0; // глобальный масштаб
+    this.backgroundSize = 200; // размер фона в процентах
     this.colors = ['#ff0000', '#0080ff', '#80ff00', '#ffff00', '#ff0000']; // цвета из swatches: красный, синий, салатовый, желтый, красный
     this.animationOffset = 0; // смещение для анимации в процентах
     this.animationTimer = null; // таймер для анимации
@@ -123,6 +133,10 @@ class LinearGradientScreensaver extends HTMLElement {
     const globalScaleAttr = this.getAttribute('data-globalScale');
     if (globalScaleAttr !== null) {
       this.globalScale = Math.max(0.1, Math.min(3.0, parseFloat(globalScaleAttr)));
+    }
+    const backgroundSizeAttr = this.getAttribute('data-backgroundSize');
+    if (backgroundSizeAttr !== null) {
+      this.backgroundSize = Math.max(100, Math.min(500, parseInt(backgroundSizeAttr, 10)));
     }
 
     // Загружаем цвета из localStorage
@@ -165,7 +179,7 @@ class LinearGradientScreensaver extends HTMLElement {
         width: 100%;
         height: 100%;
         background: linear-gradient(${colorSpaceParam}var(--angle, 90deg), ${colorStops});
-        background-size: 200% 100%;
+        background-size: var(--background-size, 200% 100%);
         background-position: var(--position, 0% 0%);
         z-index: 0;
       }
@@ -181,6 +195,7 @@ class LinearGradientScreensaver extends HTMLElement {
     // Устанавливаем начальные значения
     this.updatePosition();
     this.updateTransform();
+    this.style.setProperty('--background-size', `${this.backgroundSize}% 100%`);
   }
 
 
@@ -228,6 +243,15 @@ class LinearGradientScreensaver extends HTMLElement {
     if (newScale !== undefined) {
       this.globalScale = Math.max(0.1, Math.min(3.0, parseFloat(newScale)));
       this.updateTransform();
+    }
+  }
+
+  // Метод для обновления размера фона
+  updateBackgroundSize(newSize) {
+    if (newSize !== undefined) {
+      this.backgroundSize = Math.max(100, Math.min(500, parseInt(newSize, 10)));
+      // Обновляем CSS переменную для размера фона
+      this.style.setProperty('--background-size', `${this.backgroundSize}% 100%`);
     }
   }
 
@@ -472,7 +496,7 @@ class LinearGradientScreensaver extends HTMLElement {
     if (isNaN(this.updateStep) || this.updateStep <= 0) {
       this.updateStep = 1; // сбрасываем на значение по умолчанию
     }
-    this.animationOffset = (this.animationOffset + this.updateStep) % 201; // увеличиваем на заданный шаг от 0% до 200%
+    this.animationOffset = (this.animationOffset + this.updateStep) % (this.backgroundSize + 1); // увеличиваем на заданный шаг от 0% до backgroundSize%
     this.updatePosition(); // обновляем позицию фона
   }
 }

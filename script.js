@@ -1056,6 +1056,8 @@ function updateCurrentScreensaver() {
                 currentElement.updateGlobalRotation(value);
             } else if (setting.name === 'globalScale' && typeof currentElement.updateGlobalScale === 'function') {
                 currentElement.updateGlobalScale(value);
+            } else if (setting.name === 'backgroundSize' && componentName === 'linear-gradient-screensaver' && typeof currentElement.updateBackgroundSize === 'function') {
+                currentElement.updateBackgroundSize(value);
             }
         });
     }
