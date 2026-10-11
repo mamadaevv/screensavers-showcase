@@ -3,23 +3,23 @@ class LinearGradientScreensaver extends HTMLElement {
     const settings = [
       {
         name: 'animationEnabled',
-        label: 'Анимация',
+        label: 'Animation',
         type: 'switch',
         default: true
       },
       {
         name: 'speedPresets',
-        label: 'Скорость смещения',
+        label: 'Displacement velocity',
         type: 'button-group',
         options: [
-          { value: 'slow', label: 'Медленно' },
-          { value: 'normal', label: 'Нормально' },
-          { value: 'fast', label: 'Быстро' }
+          { value: 'slow', label: 'Slowly' },
+          { value: 'normal', label: 'Normal' },
+          { value: 'fast', label: 'Quickly' }
         ]
       },
       {
         name: 'updateInterval',
-        label: 'Период обновления (мс)',
+        label: 'Refresh rate (ms)',
         type: 'range',
         min: 10,
         max: 1000,
@@ -28,7 +28,7 @@ class LinearGradientScreensaver extends HTMLElement {
       },
       {
         name: 'updateStep',
-        label: 'Шаг обновления (%)',
+        label: 'Update Step (%)',
         type: 'range',
         min: 0.1,
         max: 10,
@@ -37,7 +37,7 @@ class LinearGradientScreensaver extends HTMLElement {
       },
       {
         name: 'colorSpace',
-        label: 'Цветовое пространство',
+        label: 'Color Space',
         type: 'radio',
         options: [
           { value: 'oklab', label: 'in oklab' },
@@ -48,7 +48,7 @@ class LinearGradientScreensaver extends HTMLElement {
       },
       {
         name: 'globalRotation',
-        label: 'Глобальный поворот (°)',
+        label: 'Global rotation (°)',
         type: 'range',
         min: -180,
         max: 180,
@@ -57,7 +57,7 @@ class LinearGradientScreensaver extends HTMLElement {
       },
       {
         name: 'globalScale',
-        label: 'Глобальный масштаб',
+        label: 'Global Scale',
         type: 'range',
         min: 0.1,
         max: 3.0,
@@ -66,7 +66,7 @@ class LinearGradientScreensaver extends HTMLElement {
       },
       {
         name: 'backgroundSize',
-        label: 'Размер фона (%)',
+        label: 'Background Size (%)',
         type: 'range',
         min: 100,
         max: 500,
@@ -75,11 +75,11 @@ class LinearGradientScreensaver extends HTMLElement {
       }
     ];
 
-    // Загружаем цвета из localStorage для создания настроек
+    // Load colors from localStorage to create settings
     const tagName = 'linear-gradient-screensaver';
     const key = `screensaver-${tagName}-colors`;
     const saved = localStorage.getItem(key);
-    let colors = ['#ff0000', '#0080ff', '#80ff00', '#ffff00', '#ff0000']; // цвета из swatches: красный, синий, салатовый, желтый, красный
+    let colors = ['#ff0000', '#0080ff', '#80ff00', '#ffff00', '#ff0000']; // Colors from the swatches: red, blue, light green, yellow, red
 
     if (saved) {
       try {
@@ -91,11 +91,11 @@ class LinearGradientScreensaver extends HTMLElement {
       }
     }
 
-    // Добавляем настройки цветов динамически в конец
+    // Add the color settings dynamically at the end
     colors.forEach((color, index) => {
       settings.push({
         name: `color${index + 1}`,
-        label: `Цвет ${index + 1}`,
+        label: `Color ${index + 1}`,
         type: 'color',
         default: color
       });
@@ -107,20 +107,20 @@ class LinearGradientScreensaver extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.animationEnabled = true; // анимация включена по умолчанию
-    this.updateInterval = Math.max(10, Math.min(1000, 100)); // период обновления в мс (с проверкой)
-    this.updateStep = Math.max(0.1, Math.min(10, 1)); // шаг обновления в процентах (с проверкой)
-    this.colorSpace = null; // цветовое пространство по умолчанию (null = отключено)
-    this.globalRotation = 0; // глобальный поворот в градусах
-    this.globalScale = 1.0; // глобальный масштаб
-    this.backgroundSize = 200; // размер фона в процентах
-    this.colors = ['#ff0000', '#0080ff', '#80ff00', '#ffff00', '#ff0000']; // цвета из swatches: красный, синий, салатовый, желтый, красный
-    this.animationOffset = 0; // смещение для анимации в процентах
-    this.animationTimer = null; // таймер для анимации
+    this.animationEnabled = true; // Animation is enabled by default
+    this.updateInterval = Math.max(10, Math.min(1000, 100)); // refresh rate in milliseconds (with validation)
+    this.updateStep = Math.max(0.1, Math.min(10, 1)); // Update increment as a percentage (with verification)
+    this.colorSpace = null; // default color space (null = disabled)
+    this.globalRotation = 0; // global rotation in degrees
+    this.globalScale = 1.0; // global scale
+    this.backgroundSize = 200; // background size as a percentage
+    this.colors = ['#ff0000', '#0080ff', '#80ff00', '#ffff00', '#ff0000']; // Colors from the swatches: red, blue, light green, yellow, red
+    this.animationOffset = 0; // animation offset (in percent)
+    this.animationTimer = null; // animation timer
   }
 
   connectedCallback() {
-    // Читаем настройки из атрибутов
+    // Reading Settings from Attributes
     const intervalAttr = this.getAttribute('data-updateInterval');
     if (intervalAttr !== null) {
       this.updateInterval = Math.max(10, Math.min(1000, parseInt(intervalAttr, 10)));
@@ -150,10 +150,10 @@ class LinearGradientScreensaver extends HTMLElement {
       this.animationEnabled = animationEnabledAttr === 'true';
     }
 
-    // Загружаем цвета из localStorage
+    // Loading colors from localStorage
     this.loadColorsFromStorage();
 
-    // Загружаем настройки цветового пространства
+    // Load color space settings
     this.loadSettingsFromStorage();
 
     this.render();
@@ -165,7 +165,7 @@ class LinearGradientScreensaver extends HTMLElement {
 
   disconnectedCallback() {
     this.stopAnimation();
-    // Сбрасываем трансформацию и размеры при отключении компонента
+    // Reset the transformation and dimensions when the component is disabled
     const container = document.getElementById('screensaver-container');
     if (container) {
       container.style.transform = '';
@@ -179,7 +179,7 @@ class LinearGradientScreensaver extends HTMLElement {
   }
 
   render() {
-    // Создаем фиксированный градиент с анимацией через background-position
+    // Creating a Fixed Gradient with Animation Using `background-position`
     const colorStops = this.colors.join(', ');
     const colorSpaceParam = this.getColorSpaceParameter();
 
@@ -205,7 +205,7 @@ class LinearGradientScreensaver extends HTMLElement {
     this.shadowRoot.appendChild(container);
     this.gradientElement = container;
 
-    // Устанавливаем начальные значения
+    // Set the initial values
     this.updatePosition();
     this.updateTransform();
     this.style.setProperty('--background-size', `${this.backgroundSize}% 100%`);
@@ -213,37 +213,37 @@ class LinearGradientScreensaver extends HTMLElement {
 
 
 
-  // Метод для обновления периода обновления
+  // Method for Updating the Refresh Interval
   updateUpdateInterval(newInterval) {
     if (newInterval !== undefined) {
-      // Ограничиваем период обновления в допустимых пределах
+      // We limit the refresh interval to an acceptable range
       this.updateInterval = Math.max(10, Math.min(1000, parseInt(newInterval)));
-      // Перезапускаем анимацию с новым интервалом
+      // Restart the animation with a new interval
       this.startAnimation();
     }
   }
 
-  // Метод для обновления шага обновления
+  // Method for Updating the Update Interval
   updateUpdateStep(newStep) {
     if (newStep !== undefined) {
-      // Ограничиваем шаг обновления в допустимых пределах
+      // We limit the update interval to within acceptable limits
       this.updateStep = Math.max(0.1, Math.min(10, parseFloat(newStep)));
-      // Перезапускаем анимацию с новым шагом
+      // Restart the animation with a new frame
       this.startAnimation();
     }
   }
 
-  // Метод для обновления цветового пространства
+  // A Method for Updating a Color Space
   updateColorSpace(newColorSpace) {
     if (newColorSpace !== undefined) {
-      this.colorSpace = newColorSpace || null; // Если пустое значение, устанавливаем null
-      // Перерисовываем компонент с новым цветовыми пространством
+      this.colorSpace = newColorSpace || null; // If the value is empty, set it to null
+      // Redraw the component with a new color space
       this.shadowRoot.innerHTML = '';
       this.render();
     }
   }
 
-  // Метод для обновления глобального поворота
+  // A Method for Updating the Global Rotation
   updateGlobalRotation(newRotation) {
     if (newRotation !== undefined) {
       this.globalRotation = Math.max(-180, Math.min(180, parseInt(newRotation, 10)));
@@ -251,7 +251,7 @@ class LinearGradientScreensaver extends HTMLElement {
     }
   }
 
-  // Метод для обновления глобального масштаба
+  // A Method for Updating the Global Scale
   updateGlobalScale(newScale) {
     if (newScale !== undefined) {
       this.globalScale = Math.max(0.1, Math.min(3.0, parseFloat(newScale)));
@@ -259,79 +259,79 @@ class LinearGradientScreensaver extends HTMLElement {
     }
   }
 
-  // Метод для обновления размера фона
+  // A method for updating the background size
   updateBackgroundSize(newSize) {
     if (newSize !== undefined) {
       this.backgroundSize = Math.max(100, Math.min(500, parseInt(newSize, 10)));
-      // Обновляем CSS переменную для размера фона
+      // Updating the CSS variable for the background size
       this.style.setProperty('--background-size', `${this.backgroundSize}% 100%`);
     }
   }
 
-  // Метод для обновления состояния анимации
+  // A method for updating the animation state
   updateAnimationEnabled(enabled) {
     if (enabled !== undefined) {
-      console.log(`[Отладка] LinearGradient: updateAnimationEnabled вызван с enabled=${enabled}`);
+      console.log(`[Debugging] LinearGradient: updateAnimationEnabled was called with enabled=${enabled}`);
       this.animationEnabled = enabled;
-      console.log(`[Отладка] LinearGradient: анимация ${enabled ? 'ВКЛЮЧЕНА' : 'ВЫКЛЮЧЕНА'}`);
+      console.log(`[Debugging] LinearGradient: Animation ${enabled ? 'ON' : 'OFF'}`);
       if (this.animationEnabled) {
         this.startAnimation();
       } else {
         this.stopAnimation();
       }
-      // Обновляем настройки в drawer с небольшой задержкой
+      // We update the settings in the drawer with a slight delay
       setTimeout(() => {
-        console.log(`[Отладка] LinearGradient: вызываю updateSettingsInDrawer`);
+        console.log(`[Debugging] LinearGradient: Calling updateSettingsInDrawer`);
         this.updateSettingsInDrawer();
       }, 10);
     }
   }
 
-  // Метод для обновления трансформации контейнера
+  // A method for updating a container's transformation
   updateTransform() {
     const container = document.getElementById('screensaver-container');
     if (container) {
-      // Рассчитываем размеры и позицию контейнера для полного покрытия экрана при повороте
+      // We calculate the container's dimensions and position so that it fully covers the screen when rotated
       this.updateContainerSizeAndPosition();
 
       container.style.transform = `rotate(${this.globalRotation}deg) scale(${this.globalScale})`;
     }
   }
 
-  // Метод для расчета размера и позиции контейнера чтобы он всегда покрывал всю область экрана
+  // A method for calculating the size and position of a container so that it always covers the entire screen area
   updateContainerSizeAndPosition() {
     const container = document.getElementById('screensaver-container');
     if (!container) return;
 
-    // Получаем размеры viewport
+    // Get the viewport dimensions
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
 
-    // Угол поворота в радианах
+    // Angle of rotation in radians
     const angleRad = (this.globalRotation * Math.PI) / 180;
 
-    // Рассчитываем bounding box для повернутого прямоугольника
+    // Calculating the bounding box for a rotated rectangle
     const cos = Math.abs(Math.cos(angleRad));
     const sin = Math.abs(Math.sin(angleRad));
 
-    // Ширина и высота bounding box с учетом масштаба
+    // The width and height of the bounding box, taking scale into account
     const boundingWidth = Math.ceil((viewportWidth * this.globalScale) * cos + (viewportHeight * this.globalScale) * sin);
     const boundingHeight = Math.ceil((viewportWidth * this.globalScale) * sin + (viewportHeight * this.globalScale) * cos);
 
-    // Устанавливаем размеры контейнера
+    // Set the container dimensions
     container.style.width = `${boundingWidth}px`;
     container.style.height = `${boundingHeight}px`;
 
-    // Центрируем контейнер
+    // Center the container
     container.style.position = 'absolute';
     container.style.left = `${Math.ceil((viewportWidth - boundingWidth) / 2)}px`;
     container.style.top = `${Math.ceil((viewportHeight - boundingHeight) / 2)}px`;
 
-    // Точка поворота должна быть в центре viewport (поскольку bounding box центрирован)
+    // The pivot point should be in the center of the viewport (since the bounding box is centered)
     container.style.transformOrigin = '50% 50%';
   }
 
-  // Метод для получения параметра цветового пространства для linear-gradient
+  // A method for obtaining the color space parameter for `linear-gradient`
   getColorSpaceParameter() {
     if (!this.colorSpace) {
       return '';
@@ -348,20 +348,20 @@ class LinearGradientScreensaver extends HTMLElement {
     return '';
   }
 
-  // Метод для обновления позиции фона для анимации
+  // A method for updating the background position for an animation
   updatePosition() {
-    // Анимируем background-position от 0% до 200%
+    // Animating the `background-position` from 0% to 200%
     const positionX = this.animationOffset;
     this.style.setProperty('--position', `${positionX}% 0%`);
   }
 
-  // Метод для обновления конкретного цвета
+  // A method for updating a specific color
   updateColor(index, newColor) {
     if (index >= 0 && index < this.colors.length) {
       this.colors[index] = newColor;
-      // Сохраняем массив цветов в localStorage
+      // We store an array of colors in localStorage
       this.saveColorsToStorage();
-      // Перерисовываем компонент чтобы обновить градиент
+      // Redraw the component to update the gradient
       this.shadowRoot.innerHTML = '';
       this.render();
     }
@@ -369,14 +369,14 @@ class LinearGradientScreensaver extends HTMLElement {
 
 
 
-  // Метод для сохранения массива цветов в localStorage
+  // A method for storing an array of colors in localStorage
   saveColorsToStorage() {
     const tagName = this.tagName.toLowerCase();
     const key = `screensaver-${tagName}-colors`;
     localStorage.setItem(key, JSON.stringify(this.colors));
   }
 
-  // Метод для загрузки массива цветов из localStorage
+  // A method for loading an array of colors from localStorage
   loadColorsFromStorage() {
     const tagName = this.tagName.toLowerCase();
     const key = `screensaver-${tagName}-colors`;
@@ -393,60 +393,60 @@ class LinearGradientScreensaver extends HTMLElement {
     }
   }
 
-  // Метод для загрузки настроек из localStorage
+  // A method for loading settings from localStorage
   loadSettingsFromStorage() {
     const tagName = this.tagName.toLowerCase();
 
-    // Загружаем состояние switch цветового пространства
+    // Load the color space switch state
     const colorSpaceEnabledKey = `screensaver-${tagName}-colorSpace_enabled`;
     const isEnabled = localStorage.getItem(colorSpaceEnabledKey) === 'true';
 
     if (isEnabled) {
-      // Загружаем выбранное цветовое пространство
+      // Load the selected color space
       const colorSpaceKey = `screensaver-${tagName}-colorSpace`;
       const savedColorSpace = localStorage.getItem(colorSpaceKey);
-      this.colorSpace = savedColorSpace || 'oklab'; // используем сохраненное или значение по умолчанию
+      this.colorSpace = savedColorSpace || 'oklab'; // Use the saved value or the default value
     } else {
       this.colorSpace = null;
     }
   }
 
 
-  // Метод для добавления нового цвета
+  // A method for adding a new color
   addColor(color) {
     if (!color) {
       color = this.generateRandomColor();
     }
     this.colors.push(color);
-    this.animationOffset = 0; // сбрасываем смещение при изменении количества цветов
+    this.animationOffset = 0; // Reset the offset when the number of colors changes
     this.saveColorsToStorage();
-    // Перерисовываем компонент чтобы обновить градиент
+    // Redraw the component to update the gradient
     this.shadowRoot.innerHTML = '';
     this.render();
-    this.updatePosition(); // принудительно обновляем позицию после перерисовки
-    // Обновляем настройки в drawer
+    this.updatePosition(); // We force a refresh of the position after redrawing
+    // Updating the settings in the drawer
     this.updateSettingsInDrawer();
   }
 
-  // Метод для удаления цвета по индексу
+  // Method for Removing Color by Index
   removeColor(index) {
     if (this.colors.length > 1 && index >= 0 && index < this.colors.length) {
       this.colors.splice(index, 1);
-      this.animationOffset = 0; // сбрасываем смещение при изменении количества цветов
+      this.animationOffset = 0; // Reset the offset when the number of colors changes
       this.saveColorsToStorage();
-      // Перерисовываем компонент чтобы обновить градиент
+      // Redraw the component to update the gradient
       this.shadowRoot.innerHTML = '';
       this.render();
-      this.updatePosition(); // принудительно обновляем позицию после перерисовки
-      // Обновляем настройки в drawer
+      this.updatePosition(); // We force a refresh of the position after redrawing
+      // Updating the settings in the drawer
       this.updateSettingsInDrawer();
     }
   }
 
-  // Метод для генерации случайного цвета
+  // A Method for Generating a Random Color
   generateRandomColor() {
     const hue = Math.floor(Math.random() * 360);
-    // Возвращаем HEX вместо HSL для совместимости
+    // We're reverting to HEX instead of HSL for compatibility
     const hslToHex = (h, s, l) => {
       h /= 360;
       s /= 100;
@@ -462,59 +462,59 @@ class LinearGradientScreensaver extends HTMLElement {
     return hslToHex(hue, 70, 50);
   }
 
-  // Метод для перемещения цвета вверх
+  // A method for shifting color upward
   moveColorUp(index) {
     if (index > 0 && index < this.colors.length) {
-      // Меняем местами цвета
+      // Swapping Colors
       [this.colors[index - 1], this.colors[index]] = [this.colors[index], this.colors[index - 1]];
       this.saveColorsToStorage();
-      // Перерисовываем компонент чтобы обновить градиент
+      // Redraw the component to update the gradient
       this.shadowRoot.innerHTML = '';
       this.render();
-      // Обновляем настройки в drawer
+      // Updating the settings in the drawer
       this.updateSettingsInDrawer();
     }
   }
 
-  // Метод для перемещения цвета вниз
+  // A method for shifting the color downward
   moveColorDown(index) {
     if (index >= 0 && index < this.colors.length - 1) {
-      // Меняем местами цвета
+      // Swapping Colors
       [this.colors[index], this.colors[index + 1]] = [this.colors[index + 1], this.colors[index]];
       this.saveColorsToStorage();
-      // Перерисовываем компонент чтобы обновить градиент
+      // Redraw the component to update the gradient
       this.shadowRoot.innerHTML = '';
       this.render();
-      // Обновляем настройки в drawer
+      // Updating the settings in the drawer
       this.updateSettingsInDrawer();
     }
   }
 
-  // Метод для обновления настроек в drawer
+  // A method for updating settings in the drawer
   updateSettingsInDrawer() {
-    // Находим контейнер настроек и обновляем их
+    // Find the settings container and update the settings
     const settingsContainer = document.getElementById('screensaver-settings');
     if (settingsContainer) {
-      // Получаем текущий компонент
+      // Get the current component
       const componentClass = this.constructor;
-      // Пересоздаем настройки
+      // Let's reset the settings
       if (window.createSettingsControls) {
         window.createSettingsControls(componentClass, settingsContainer);
       }
     }
   }
 
-  // Метод для запуска анимации
+  // A method for starting an animation
   startAnimation() {
     if (this.animationTimer) {
-      this.stopAnimation(); // останавливаем предыдущую анимацию, если она была
+      this.stopAnimation(); // We stop the previous animation, if there was one
     }
     this.animationTimer = setInterval(() => {
       this.updateAnimation();
     }, this.updateInterval);
   }
 
-  // Метод для остановки анимации
+  // A method for stopping an animation
   stopAnimation() {
     if (this.animationTimer) {
       clearInterval(this.animationTimer);
@@ -522,14 +522,14 @@ class LinearGradientScreensaver extends HTMLElement {
     }
   }
 
-  // Метод для обновления анимации
+  // A Method for Updating Animations
   updateAnimation() {
-    // Проверяем что updateStep корректный
+    // We check that `updateStep` is correct
     if (isNaN(this.updateStep) || this.updateStep <= 0) {
-      this.updateStep = 1; // сбрасываем на значение по умолчанию
+      this.updateStep = 1; // reset to the default value
     }
-    this.animationOffset = (this.animationOffset + this.updateStep) % (this.backgroundSize + 1); // увеличиваем на заданный шаг от 0% до backgroundSize%
-    this.updatePosition(); // обновляем позицию фона
+    this.animationOffset = (this.animationOffset + this.updateStep) % (this.backgroundSize + 1); // Increase by a specified increment from 0% to backgroundSize%
+    this.updatePosition(); // Update the background position
   }
 }
 

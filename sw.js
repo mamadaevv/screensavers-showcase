@@ -16,7 +16,7 @@ const urlsToCache = [
   'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js'
 ];
 
-// Установка Service Worker
+// Setting Up a Service Worker
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -25,7 +25,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Активация Service Worker
+// Enabling Service Workers
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -42,12 +42,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Обработка запросов с network-first стратегией для разработки
+// Processing Requests Using a "Network-First" Strategy for Development
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Если запрос успешен, обновляем кэш
+        // If the request is successful, we update the cache
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseClone);
@@ -55,8 +55,8 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // При ошибке сети возвращаем кэшированную версию
-        console.log('Service Worker: Загружаю кэшированную версию для:', event.request.url);
+        // If a network error occurs, we return the cached version
+        console.log('Service Worker: Loading the cached version for:', event.request.url);
         return caches.match(event.request);
       })
   );

@@ -1,7 +1,7 @@
 {
   "name": "Screensavers Showcase",
   "short_name": "Screensavers Showcase",
-  "description": "Веб-приложение с разными заставками",
+  "description": "A web application with different splash screens",
   "start_url": "/screensavers-showcase/",
   "scope": "/screensavers-showcase/",
   "display": "standalone",

@@ -16,7 +16,7 @@ const urlsToCache = [
   'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js'
 ];
 
-// Установка Service Worker
+// Installing a Service Worker
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -25,7 +25,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Активация Service Worker
+// Enabling Service Workers
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -42,12 +42,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Обработка запросов с кэшем
+// Processing Requests Using a Cache
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Возвращаем кэшированную версию или загружаем из сети
+        // Return the cached version or load it from the web
         return response || fetch(event.request);
       })
   );

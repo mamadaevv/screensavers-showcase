@@ -3,7 +3,7 @@ class SolidColorScreensaver extends HTMLElement {
     return [
       {
         name: 'color',
-        label: 'Цвет',
+        label: 'Color',
         type: 'color',
         default: '#ff0000'
       }
@@ -13,17 +13,17 @@ class SolidColorScreensaver extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.color = '#ff0000'; // значение по умолчанию: красный
+    this.color = '#ff0000'; // default value: red
   }
 
   connectedCallback() {
-    // Читаем настройки из атрибутов
+    // Reading Settings from Attributes
     const colorAttr = this.getAttribute('data-color');
     if (colorAttr !== null) {
       this.color = colorAttr;
     }
 
-    // Загружаем цвет из localStorage
+    // Loading a color from localStorage
     this.loadColorFromStorage();
 
     this.render();
@@ -50,28 +50,28 @@ class SolidColorScreensaver extends HTMLElement {
     this.shadowRoot.appendChild(container);
     this.backgroundElement = container;
 
-    // Устанавливаем начальный цвет
+    // Set the starting color
     this.updateColor();
   }
 
-  // Метод для обновления цвета
+  // A method for updating colors
   updateColor(newColor) {
     if (newColor !== undefined) {
       this.color = newColor;
-      // Сохраняем цвет в localStorage
+      // Save the color to localStorage
       this.saveColorToStorage();
     }
     this.backgroundElement.style.setProperty('--background-color', this.color);
   }
 
-  // Метод для сохранения цвета в localStorage
+  // A method for storing color in localStorage
   saveColorToStorage() {
     const tagName = this.tagName.toLowerCase();
     const key = `screensaver-${tagName}-color`;
     localStorage.setItem(key, this.color);
   }
 
-  // Метод для загрузки цвета из localStorage
+  // A method for loading a color from localStorage
   loadColorFromStorage() {
     const tagName = this.tagName.toLowerCase();
     const key = `screensaver-${tagName}-color`;

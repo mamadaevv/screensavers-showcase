@@ -1,10 +1,10 @@
 {
     "name": "gradient-screensavers-pwa",
     "version": "1.0.0",
-    "description": "PWA с анимированными градиентными заставками. Поддерживает переключаемые варианты заставок с настраиваемыми параметрами. Можно установить как приложение.",
+    "description": "A PWA with animated gradient splash screens. Supports switchable screensaver options with customizable settings. Can be installed as an app.",
     "main": "script.js",
     "scripts": {
-      "build": "echo \"PWA не требует сборки, просто откройте index.html в браузере\"",
+      "build": "echo \"A PWA does not require a build; open index.html in your browser\"",
       "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": ["screensaver", "gradient", "animation", "pwa", "web-app"],

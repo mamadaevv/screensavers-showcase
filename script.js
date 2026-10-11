@@ -1,9 +1,9 @@
-// Функция определения типа окружения
+// Environment Type Detection Function
 function getEnvironmentType() {
     const hostname = location.hostname;
     const protocol = location.protocol;
 
-    // Локальные окружения
+    // Local Environments
     if (protocol === 'file:' ||
         hostname === 'localhost' ||
         hostname === '127.0.0.1' ||
@@ -14,11 +14,11 @@ function getEnvironmentType() {
         return 'local';
     }
 
-    // Все остальные считаем продакшеном
+    // We consider everything else to be production
     return 'production';
 }
 
-// Регистрация Service Worker для PWA
+// Registering a Service Worker for a PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         const environment = getEnvironmentType();
@@ -26,44 +26,44 @@ if ('serviceWorker' in navigator) {
 
         navigator.serviceWorker.register(swPath)
             .then(registration => {
-                // Service Worker зарегистрирован успешно
+                // The Service Worker was registered successfully
             })
             .catch(error => {
             });
     });
 }
 
-// Обработка установки PWA
+// PWA Setup Processing
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Не предотвращаем показ промпта, позволяем браузеру показать кнопку в адресной строке
+    // We do not prevent the prompt from appearing; we allow the browser to display the button in the address bar
 });
 
 window.addEventListener('appinstalled', (evt) => {
-    // PWA успешно установлено
+    // The PWA has been successfully installed
 });
 
-// Получаем элементы
+// Retrieving elements
 const drawer = document.querySelector('.drawer-placement-start');
 const mainContainer = document.querySelector('main');
 
-// Обработчик клика для открытия drawer
+// Click handler to open the drawer
 mainContainer.addEventListener('click', () => {
     drawer.show();
 });
 
-// Обработчик события закрытия drawer (опционально)
+// Drawer close event handler (optional)
 drawer.addEventListener('sl-after-hide', () => {
-    // Drawer закрыт
+    // The drawer is closed
 });
 
-// Обработчик для кнопки полноэкранного режима в header drawer'а
+// Handler for the full-screen mode button in the header drawer
 document.addEventListener('click', (e) => {
     if (e.target.closest('.fullscreen-button')) {
         toggleFullscreen();
     }
 });
 
-// Функция переключения полноэкранного режима
+// Full-Screen Mode Toggle Feature
 function toggleFullscreen() {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(err => {
@@ -74,10 +74,10 @@ function toggleFullscreen() {
     }
 }
 
-// Получаем селект для выбора заставки
+// We get a drop-down menu for selecting a screensaver
 const screensaverSelect = document.querySelector('sl-select');
 
-// Функции для работы с настройками яркости
+// Functions for adjusting brightness settings
 function getBrightnessSetting() {
     const saved = localStorage.getItem('brightness-value');
     return saved !== null ? parseInt(saved) : 0;
@@ -89,7 +89,7 @@ function saveBrightnessSetting(value) {
 
 function getBrightnessSwitchSetting() {
     const saved = localStorage.getItem('brightness-switch-enabled');
-    return saved !== null ? saved === 'true' : false; // По умолчанию выключено
+    return saved !== null ? saved === 'true' : false; // Disabled by default
 }
 
 function saveBrightnessSwitchSetting(enabled) {
@@ -97,7 +97,7 @@ function saveBrightnessSwitchSetting(enabled) {
 }
 
 
-// Функция обновления яркости
+// Brightness Adjustment Feature
 function updateBrightness() {
     const brightnessSwitch = document.getElementById('brightness-switch');
     const screensaverContainer = document.getElementById('screensaver-container');
@@ -110,7 +110,7 @@ function updateBrightness() {
     const isEnabled = brightnessSwitch.checked;
     const brightness = getBrightnessSetting();
 
-    // Показываем/скрываем элементы управления яркостью
+    // Show/Hide Brightness Controls
     const brightnessContainer = document.getElementById('brightness-settings');
     if (brightnessContainer) {
         const controls = brightnessContainer.querySelectorAll('sl-range, sl-input');
@@ -120,11 +120,11 @@ function updateBrightness() {
     }
 
     if (isEnabled) {
-        // Применяем яркость - инвертированная прозрачность
-        const opacity = (100 - Math.abs(brightness)) / 100; // От 1 до 0
+        // Applying Brightness - Inverted Transparency
+        const opacity = (100 - Math.abs(brightness)) / 100; // From 1 to 0
         screensaverContainer.style.opacity = opacity;
 
-        // Меняем цвет фона body
+        // Change the background color of the body
         if (brightness < 0) {
             body.style.backgroundColor = 'black';
         } else if (brightness > 0) {
@@ -133,21 +133,21 @@ function updateBrightness() {
             body.style.backgroundColor = '';
         }
     } else {
-        // Не применяем яркость - сбрасываем стили
+        // Do not apply brightness—reset the styles
         screensaverContainer.style.opacity = '';
         body.style.backgroundColor = '';
     }
 }
 
 
-// Функция добавления глобальных настроек трансформации
+// Function for Adding Global Transformation Settings
 function addTransformControl(container) {
 
-    // Настройка поворота
+    // Rotation Settings
     const rotationDiv = document.createElement('div');
 
     const rotationLabel = document.createElement('label');
-    rotationLabel.textContent = 'Поворот (°)';
+    rotationLabel.textContent = 'Rotation (°)';
     rotationLabel.style.display = 'block';
     rotationLabel.style.fontSize = 'var(--sl-input-label-font-size-small)';
     rotationLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
@@ -169,7 +169,7 @@ function addTransformControl(container) {
     rotationInput.size = 'small';
     rotationInput.style.marginLeft = 'var(--sl-spacing-small)';
 
-    // Синхронизируем значения между range и input
+    // Synchronize values between `range` and `input`
     rotationRange.addEventListener('input', (e) => {
         rotationInput.value = e.target.value;
         saveRotationSetting(e.target.value);
@@ -198,11 +198,11 @@ function addTransformControl(container) {
     rotationDiv.appendChild(rotationRange);
     rotationDiv.appendChild(rotationInput);
 
-    // Настройка масштаба
+    // Scale Settings
     const scaleDiv = document.createElement('div');
 
     const scaleLabel = document.createElement('label');
-    scaleLabel.textContent = 'Масштаб';
+    scaleLabel.textContent = 'Scale';
     scaleLabel.style.display = 'block';
     scaleLabel.style.fontSize = 'var(--sl-input-label-font-size-small)';
     scaleLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
@@ -224,7 +224,7 @@ function addTransformControl(container) {
     scaleInput.size = 'small';
     scaleInput.style.marginLeft = 'var(--sl-spacing-small)';
 
-    // Синхронизируем значения между range и input
+    // Synchronize values between `range` and `input`
     scaleRange.addEventListener('input', (e) => {
         scaleInput.value = e.target.value;
         saveScaleSetting(e.target.value);
@@ -257,31 +257,31 @@ function addTransformControl(container) {
     container.appendChild(scaleDiv);
 }
 
-// Функция добавления глобальной настройки яркости
+// Function to Add a Global Brightness Setting
 function addBrightnessControl(container) {
     const brightnessDiv = document.createElement('div');
 
-    // Создаем контейнер для заголовка и switch
+    // Let's create a container for the header and the switch
     const headerDiv = document.createElement('div');
     headerDiv.style.display = 'flex';
     headerDiv.style.alignItems = 'center';
     headerDiv.style.justifyContent = 'space-between';
 
-    // Создаем лейбл
+    // Creating a Label
     const label = document.createElement('label');
-    label.textContent = 'Яркость';
+    label.textContent = 'Brightness';
     label.style.display = 'block';
     label.style.fontSize = 'var(--sl-input-label-font-size-small)';
     label.style.fontWeight = 'var(--sl-input-label-font-weight)';
     label.style.color = 'var(--sl-input-label-color)';
 
-    // Создаем switch без лейбла
+    // Creating a Switch Without a Label
     const brightnessSwitch = document.createElement('sl-switch');
     brightnessSwitch.id = 'brightness-switch';
     brightnessSwitch.size = 'small';
     brightnessSwitch.checked = getBrightnessSwitchSetting();
 
-    // Обработчик изменения switch яркости
+    // Brightness Switch Change Handler
     brightnessSwitch.addEventListener('sl-change', (event) => {
         const isEnabled = event.target.checked;
         saveBrightnessSwitchSetting(isEnabled);
@@ -291,7 +291,7 @@ function addBrightnessControl(container) {
     headerDiv.appendChild(label);
     headerDiv.appendChild(brightnessSwitch);
 
-    // Создаем sl-range с custom track offset
+    // Creating an sl-range with a custom track offset
     const range = document.createElement('sl-range');
     range.style.setProperty('--thumb-size', '12px');
     range.min = -100;
@@ -300,7 +300,7 @@ function addBrightnessControl(container) {
     range.value = getBrightnessSetting();
     range.style.setProperty('--track-active-offset', '50%');
 
-    // Создаем sl-input для числового ввода
+    // Let's create an `sl-input` for numeric input
     const input = document.createElement('sl-input');
     input.size = 'small';
     input.type = 'number';
@@ -309,7 +309,7 @@ function addBrightnessControl(container) {
     input.step = 1;
     input.value = range.value;
 
-    // Синхронизируем значения между range и input в реальном времени
+    // Synchronize values between `range` and `input` in real time
     range.addEventListener('input', (e) => {
         input.value = e.target.value;
         saveBrightnessSetting(e.target.value);
@@ -340,29 +340,29 @@ function addBrightnessControl(container) {
     container.appendChild(brightnessDiv);
 }
 
-// Функция создания элементов управления настройками
+// Function for Creating Settings Controls
 function createSettingsControls(componentClass, container) {
-  // Делаем функцию глобальной для доступа из компонентов
+  // Make the function global so it can be accessed from components
   window.createSettingsControls = createSettingsControls;
-    // Очищаем контейнер
+    // Cleaning the container
     container.innerHTML = '';
 
-    // Получаем настройки из компонента
+    // Retrieve settings from the component
     const settings = componentClass.getSettings();
 
-    // Вычисляем имя тега компонента (тот же формат, что в switchScreensaver)
+    // Calculate the component's tag name (using the same format as in `switchScreensaver`)
     const componentName = componentClass.name.replace('Screensaver', '');
     const componentTagName = componentName.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '') + '-screensaver';
 
-    // Проверяем состояние анимации
+    // Checking the animation status
     const isAnimationEnabled = getSavedSetting(componentTagName, 'animationEnabled', 'true') === 'true';
-    console.log(`[Отладка] Создание настроек для ${componentTagName}, анимация: ${isAnimationEnabled ? 'ВКЛ' : 'ВЫКЛ'}`);
+    console.log(`[Debugging] Configuring settings for ${componentTagName}, animation: ${isAnimationEnabled ? 'ON' : 'OFF'}`);
 
-    // Функция для проверки, должна ли настройка быть отключена
+    // A function to check whether a setting should be disabled
     const shouldDisableSetting = (settingName) => {
         if (isAnimationEnabled) return false;
 
-        // Настройки, которые отключаются когда анимация выключена
+        // Settings that are disabled when animations are turned off
         const animationSettings = {
             'linear-gradient-screensaver': ['speedPresets', 'updateInterval', 'updateStep'],
             'conic-gradient-screensaver': ['speed'],
@@ -371,12 +371,12 @@ function createSettingsControls(componentClass, container) {
 
         const shouldDisable = animationSettings[componentTagName]?.includes(settingName) || false;
         if (shouldDisable) {
-            console.log(`[Отладка] Отключение настройки ${settingName} для ${componentTagName} (анимация выключена)`);
+            console.log(`[Debugging] Disabling setting ${settingName} for ${componentTagName} (animation disabled)`);
         }
         return shouldDisable;
     };
 
-    // Группируем настройки по типу
+    // Group settings by type
     const rangeSettings = settings.filter(setting => setting.type === 'range');
     const colorSettings = settings.filter(setting => setting.type === 'color');
     const radioSettings = settings.filter(setting => setting.type === 'radio');
@@ -384,17 +384,17 @@ function createSettingsControls(componentClass, container) {
     const switchSettings = settings.filter(setting => setting.type === 'switch');
     const positionCenterSettings = settings.filter(setting => setting.type === 'position-center');
 
-    // Создаем элементы управления для switch настроек (в начале)
+    // Creating controls for the settings switch (at the beginning)
     switchSettings.forEach(setting => {
         const switchDiv = document.createElement('div');
 
-        // Создаем контейнер для заголовка и switch
+        // Let's create a container for the header and the switch
         const headerDiv = document.createElement('div');
         headerDiv.style.display = 'flex';
         headerDiv.style.alignItems = 'center';
         headerDiv.style.justifyContent = 'space-between';
 
-        // Создаем лейбл
+        // Creating a Label
         const label = document.createElement('label');
         label.textContent = setting.label;
         label.style.display = 'block';
@@ -402,27 +402,27 @@ function createSettingsControls(componentClass, container) {
         label.style.fontWeight = 'var(--sl-input-label-font-weight)';
         label.style.color = 'var(--sl-input-label-color)';
 
-        // Создаем switch
+        // Let's create a switch
         const switchElement = document.createElement('sl-switch');
         switchElement.size = 'small';
         const savedValue = getSavedSetting(componentTagName, setting.name, setting.default);
-        // Преобразуем строку в boolean
+        // Convert a string to a boolean
         const checkedValue = savedValue === 'true' || savedValue === true;
         switchElement.checked = checkedValue;
-        console.log(`[Отладка] Создание switch ${setting.name} для ${componentTagName}, значение из localStorage: ${savedValue}, checked: ${checkedValue}`);
+        console.log(`[Debugging] Creating a switch ${setting.name} for ${componentTagName}, value from localStorage: ${savedValue}, checked: ${checkedValue}`);
 
-        // Принудительно обновляем состояние switch
+        // Force a refresh of the switch's status
         requestAnimationFrame(() => {
             switchElement.checked = checkedValue;
         });
 
-        // Обработчик изменения switch
+        // Switch change handler
         switchElement.addEventListener('sl-change', (event) => {
             const isChecked = event.target.checked;
-            console.log(`[Отладка] Switch ${setting.name} изменен на ${isChecked ? 'ВКЛ' : 'ВЫКЛ'} для ${componentTagName}, сохраняю в localStorage`);
-            saveSetting(componentTagName, setting.name, isChecked.toString()); // сохраняем как строку
+            console.log(`[Debugging] Switch ${setting.name} changed to ${isChecked ? 'ON' : 'OFF'} for ${componentTagName}, saving to localStorage`);
+            saveSetting(componentTagName, setting.name, isChecked.toString()); // Save as a string
 
-            // Специальная обработка для animationEnabled
+            // Special handling for `animationEnabled`
             if (setting.name === 'animationEnabled') {
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement && typeof currentElement.updateAnimationEnabled === 'function') {
@@ -440,12 +440,12 @@ function createSettingsControls(componentClass, container) {
         container.appendChild(switchDiv);
     });
 
-    // Специальная обработка для solid-color (inline color picker)
+    // Special processing for solid colors (inline color picker)
     if (componentTagName === 'solid-color-screensaver' && colorSettings.length === 1) {
         const setting = colorSettings[0];
         const colorDiv = document.createElement('div');
 
-        // Создаем лейбл
+        // Creating a Label
         const label = document.createElement('label');
         label.textContent = setting.label;
         label.style.display = 'block';
@@ -453,10 +453,10 @@ function createSettingsControls(componentClass, container) {
         label.style.fontWeight = 'var(--sl-input-label-font-weight)';
         label.style.color = 'var(--sl-input-label-color)';
 
-        // Создаем inline color picker
+        // Creating an inline color picker
         const colorPicker = document.createElement('sl-color-picker');
         colorPicker.value = getSavedSetting(componentTagName, setting.name, setting.default);
-        colorPicker.inline = true; // Используем inline режим
+        colorPicker.inline = true; // Let's use inline mode
         colorPicker.swatches = '#ff0000;#ff8000;#ffff00;#80ff00;#00ff80;#0080ff;#8000ff;#ffffff;#c0c0c0;#808080;#404040;#000000';
 
         colorPicker.addEventListener('sl-input', (e) => {
@@ -470,14 +470,14 @@ function createSettingsControls(componentClass, container) {
         colorDiv.appendChild(label);
         colorDiv.appendChild(colorPicker);
         container.appendChild(colorDiv);
-        return; // Для solid-color не нужны другие настройки
+        return; // No other settings are needed for solid-color
     }
 
-    // Создаем элементы управления для range настроек
+    // Creating controls for the settings range
     rangeSettings.forEach(setting => {
         const settingDiv = document.createElement('div');
 
-        // Создаем лейбл
+        // Creating a Label
         const label = document.createElement('label');
         label.textContent = setting.label;
         label.style.display = 'block';
@@ -485,7 +485,7 @@ function createSettingsControls(componentClass, container) {
         label.style.fontWeight = 'var(--sl-input-label-font-weight)';
         label.style.color = 'var(--sl-input-label-color)';
 
-        // Создаем sl-range без лейбла
+        // Create an sl-range without a label
         const range = document.createElement('sl-range');
         range.style.setProperty('--thumb-size', '12px');
         range.min = setting.min;
@@ -493,7 +493,7 @@ function createSettingsControls(componentClass, container) {
         range.step = setting.step;
         range.value = getSavedSetting(componentTagName, setting.name, setting.default);
 
-        // Создаем sl-input для числового ввода без лейбла
+        // Create an `sl-input` for numeric input without a label
         const input = document.createElement('sl-input');
         input.type = 'number';
         input.min = setting.min;
@@ -502,7 +502,7 @@ function createSettingsControls(componentClass, container) {
         input.value = range.value;
         input.size = 'small';
 
-        // Отключаем элементы управления, если настройка отключена
+        // Hide the controls if the setting is disabled
         const isDisabled = setting.disabled || shouldDisableSetting(setting.name);
         if (isDisabled) {
             range.disabled = true;
@@ -511,12 +511,12 @@ function createSettingsControls(componentClass, container) {
             input.style.opacity = '0.5';
         }
 
-        // Синхронизируем значения между range и input в реальном времени
+        // Synchronize values between `range` and `input` in real time
         range.addEventListener('input', (e) => {
             input.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
 
-            // Специальная обработка для настроек компонента
+            // Special processing for component settings
             if (setting.name === 'globalRotation' || setting.name === 'globalScale') {
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement) {
@@ -570,7 +570,7 @@ function createSettingsControls(componentClass, container) {
             input.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
 
-            // Специальная обработка для настроек компонента
+            // Special processing for component settings
             if (setting.name === 'globalRotation' || setting.name === 'globalScale') {
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement) {
@@ -624,7 +624,7 @@ function createSettingsControls(componentClass, container) {
             range.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
 
-            // Специальная обработка для настроек компонента
+            // Special processing for component settings
             if (setting.name === 'globalRotation' || setting.name === 'globalScale') {
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement) {
@@ -678,7 +678,7 @@ function createSettingsControls(componentClass, container) {
             range.value = e.target.value;
             saveSetting(componentTagName, setting.name, e.target.value);
 
-            // Специальная обработка для настроек компонента
+            // Special processing for component settings
             if (setting.name === 'globalRotation' || setting.name === 'globalScale') {
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement) {
@@ -731,12 +731,12 @@ function createSettingsControls(componentClass, container) {
         settingDiv.appendChild(label);
         settingDiv.appendChild(input);
 
-        // Добавляем button-group для globalRotation между input и range
+        // Add a button group for `globalRotation` between the `input` and `range` elements
         if (setting.name === 'globalRotation') {
-            // Создаем button-group
+            // Let's create a button group
             const buttonGroup = document.createElement('sl-button-group');
 
-            // Добавляем button элементы
+            // Add button elements
             const presets = [-90, -45, 0, 45, 90, 180];
             presets.forEach(value => {
                 const button = document.createElement('sl-button');
@@ -744,7 +744,7 @@ function createSettingsControls(componentClass, container) {
                 button.value = value;
                 button.size = 'small';
 
-                // Обработчик клика на кнопку
+                // Button Click Handler
                 button.addEventListener('click', () => {
                     input.value = value;
                     range.value = value;
@@ -763,12 +763,12 @@ function createSettingsControls(componentClass, container) {
         }
 
 
-        // Добавляем button-group для offsetX в коническом градиенте
+        // Add a button group for `offsetX` in the conical gradient
         if (setting.name === 'offsetX' && componentTagName === 'conic-gradient-screensaver') {
-            // Создаем button-group
+            // Let's create a button group
             const buttonGroup = document.createElement('sl-button-group');
 
-            // Добавляем button элементы
+            // Add button elements
             const presets = [0, 50, 100];
             presets.forEach(value => {
                 const button = document.createElement('sl-button');
@@ -776,7 +776,7 @@ function createSettingsControls(componentClass, container) {
                 button.value = value;
                 button.size = 'small';
 
-                // Обработчик клика на кнопку
+                // Button Click Handler
                 button.addEventListener('click', () => {
                     input.value = value;
                     range.value = value;
@@ -794,12 +794,12 @@ function createSettingsControls(componentClass, container) {
             settingDiv.appendChild(buttonGroup);
         }
 
-        // Добавляем button-group для offsetY в коническом градиенте
+        // Add a button group for `offsetY` in the conical gradient
         if (setting.name === 'offsetY' && componentTagName === 'conic-gradient-screensaver') {
-            // Создаем button-group
+            // Let's create a button group
             const buttonGroup = document.createElement('sl-button-group');
 
-            // Добавляем button элементы
+            // Add button elements
             const presets = [0, 50, 100];
             presets.forEach(value => {
                 const button = document.createElement('sl-button');
@@ -807,7 +807,7 @@ function createSettingsControls(componentClass, container) {
                 button.value = value;
                 button.size = 'small';
 
-                // Обработчик клика на кнопку
+                // Button Click Handler
                 button.addEventListener('click', () => {
                     input.value = value;
                     range.value = value;
@@ -829,11 +829,11 @@ function createSettingsControls(componentClass, container) {
         container.appendChild(settingDiv);
     });
 
-    // Создаем элементы управления для position-center настроек
+    // Creating controls for the "position-center" settings
     positionCenterSettings.forEach(setting => {
         const settingDiv = document.createElement('div');
 
-        // Создаем лейбл
+        // Creating a Label
         const label = document.createElement('label');
         label.textContent = setting.label;
         label.style.display = 'block';
@@ -843,13 +843,13 @@ function createSettingsControls(componentClass, container) {
 
         settingDiv.appendChild(label);
 
-        // Контейнер для групп кнопок
+        // Button Group Container
         const buttonContainer = document.createElement('div');
         buttonContainer.style.display = 'flex';
         buttonContainer.style.flexDirection = 'column';
-        buttonContainer.style.gap = '-1px'; // отрицательный отступ для компенсации границ
+        buttonContainer.style.gap = '-1px'; // negative indentation to compensate for borders
 
-        // Определяем позиции и иконки
+        // Defining Positions and Icons
         const positions = [
             ['top-left', 'top-center', 'top-right'],
             ['middle-left', 'center', 'middle-right'],
@@ -873,8 +873,8 @@ function createSettingsControls(componentClass, container) {
             rowContainer.style.display = 'flex';
             rowContainer.style.gap = '0';
 
-            // Добавляем классы для CSS Parts кастомизации отступов
-            if (rowIndex < 2) { // первые две строки
+            // Add classes for CSS Parts to customize indentation
+            if (rowIndex < 2) { // the first two lines
                 rowContainer.classList.add('position-row-with-margin');
             }
 
@@ -887,7 +887,7 @@ function createSettingsControls(componentClass, container) {
                 button.size = 'small';
                 button.style.flex = '1';
 
-                // Добавляем классы для CSS Parts кастомизации
+                // Adding Classes for CSS Parts Customization
                 const isCorner = (rowIndex === 0 && colIndex === 0) || // top-left
                                 (rowIndex === 0 && colIndex === 2) || // top-right
                                 (rowIndex === 2 && colIndex === 0) || // bottom-left
@@ -904,13 +904,13 @@ function createSettingsControls(componentClass, container) {
                     button.classList.add('position-no-radius');
                 }
 
-                // Устанавливаем иконку вместо текста
+                // Set an icon instead of text
                 const icon = document.createElement('sl-icon');
                 icon.name = icons[position];
                 icon.slot = 'prefix';
                 button.appendChild(icon);
 
-                // Преобразовываем позицию в проценты
+                // Convert the position to a percentage
                 const positionToCoords = {
                     'top-left': { x: 0, y: 0 },
                     'top-center': { x: 50, y: 0 },
@@ -923,11 +923,11 @@ function createSettingsControls(componentClass, container) {
                     'bottom-right': { x: 100, y: 100 }
                 };
 
-                // Обработчик клика на кнопку
+                // Button Click Handler
                 button.addEventListener('click', () => {
                     const coords = positionToCoords[position];
 
-                    // Обновляем компонент
+                    // Updating the component
                     const currentElement = document.querySelector(`${componentTagName}`);
                     if (currentElement) {
                         if (typeof currentElement.updateOffsetX === 'function') {
@@ -937,8 +937,8 @@ function createSettingsControls(componentClass, container) {
                             currentElement.updateOffsetY(coords.y);
                         }
 
-                        // Обновляем значения в слайдерах UI
-                        // Находим слайдеры offsetX и offsetY
+                        // Updating Values in UI Sliders
+                        // Find the offsetX and offsetY sliders
                         const allSettingDivs = container.querySelectorAll('#screensaver-settings > div');
                         let offsetXDiv, offsetYDiv;
 
@@ -949,15 +949,15 @@ function createSettingsControls(componentClass, container) {
 
                             if (inputs.length > 0 && ranges.length > 0) {
                                 const label = div.querySelector('label');
-                                if (label && label.textContent.includes('Смещение по X')) {
+                                if (label && label.textContent.includes('X-axis offset')) {
                                     offsetXDiv = div;
-                                } else if (label && label.textContent.includes('Смещение по Y')) {
+                                } else if (label && label.textContent.includes('Y-Offset')) {
                                     offsetYDiv = div;
                                 }
                             }
                         }
 
-                        // Обновляем слайдеры и инпуты
+                        // Updating sliders and input fields
                         if (offsetXDiv) {
                             const offsetXInput = offsetXDiv.querySelector('sl-input');
                             const offsetXRange = offsetXDiv.querySelector('sl-range');
@@ -985,11 +985,11 @@ function createSettingsControls(componentClass, container) {
         container.appendChild(settingDiv);
     });
 
-    // Создаем элементы управления для button-group настроек
+    // Creating controls for the settings button group
     buttonGroupSettings.forEach(setting => {
         const settingDiv = document.createElement('div');
 
-        // Создаем лейбл
+        // Creating a Label
         const label = document.createElement('label');
         label.textContent = setting.label;
         label.style.display = 'block';
@@ -999,23 +999,23 @@ function createSettingsControls(componentClass, container) {
 
         settingDiv.appendChild(label);
 
-        // Добавляем button-group для speedPresets в линейном градиенте
+        // Add a button group for speedPresets with a linear gradient
         if (setting.name === 'speedPresets' && componentTagName === 'linear-gradient-screensaver') {
-            // Создаем button-group
+            // Let's create a button group
             const buttonGroup = document.createElement('sl-button-group');
 
-            // Проверяем, должна ли настройка быть отключена
+            // Check whether the setting should be disabled
             const isDisabled = shouldDisableSetting(setting.name);
             if (isDisabled) {
                 buttonGroup.style.opacity = '0.5';
                 buttonGroup.style.pointerEvents = 'none';
             }
 
-            // Добавляем button элементы
+            // Add button elements
             const presets = [
-                { value: 'slow', label: 'Медленно', interval: 500, step: 1 },
-                { value: 'normal', label: 'Нормально', interval: 100, step: 1 },
-                { value: 'fast', label: 'Быстро', interval: 10, step: 1 }
+                { value: 'slow', label: 'Slowly', interval: 500, step: 1 },
+                { value: 'normal', label: 'Normal', interval: 100, step: 1 },
+                { value: 'fast', label: 'Quickly', interval: 10, step: 1 }
             ];
             presets.forEach(preset => {
                 const button = document.createElement('sl-button');
@@ -1026,14 +1026,14 @@ function createSettingsControls(componentClass, container) {
                     button.disabled = true;
                 }
 
-                // Обработчик клика на кнопку
+                // Button Click Handler
                 button.addEventListener('click', () => {
-                    // Устанавливаем значения периода и шага
+                    // Set the period and step values
                     saveSetting(componentTagName, 'updateInterval', preset.interval);
                     saveSetting(componentTagName, 'updateStep', preset.step);
 
-                    // Обновляем соответствующие элементы управления
-                    // Находим элементы по их положению в DOM
+                    // Update the relevant controls
+                    // Finding Elements by Their Position in the DOM
                     const allSettingDivs = container.querySelectorAll('#screensaver-settings > div');
                     let intervalDiv, stepDiv;
 
@@ -1044,9 +1044,9 @@ function createSettingsControls(componentClass, container) {
 
                         if (inputs.length > 0 && ranges.length > 0) {
                             if (!intervalDiv) {
-                                intervalDiv = div; // первый div с input/range - updateInterval
+                                intervalDiv = div; // The first div with an input/range element - updateInterval
                             } else {
-                                stepDiv = div; // второй div с input/range - updateStep
+                                stepDiv = div; // The second div with an input/range element—updateStep
                                 break;
                             }
                         }
@@ -1099,18 +1099,18 @@ function createSettingsControls(componentClass, container) {
         container.appendChild(settingDiv);
     });
 
-    // Создаем блок для radio настроек
+    // Creating a block for radio settings
     if (radioSettings.length > 0) {
         radioSettings.forEach(setting => {
             const radioDiv = document.createElement('div');
 
-            // Создаем контейнер для заголовка и switch (как у яркости)
+            // Let's create a container for the header and the switch (like the one for brightness)
             const headerDiv = document.createElement('div');
             headerDiv.style.display = 'flex';
             headerDiv.style.alignItems = 'center';
             headerDiv.style.justifyContent = 'space-between';
 
-            // Создаем лейбл
+            // Creating a Label
             const label = document.createElement('label');
             label.textContent = setting.label;
             label.style.display = 'block';
@@ -1118,12 +1118,12 @@ function createSettingsControls(componentClass, container) {
             label.style.fontWeight = 'var(--sl-input-label-font-weight)';
             label.style.color = 'var(--sl-input-label-color)';
 
-            // Создаем switch для включения/выключения настройки
+            // Let's create a switch to turn the setting on or off
             const radioSwitch = document.createElement('sl-switch');
             radioSwitch.size = 'small';
             radioSwitch.checked = getSavedSetting(componentTagName, setting.name + '_enabled', 'false') === 'true';
 
-            // Обработчик изменения switch
+            // Switch change handler
             radioSwitch.addEventListener('sl-change', (event) => {
                 const isEnabled = event.target.checked;
                 saveSetting(componentTagName, setting.name + '_enabled', isEnabled);
@@ -1132,11 +1132,11 @@ function createSettingsControls(componentClass, container) {
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement && typeof currentElement.updateColorSpace === 'function') {
                     if (isEnabled) {
-                        // При включении применяем сохраненное цветовое пространство
+                        // When turning it on, we apply the saved color space
                         const savedColorSpace = localStorage.getItem(`screensaver-${componentTagName}-${setting.name}`);
                         currentElement.updateColorSpace(savedColorSpace || setting.default);
                     } else {
-                        // При выключении сбрасываем цветовое пространство
+                        // When shutting down, reset the color space
                         currentElement.updateColorSpace(null);
                     }
                 }
@@ -1145,13 +1145,13 @@ function createSettingsControls(componentClass, container) {
             headerDiv.appendChild(label);
             headerDiv.appendChild(radioSwitch);
 
-            // Создаем radio-group
+            // Let's create a radio group
             const radioGroup = document.createElement('sl-radio-group');
             radioGroup.name = setting.name;
             radioGroup.value = getSavedSetting(componentTagName, setting.name, setting.default);
             radioGroup.size = 'small';
 
-            // Добавляем radio элементы
+            // Add radio buttons
             setting.options.forEach(option => {
                 const radio = document.createElement('sl-radio');
                 radio.value = option.value;
@@ -1159,19 +1159,19 @@ function createSettingsControls(componentClass, container) {
                 radioGroup.appendChild(radio);
             });
 
-            // Обработчик изменения radio-group
+            // radio-group change handler
             radioGroup.addEventListener('sl-change', (e) => {
                 const value = e.target.value;
                 saveSetting(componentTagName, setting.name, value);
 
-                // При выборе опции в radio-group автоматически включаем switch
+                // When a radio button in a radio group is selected, the switch is automatically turned on
                 if (!radioSwitch.checked) {
                     radioSwitch.checked = true;
                     saveSetting(componentTagName, setting.name + '_enabled', true);
                     updateRadioGroupVisibility(radioDiv, setting, componentTagName, true);
                 }
 
-                // Применяем цветовое пространство
+                // We use a color space
                 const currentElement = document.querySelector(`${componentTagName}`);
                 if (currentElement && typeof currentElement.updateColorSpace === 'function') {
                     currentElement.updateColorSpace(value);
@@ -1181,7 +1181,7 @@ function createSettingsControls(componentClass, container) {
             radioDiv.appendChild(headerDiv);
             radioDiv.appendChild(radioGroup);
 
-            // Управляем видимостью radio-group
+            // Controlling the visibility of a radio group
             updateRadioGroupVisibility(radioDiv, setting, componentTagName, radioSwitch.checked);
 
             container.appendChild(radioDiv);
@@ -1189,24 +1189,24 @@ function createSettingsControls(componentClass, container) {
     }
 
 
-    // Создаем блок для цветовых настроек
+    // Let's create a block for color settings
     if (colorSettings.length > 0) {
         const colorsDiv = document.createElement('div');
 
-        // Создаем заголовок для блока цветов
+        // Let's create a heading for the color block
         const colorsLabel = document.createElement('label');
-        colorsLabel.textContent = 'Цвета';
+        colorsLabel.textContent = 'Colors';
         colorsLabel.style.display = 'block';
         colorsLabel.style.fontSize = 'var(--sl-input-label-font-size-small)';
         colorsLabel.style.fontWeight = 'var(--sl-input-label-font-weight)';
         colorsLabel.style.color = 'var(--sl-input-label-color)';
 
-        // Создаем контейнер для цветовых строк
+        // Let's create a container for color strings
         const colorsContainer = document.createElement('div');
         colorsContainer.className = 'colors-container';
 
         colorSettings.forEach((setting, index) => {
-            // Создаем строку для каждого цвета
+            // Let's create a row for each color
             const colorRow = document.createElement('div');
             colorRow.className = 'color-row';
             colorRow.style.display = 'flex';
@@ -1216,7 +1216,7 @@ function createSettingsControls(componentClass, container) {
             colorRow.style.border = '1px solid var(--sl-color-neutral-200)';
             colorRow.style.borderRadius = 'var(--sl-border-radius-medium)';
 
-            // Цветовой пикер (swatch)
+            // Color Picker (Swatch)
             const colorPicker = document.createElement('sl-color-picker');
             colorPicker.value = getSavedSetting(componentTagName, setting.name, setting.default);
             colorPicker.size = 'small';
@@ -1225,7 +1225,7 @@ function createSettingsControls(componentClass, container) {
             colorPicker.addEventListener('sl-input', (e) => {
                 const newHex = e.target.value;
 
-                // Для конического, линейного градиентов и смены цветов обновляем массив цветов в компоненте
+                // For conical, linear, and color-fade gradients, we update the color array in the component
                 if (componentTagName === 'conic-gradient-screensaver' || componentTagName === 'linear-gradient-screensaver' || componentTagName === 'color-transition-screensaver') {
                     const currentElement = document.querySelector(`${componentTagName}`);
                     if (currentElement && typeof currentElement.updateColor === 'function') {
@@ -1233,7 +1233,7 @@ function createSettingsControls(componentClass, container) {
                         currentElement.updateColor(colorIndex, newHex);
                     }
                 } else {
-                    // Для других компонентов сохраняем обычным способом
+                    // For the other components, save them as usual
                     saveSetting(componentTagName, setting.name, newHex);
                     updateCurrentScreensaver();
                 }
@@ -1241,12 +1241,12 @@ function createSettingsControls(componentClass, container) {
 
             const currentColor = getSavedSetting(componentTagName, setting.name, setting.default);
 
-            // Кнопка дублировать цвет
+            // "Duplicate Color" button
             const duplicateButton = document.createElement('sl-button');
             duplicateButton.variant = 'default';
             duplicateButton.size = 'small';
             duplicateButton.innerHTML = '<sl-icon name="copy"></sl-icon>';
-            duplicateButton.title = 'Дублировать цвет';
+            duplicateButton.title = 'Duplicate Color';
 
             duplicateButton.addEventListener('click', () => {
                 const currentElement = document.querySelector(`${componentTagName}`);
@@ -1255,16 +1255,16 @@ function createSettingsControls(componentClass, container) {
                 }
             });
 
-            // Группа кнопок перемещения
+            // Navigation Button Group
             const moveButtonGroup = document.createElement('sl-button-group');
-            moveButtonGroup.label = 'Перемещение цвета';
+            moveButtonGroup.label = 'Color Shift';
 
-            // Кнопка переместить цвет вверх
+            // "Move Color Up" button
             const moveUpButton = document.createElement('sl-button');
             moveUpButton.variant = 'default';
             moveUpButton.size = 'small';
             moveUpButton.innerHTML = '<sl-icon name="arrow-up"></sl-icon>';
-            moveUpButton.title = 'Переместить цвет вверх';
+            moveUpButton.title = 'Move the color up';
 
             moveUpButton.addEventListener('click', () => {
                 const currentElement = document.querySelector(`${componentTagName}`);
@@ -1273,12 +1273,12 @@ function createSettingsControls(componentClass, container) {
                 }
             });
 
-            // Кнопка переместить цвет вниз
+            // "Move Color Down" button
             const moveDownButton = document.createElement('sl-button');
             moveDownButton.variant = 'default';
             moveDownButton.size = 'small';
             moveDownButton.innerHTML = '<sl-icon name="arrow-down"></sl-icon>';
-            moveDownButton.title = 'Переместить цвет вниз';
+            moveDownButton.title = 'Move the color down';
 
             moveDownButton.addEventListener('click', () => {
                 const currentElement = document.querySelector(`${componentTagName}`);
@@ -1287,16 +1287,16 @@ function createSettingsControls(componentClass, container) {
                 }
             });
 
-            // Добавляем кнопки в группу
+            // Add buttons to a group
             moveButtonGroup.appendChild(moveUpButton);
             moveButtonGroup.appendChild(moveDownButton);
 
-            // Кнопка удалить цвет
+            // "Delete Color" button
             const deleteButton = document.createElement('sl-button');
             deleteButton.variant = 'danger';
             deleteButton.size = 'small';
             deleteButton.innerHTML = '<sl-icon name="trash"></sl-icon>';
-            deleteButton.title = 'Удалить цвет';
+            deleteButton.title = 'Remove Color';
 
             deleteButton.addEventListener('click', () => {
                 const currentElement = document.querySelector(`${componentTagName}`);
@@ -1305,24 +1305,24 @@ function createSettingsControls(componentClass, container) {
                 }
             });
 
-            // Отключаем кнопки в зависимости от позиции цвета
+            // Disable buttons based on the color's position
             if (colorSettings.length <= 1) {
-                // Для solid-color или единственного цвета отключаем все кнопки управления
+                // For solid-color or a single color, disable all control buttons
                 moveUpButton.disabled = true;
                 moveDownButton.disabled = true;
                 deleteButton.disabled = true;
             } else {
-                // Отключаем кнопку "вверх" для первого цвета
+                // Disable the "Up" button for the first color
                 if (index === 0) {
                     moveUpButton.disabled = true;
                 }
-                // Отключаем кнопку "вниз" для последнего цвета
+                // Disable the "down" button for the last color
                 if (index === colorSettings.length - 1) {
                     moveDownButton.disabled = true;
                 }
             }
 
-            // Добавляем элементы в строку
+            // Adding Elements to a String
             colorRow.appendChild(colorPicker);
             colorRow.appendChild(moveButtonGroup);
             colorRow.appendChild(duplicateButton);
@@ -1331,7 +1331,7 @@ function createSettingsControls(componentClass, container) {
             colorsContainer.appendChild(colorRow);
         });
 
-        // Кнопка "Добавить цвет" на всю ширину
+        // "Add Color" button that spans the full width
         const addColorRow = document.createElement('div');
 
         const addColorButton = document.createElement('sl-button');
@@ -1339,7 +1339,7 @@ function createSettingsControls(componentClass, container) {
         addColorButton.outline = true;
         addColorButton.size = 'small';
         addColorButton.style.width = '100%';
-        addColorButton.innerHTML = '<sl-icon name="plus" slot="prefix"></sl-icon>Добавить цвет';
+        addColorButton.innerHTML = '<sl-icon name="plus" slot="prefix"></sl-icon>Add a color';
 
         addColorButton.addEventListener('click', () => {
             const currentElement = document.querySelector(`${componentTagName}`);
@@ -1357,7 +1357,7 @@ function createSettingsControls(componentClass, container) {
     }
 }
 
-// Функция для управления видимостью radio-group
+// Function for controlling the visibility of a radio group
 function updateRadioGroupVisibility(container, setting, componentTagName, isEnabled) {
     const radioGroup = container.querySelector('sl-radio-group');
     if (radioGroup) {
@@ -1365,16 +1365,16 @@ function updateRadioGroupVisibility(container, setting, componentTagName, isEnab
     }
 }
 
-// Функция получения сохраненной настройки
+// Function for Retrieving Saved Settings
 function getSavedSetting(componentName, settingName, defaultValue) {
-    // Для solid-color получаем одиночный цвет
+    // For "solid-color," we get a single color
     if (componentName === 'solid-color-screensaver' && settingName === 'color') {
         const colorKey = `screensaver-${componentName}-color`;
         const savedColor = localStorage.getItem(colorKey);
         return savedColor !== null ? savedColor : defaultValue;
     }
 
-    // Для цветовых настроек конического градиента и смены цветов получаем из массива цветов
+    // For the color settings of the conical gradient and color transitions, we retrieve the following from the color array
     if ((componentName === 'conic-gradient-screensaver' || componentName === 'color-transition-screensaver') && settingName.startsWith('color')) {
         const colorsKey = `screensaver-${componentName}-colors`;
         const savedColors = localStorage.getItem(colorsKey);
@@ -1395,13 +1395,13 @@ function getSavedSetting(componentName, settingName, defaultValue) {
     return saved !== null ? saved : defaultValue;
 }
 
-// Функция сохранения настройки
+// Setting Save Function
 function saveSetting(componentName, settingName, value) {
     const key = `screensaver-${componentName}-${settingName}`;
     localStorage.setItem(key, value);
 }
 
-// Функция получения класса компонента по имени
+// Function to retrieve a component's class by name
 function getComponentClass(componentName) {
     switch (componentName) {
         case 'linear-gradient-screensaver':
@@ -1417,7 +1417,7 @@ function getComponentClass(componentName) {
     }
 }
 
-// Функция обновления текущей заставки с новыми настройками
+// A feature that updates the current screensaver with new settings
 function updateCurrentScreensaver() {
     const container = document.getElementById('screensaver-container');
     const currentElement = container.firstElementChild;
@@ -1429,7 +1429,7 @@ function updateCurrentScreensaver() {
         settings.forEach(setting => {
             const value = getSavedSetting(componentName, setting.name, setting.default);
 
-            // Пропускаем отключенные настройки
+            // Skip disabled settings
             if (setting.disabled) {
                 return;
             }
@@ -1460,32 +1460,32 @@ function updateCurrentScreensaver() {
             } else if (setting.name === 'backgroundSize' && componentName === 'linear-gradient-screensaver' && typeof currentElement.updateBackgroundSize === 'function') {
                 currentElement.updateBackgroundSize(value);
             } else if (setting.name === 'animationEnabled' && typeof currentElement.updateAnimationEnabled === 'function') {
-                console.log(`[Отладка] Изменение настройки анимации для ${componentName}: ${value === 'true' ? 'ВКЛ' : 'ВЫКЛ'}`);
+                console.log(`[Debugging] Changing the animation settings for ${componentName}: ${value === 'true' ? 'ON' : 'OFF'}`);
                 currentElement.updateAnimationEnabled(value === 'true');
             }
         });
     }
 }
 
-// Функция переключения заставок
+// Screensaver Toggle Feature
 function switchScreensaver(type) {
-    // Информация о текущей заставке
+    // Information about the current screensaver
     const screensaverNames = {
-        'linear-gradient': 'Линейный градиент',
-        'conic-gradient': 'Конический градиент',
-        'color-transition': 'Смена цветов',
-        'solid-color': 'Сплошной цвет'
+        'linear-gradient': 'Linear gradient',
+        'conic-gradient': 'Conical gradient',
+        'color-transition': 'Color Change',
+        'solid-color': 'Solid color'
     };
 
     const container = document.getElementById('screensaver-container');
     const settingsContainer = document.getElementById('screensaver-settings');
     const brightnessContainer = document.getElementById('brightness-settings');
 
-    // Очищаем контейнеры
+    // Cleaning the containers
     container.innerHTML = '';
     brightnessContainer.innerHTML = '';
 
-    // Получаем класс компонента
+    // Get the component class
     let componentClass;
     switch (type) {
         case 'linear-gradient':
@@ -1504,15 +1504,15 @@ function switchScreensaver(type) {
             return;
     }
 
-    // Создаем новый компонент
+    // Creating a New Component
     const component = document.createElement(`${type}-screensaver`);
 
-    // Устанавливаем настройки из localStorage
+    // Loading settings from localStorage
     const settings = componentClass.getSettings();
     const componentTagName = `${type}-screensaver`;
     settings.forEach(setting => {
-        // Для цветовых настроек конического градиента, смены цветов и сплошного цвета не устанавливаем атрибуты,
-        // поскольку цвета загружаются из localStorage в connectedCallback
+        // For color settings such as conical gradients, color transitions, and solid colors, we do not set any attributes,
+        // since the colors are loaded from localStorage in the connectedCallback
         if (!(componentTagName === 'conic-gradient-screensaver' && setting.type === 'color') &&
             !(componentTagName === 'color-transition-screensaver' && setting.type === 'color') &&
             !(componentTagName === 'solid-color-screensaver' && setting.type === 'color')) {
@@ -1521,59 +1521,59 @@ function switchScreensaver(type) {
         }
     });
 
-    // Добавляем компонент в контейнер
+    // Add a component to the container
     container.appendChild(component);
 
-    // Создаем динамические элементы управления
+    // Creating Dynamic Controls
     createSettingsControls(componentClass, settingsContainer);
 
-    // Добавляем настройки яркости ПОСЛЕ создания основных настроек
+    // Add the brightness settings AFTER you've configured the basic settings
     addBrightnessControl(brightnessContainer);
 
-    // Применяем настройки яркости
+    // Applying brightness settings
     updateBrightness();
 
-    // Сохраняем выбор в localStorage
+    // Save the selection to localStorage
     localStorage.setItem('selectedScreensaver', type);
 }
 
-// Обработчик изменения селекта
+// Select Change Handler
 screensaverSelect.addEventListener('sl-change', (event) => {
     const selectedValue = event.target.value;
     switchScreensaver(selectedValue);
 });
 
-// Обработчик изменения switch яркости будет добавлен в addBrightnessControl
+// A handler for the switch brightness change will be added to addBrightnessControl
 
-// Функция обновления размера текущей заставки
+// Function to update the size of the current screensaver
 function updateCurrentScreensaverSize() {
     const container = document.getElementById('screensaver-container');
     if (container && container.firstElementChild) {
         const component = container.firstElementChild;
-        // Проверяем, есть ли метод updateTransform у компонента
+        // Check whether the component has an `updateTransform` method
         if (component.updateTransform) {
             component.updateTransform();
         }
     }
 }
 
-// Функция принудительной загрузки заставки из хранилища
+// Function to force the loading of a splash screen from storage
 function forceLoadScreensaver() {
-    // Получаем сохраненную заставку или используем значение по умолчанию
+    // Retrieve the saved screensaver or use the default value
     const savedScreensaver = localStorage.getItem('selectedScreensaver') || 'linear-gradient';
 
-    // Устанавливаем значение в селекте
+    // Set a value in the drop-down menu
     if (screensaverSelect) {
         screensaverSelect.value = savedScreensaver;
     }
 
-    // Показываем выбранную заставку
+    // Displaying the selected screensaver
     switchScreensaver(savedScreensaver);
 }
 
-// Дополнительная инициализация при готовности DOM
+// Additional initialization when the DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Если основные компоненты уже зарегистрированы, загружаем заставку
+    // If the main components have already been registered, load the splash screen
     const checkComponentsReady = () => {
         const components = [
             'sl-select', 'sl-option',
@@ -1590,13 +1590,13 @@ document.addEventListener('DOMContentLoaded', () => {
     checkComponentsReady();
 });
 
-// Инициализация при загрузке страницы
+// Initialization When the Page Loads
 window.addEventListener('load', () => {
-    // Ждем инициализации основных Shoelace компонентов и компонентов заставок
+    // Waiting for the main Shoelace components and splash screen components to initialize
     const componentPromises = [
         customElements.whenDefined('sl-select'),
         customElements.whenDefined('sl-option'),
-        // Ждем регистрации компонентов заставок
+        // Waiting for the splash screen components to be registered
         customElements.whenDefined('linear-gradient-screensaver'),
         customElements.whenDefined('conic-gradient-screensaver'),
         customElements.whenDefined('color-transition-screensaver'),
@@ -1606,12 +1606,12 @@ window.addEventListener('load', () => {
     Promise.all(componentPromises).then(() => {
         forceLoadScreensaver();
 
-        // Настраиваем обработчик изменения размера окна для обновления заставки
+        // Configure the window resize handler to update the screensaver
         window.addEventListener('resize', () => {
             updateCurrentScreensaverSize();
         });
     }).catch((error) => {
-        // Даже при ошибке пытаемся загрузить заставку
+        // Even if an error occurs, we try to load the splash screen
         forceLoadScreensaver();
     });
 });

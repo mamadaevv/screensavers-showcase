@@ -1,4 +1,4 @@
-/* Базовые стили для применения системного шрифта Shoelace ко всему документу */
+/* Basic styles for applying the Shoelace system font to the entire document */
 html, body {
   height: 100%;
   margin: 0;
@@ -7,17 +7,17 @@ html, body {
   overflow: hidden;
 }
 
-/* Кастомные стили приложения */
+/* Custom App Styles */
 .drawer-placement-start {
     --size: 300px;
 }
 
-/* Убрать затемнение overlay для drawer */
+/* Remove the overlay shading for the drawer */
 sl-drawer::part(overlay) {
     background-color: transparent;
 }
 
-/* Вертикальное расположение элементов настроек */
+/* Vertical Arrangement of Settings */
 #brightness-settings > div,
 #screensaver-select > div,
 #screensaver-settings > div {
@@ -32,7 +32,7 @@ sl-drawer::part(overlay) {
     gap: var(--sl-spacing-large);
 }
 
-/* Растягиваем button-group по ширине */
+/* Stretch the button group to fill the width */
 #screensaver-settings sl-button-group {
     width: 100%;
 }
@@ -49,7 +49,7 @@ sl-drawer::part(overlay) {
 
 
 
-/* Стили для main контейнера - занимает всю высоту и кликабелен */
+/* Styles for the main container—takes up the entire height and is clickable */
 main {
     height: 100vh;
     cursor: pointer;
@@ -62,7 +62,7 @@ main {
     height: 100%;
 }
 
-/* Стили для цветовых строк */
+/* Styles for Color Rows */
 .color-row {
     transition: all 0.2s ease;
 }
@@ -73,12 +73,12 @@ main {
 }
 
 
-/* Стили для кнопки автора в footer drawer'а */
+/* Styles for the author button in the footer drawer */
 sl-drawer .author-button {
     width: 100%;
 }
 
-/* Более нейтральный цвет для text button с поддержкой тем */
+/* A more neutral color for text buttons with theme support */
 sl-drawer .author-button::part(label) {
     color: var(--sl-color-gray-600);
 }
@@ -87,7 +87,7 @@ sl-drawer .author-button:hover::part(label) {
     color: var(--sl-color-gray-700);
 }
 
-/* В темной теме используем более светлые оттенки */
+/* In a dark theme, we use lighter shades */
 .sl-theme-dark sl-drawer .author-button::part(label) {
     color: var(--sl-color-gray-400);
 }
@@ -96,7 +96,7 @@ sl-drawer .author-button:hover::part(label) {
     color: var(--sl-color-gray-300);
 }
 
-/* Стили для кнопок положения центра */
+/* Styles for Center Position Buttons */
 .position-top-left::part(base) {
     border-radius: var(--sl-border-radius-medium) 0 0 0;
 }
@@ -117,7 +117,7 @@ sl-drawer .author-button:hover::part(label) {
     border-radius: 0;
 }
 
-/* Отступы между строками кнопок положения центра */
+/* Spacing between the rows of buttons in the center position */
 .position-row-with-margin {
     margin-bottom: -1px;
 }

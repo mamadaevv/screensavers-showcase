@@ -1,91 +1,91 @@
 # Screensavers Showcase
 
-Progressive Web App (PWA) с анимированными заставками экрана на базе веб-компонентов. Поддерживает переключаемые варианты заставок с динамически генерируемыми настройками. Можно установить как нативное приложение.
+A Progressive Web App (PWA) with animated splash screens based on web components. Supports switchable splash screen options with dynamically generated settings. Can be installed as a native app.
 
-## Возможности
+## Features
 
-- **Линейный градиент**: Плавно вращающийся линейный градиент от красного к синему через желтый
-- **Конический градиент**: Цветной конический градиент с плавным вращением
-- **Переход цветов**: Плавная смена между несколькими цветами с настраиваемой скоростью
-- **Сплошной цвет**: Статический фон с выбранным цветом
-- **Динамические настройки**: Скорость вращения/смены (0-100°/сек или 1-10) с сохранением в localStorage
-- **Веб-компоненты**: Каждая заставка - самодостаточный веб-компонент с инкапсуляцией
-- **Адаптивный интерфейс**: Боковая панель настроек с кнопкой ⚙️
-- **Настройки яркости**: Глобальная регулировка яркости экрана (-100 до +100)
-- **Оффлайн работа**: Кэширование через Service Worker
+- **Linear gradient**: A smoothly rotating linear gradient from red to blue through yellow
+- **Conical gradient**: A colored conical gradient with a smooth rotation
+- **Color transitions**: Smooth transitions between multiple colors at a customizable speed
+- **Solid Color**: A static background in the selected color
+- **Dynamic settings**: Rotation/swivel speed (0–100°/sec or 1–10) saved in localStorage
+- **Web Components**: Each splash screen is a self-contained, encapsulated web component
+- **Adaptive Interface**: Sidebar with a ⚙️ button
+- **Brightness Settings**: Global screen brightness adjustment (-100 to +100)
+- **Offline operation**: Caching via Service Worker
 
-## Структура проекта
+## Project Structure
 
 ```
 /
-├── index.html                          # Основной HTML файл с drawer интерфейсом
-├── style.css                           # Глобальные стили приложения
-├── script.js                           # Основная логика приложения и управление заставками
-├── manifest.json                       # Web App Manifest для PWA
-├── sw.js                              # Service Worker для оффлайн работы
-├── favicon.ico                        # Иконка приложения
-├── screensavers/                       # Папка с веб-компонентами заставок
+├── index.html                          # Main HTML file with a drawer interface
+├── style.css                           # Global Application Styles
+├── script.js                           # The Application's Core Logic and Splash Screen Control
+├── manifest.json                       # Web App Manifest for PWAs
+├── sw.js                              # Service Worker for Offline Use
+├── favicon.ico                        # App icon
+├── screensavers/                       # Folder containing web components for splash screens
 │   ├── linear-gradient/
-│   │   └── linear-gradient-component.js    # Веб-компонент линейного градиента
+│   │   └── linear-gradient-component.js    # Linear Gradient Web Component
 │   └── conic-gradient/
-│       └── conic-gradient-component.js      # Веб-компонент конического градиента
-├── node_modules/                      # Зависимости (Shoelace UI)
-├── package.json                       # Конфигурация проекта
-└── README.md                          # Эта документация
+│       └── conic-gradient-component.js      # Conical Gradient Web Component
+├── node_modules/                      # Dependencies (Shoelace UI)
+├── package.json                       # Project Configuration
+└── README.md                          # This documentation
 ```
 
-## Технологии
+## Technologies
 
-- **HTML5**: Семантическая разметка и структура приложения
-- **CSS3**: Стилизация компонентов, CSS Variables, Animations, Grid
-- **JavaScript (ES6+)**: Классы, модули, асинхронные функции, Web Components API
-- **Web Components**: Shadow DOM, Custom Elements, инкапсуляция компонентов
-- **Shoelace UI**: Компоненты интерфейса (@shoelace-style/shoelace v2.20.1)
-- **Progressive Web App (PWA)**: Web App Manifest, Service Worker для оффлайн работы
-- **localStorage**: Сохранение пользовательских настроек
-- **npm**: Управление зависимостями
+- **HTML5**: Semantic Markup and Application Structure
+- **CSS3**: Styling components, CSS variables, animations, Grid
+- **JavaScript (ES6+)**: Classes, modules, asynchronous functions, Web Components API
+- **Web Components**: Shadow DOM, Custom Elements, component encapsulation
+- **Shoelace UI**: UI components (@shoelace-style/shoelace v2.20.1)
+- **Progressive Web App (PWA)**: Web App Manifest, Service Worker for offline functionality
+- **localStorage**: Storing user settings
+- **npm**: Dependency management
 
-## Архитектура
+## Architecture
 
-Проект построен на **веб-компонентах** (Web Components API):
+The project is built using **Web Components** (Web Components API):
 
-- **Shadow DOM**: Инкапсуляция стилей и разметки каждой заставки
-- **Custom Elements**: Собственные HTML теги (`<linear-gradient-screensaver>`)
-- **Динамическая генерация UI**: Настройки создаются автоматически на основе `getSettings()` методов компонентов
+- **Shadow DOM**: Encapsulation of the styles and markup for each splash screen
+- **Custom Elements**: Custom HTML tags (`<linear-gradient-screensaver>`)
+- **Dynamic UI Generation**: Settings are created automatically based on the `getSettings()` methods of the components
 
-### Основные файлы
+### Main Files
 
 **index.html**
-- Основная разметка с drawer интерфейсом
-- Подключение веб-компонентов
-- Форма настроек с динамически генерируемыми элементами управления
+- Basic layout with a drawer interface
+- Connecting Web Components
+- A settings form with dynamically generated controls
 
 **script.js**
-- Управление переключением заставок
-- Динамическая генерация элементов настроек
-- Работа с localStorage
-- Инициализация приложения
+- Screen Saver Control
+- Dynamic generation of configuration elements
+- Working with localStorage
+- Application Initialization
 
-**Веб-компоненты** (`*-component.js`)
-- Полностью самодостаточные модули
-- Инкапсулируют HTML, CSS и JavaScript
-- Поддерживают настройки через атрибуты данных
-- Управляют собственной анимацией
+**Web Components** (`*-component.js`)
+- Fully self-contained modules
+- They encapsulate HTML, CSS, and JavaScript
+- Support settings via data attributes
+- Control their own animations
 
-## Управление
+## Management
 
-- **Открытие настроек**: Клик по кнопке ⚙️ в левом верхнем углу
-- **Переключение заставок**: Выбор в выпадающем списке селекта
-- **Настройка скорости**: Ползунок и числовое поле (0-100°/сек)
-- **Закрытие настроек**: Клик вне панели drawer
+- **Open Settings**: Click the ⚙️ button in the upper-left corner
+- **Switching between screensavers**: Select from the drop-down list
+- **Speed adjustment**: Slider and numeric field (0–100°/sec)
+- **Close Settings**: Click outside the drawer panel
 
-## Добавление новой заставки
+## Adding a New Screensaver
 
-Для добавления новой заставки следуйте этим шагам:
+To add a new screensaver, follow these steps:
 
-### 1. Создайте компонент заставки
+### 1. Create a splash screen component
 
-Создайте папку в `screensavers/` (например, `new-effect/`) и файл `new-effect-component.js`:
+Create a folder in `screensavers/` (for example, `new-effect/`) and a file named `new-effect-component.js`:
 
 ```javascript
 class NewEffectScreensaver extends HTMLElement {
@@ -93,14 +93,14 @@ class NewEffectScreensaver extends HTMLElement {
     return [
       {
         name: 'speed',
-        label: 'Скорость эффекта',
+        label: 'Speed of Effect',
         type: 'range',
         min: 0,
         max: 100,
         default: 50,
         step: 1
       }
-      // Добавьте другие настройки по необходимости
+      // Add other settings as needed
     ];
   }
 
@@ -112,7 +112,7 @@ class NewEffectScreensaver extends HTMLElement {
   }
 
   connectedCallback() {
-    // Чтение настроек из атрибутов
+    // Reading Settings from Attributes
     const speedAttr = this.getAttribute('data-speed');
     if (speedAttr !== null) {
       this.speed = parseInt(speedAttr, 10);
@@ -135,7 +135,7 @@ class NewEffectScreensaver extends HTMLElement {
         left: 0;
         width: 100%;
         height: 100%;
-        background: /* ваш эффект */;
+        background: /* your effect */;
         z-index: -1;
       }
     `;
@@ -156,7 +156,7 @@ class NewEffectScreensaver extends HTMLElement {
       if (lastTime === 0) lastTime = currentTime;
 
       const deltaTime = currentTime - lastTime;
-      // Ваша логика анимации здесь
+      // Your animation logic here
 
       lastTime = currentTime;
       this.animationId = requestAnimationFrame(animate);
@@ -181,122 +181,122 @@ class NewEffectScreensaver extends HTMLElement {
 customElements.define('new-effect-screensaver', NewEffectScreensaver);
 ```
 
-### 2. Подключите компонент в `index.html`
+### 2. Connect the component in `index.html`
 
-Добавьте в конец `<head>`:
+Add the following to the end of `<head>`:
 
 ```html
 <script src="screensavers/new-effect/new-effect-component.js"></script>
 ```
 
-### 3. Добавьте вариант в селектор в `index.html`
+### 3. Add the variant to the selector in `index.html`
 
-Найдите `<sl-select>` и добавьте:
+Find `<sl-select>` and add:
 
 ```html
-<sl-option value="new-effect">Новый эффект</sl-option>
+<sl-option value="new-effect">New Effect</sl-option>
 ```
 
-### 4. Обновите `script.js`
+### 4. Update `script.js`
 
-**В функции `getComponentClass`:**
+**In the `getComponentClass` function:**
 ```javascript
 case 'new-effect-screensaver':
     return NewEffectScreensaver;
 ```
 
-**В функции `switchScreensaver`:**
+**In the `switchScreensaver` function:**
 ```javascript
 case 'new-effect':
     componentClass = NewEffectScreensaver;
     break;
 ```
 
-**В `DOMContentLoaded` обработчике:**
+**In the `DOMContentLoaded` handler:**
 ```javascript
 const components = [
-    // ... существующие компоненты
+    // ... existing components
     'new-effect-screensaver'
 ];
 ```
 
-**В `window.addEventListener('load')`:**
+**In `window.addEventListener('load')`:**
 ```javascript
 const componentPromises = [
-    // ... существующие промисы
+    // ... existing promises
     customElements.whenDefined('new-effect-screensaver')
 ];
 ```
 
-### 5. Поддержка специальных настроек
+### 5. Support for Custom Settings
 
-Для цветовых настроек с массивом цветов:
-- Реализуйте методы `updateColor(index, color)`, `addColor(color)`, `removeColor(index)`
-- Сохраняйте цвета в localStorage с ключом `screensaver-{tagName}-colors`
+For color settings using a color array:
+- Implement the methods `updateColor(index, color)`, `addColor(color)`, and `removeColor(index)`
+- Save the colors to localStorage with the key `screensaver-{tagName}-colors`
 
-Для одиночных цветовых настроек:
-- Реализуйте метод `updateColor(color)`
-- Сохраняйте цвет в localStorage с ключом `screensaver-{tagName}-color`
+For individual color settings:
+- Implement the `updateColor(color)` method
+- Save the color to localStorage with the key `screensaver-{tagName}-color`
 
-Компонент автоматически получит динамически сгенерированные настройки на основе метода `getSettings()`.
+The component will automatically retrieve dynamically generated settings based on the `getSettings()` method.
 
-## Запуск
+## Launch
 
-### Локальный запуск
-Откройте `index.html` в современном браузере с поддержкой ES6 модулей и Service Workers.
+### Local Execution
+Open `index.html` in a modern browser that supports ES6 modules and Service Workers.
 
-### Развертывание на GitHub Pages
+### Deployment to GitHub Pages
 
-Проект настроен для автоматического развертывания на GitHub Pages:
+The project is configured for automatic deployment to GitHub Pages:
 
-1. **Создайте репозиторий** на GitHub
-2. **Загрузите код** в репозиторий:
+1. **Create a repository** on GitHub
+2. **Upload the code** to the repository:
    ```bash
    git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
    git push -u origin main
    ```
-3. **Включите GitHub Pages** в настройках репозитория:
-   - Перейдите в Settings → Pages
-   - Выберите "GitHub Actions" как источник
-4. **Дождитесь развертывания** - GitHub Actions автоматически опубликует приложение
+3. **Enable GitHub Pages** in the repository settings:
+   - Go to Settings → Pages
+   - Select "GitHub Actions" as the source
+4. **Wait for deployment** — GitHub Actions will automatically publish the app
 
-Приложение будет доступно по адресу: `https://YOUR_USERNAME.github.io/YOUR_REPO/`
+The app will be available at: `https://YOUR_USERNAME.github.io/YOUR_REPO/`
 
-## Установка как PWA
+## Install as a PWA
 
-Приложение можно установить как нативное на следующих платформах:
+The app can be installed natively on the following platforms:
 
 ### Chrome/Chromium (Android/Desktop)
-1. Откройте приложение в браузере
-2. Нажмите кнопку "Установить" в адресной строке или меню
+1. Open the app in your browser
+2. Click the "Install" button in the address bar or menu
 
 ### Firefox (Desktop)
-1. Откройте приложение в браузере
-2. Нажмите кнопку "Установить это приложение" в адресной строке
+1. Open the app in your browser
+2. Click the "Install this app" button in the address bar
 
 ### Safari (iOS)
-1. Откройте приложение в Safari
-2. Нажмите кнопку "Поделиться" (Share)
-3. Выберите "На экран «Домой»" (Add to Home Screen)
+1. Open the app in Safari
+2. Click the "Share" button
+3. Select "Add to Home Screen"
 
 ### Edge (Windows)
-1. Откройте приложение в браузере
-2. Нажмите кнопку "Установить" в адресной строке
+1. Open the app in your browser
+2. Click the "Install" button in the address bar
 
-После установки приложение будет работать в полноэкранном режиме без браузерных элементов управления.
+Once installed, the app will run in full-screen mode without browser controls.
 
-## Совместимость
+## Compatibility
 
-### Браузерная поддержка
+### Browser Support
 - Chrome 60+
 - Firefox 55+
 - Safari 11+
 - Edge 79+
 
-### PWA поддержка
-- Chrome/Chromium 70+ (полная поддержка)
-- Firefox 68+ (ограниченная поддержка)
+### PWA Support
+- Chrome/Chromium 70+ (full support)
+- Firefox 68+ (limited support)
 - Safari 12.2+ (iOS), 13.1+ (macOS)
-- Edge 79+ (полная поддержка)
+- Edge 79+ (full support)
 
-PWA функции (установка, оффлайн режим) доступны только при использовании HTTPS или localhost.
+PWA features (installation, offline mode) are available only when using HTTPS or localhost.

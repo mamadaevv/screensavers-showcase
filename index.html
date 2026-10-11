@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Screensavers">
-    <meta name="description" content="Веб-приложение с анимированными градиентными заставками">
+    <meta name="description" content="A web application with animated gradient splash screens">
     <title>Screensavers</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -20,40 +20,40 @@
     <div class="container">
         <main>
             <div id="screensaver-container">
-                <!-- Контейнер для заставок -->
+                <!-- Placeholder Container -->
             </div>
         </main>
 
         <!-- Drawer -->
-        <sl-drawer label="Настройки" placement="start" class="drawer-placement-start" style="--size: 320px;">
-            <sl-icon-button slot="header-actions" name="arrows-fullscreen" class="fullscreen-button" title="Развернуть на весь экран"></sl-icon-button>
+        <sl-drawer label="Settings" placement="start" class="drawer-placement-start" style="--size: 320px;">
+            <sl-icon-button slot="header-actions" name="arrows-fullscreen" class="fullscreen-button" title="Expand to full screen"></sl-icon-button>
             
             <div id= "screensaver-select" style="margin-bottom: var(--sl-spacing-large);">
                 <div>
-                    <label style="display: block; font-size: var(--sl-input-label-font-size-small); font-weight: var(--sl-input-label-font-weight); color: var(--sl-input-label-color);">Выберите заставку</label>
+                    <label style="display: block; font-size: var(--sl-input-label-font-size-small); font-weight: var(--sl-input-label-font-weight); color: var(--sl-input-label-color);">Select a screensaver</label>
                     <sl-select value="linear-gradient" size="small">
-                        <sl-option value="linear-gradient">Линейный градиент</sl-option>
-                        <sl-option value="conic-gradient">Конический градиент</sl-option>
-                        <sl-option value="color-transition">Смена цветов</sl-option>
-                        <sl-option value="solid-color">Сплошной цвет</sl-option>
+                        <sl-option value="linear-gradient">Linear gradient</sl-option>
+                        <sl-option value="conic-gradient">Conical gradient</sl-option>
+                        <sl-option value="color-transition">Color Change</sl-option>
+                        <sl-option value="solid-color">Solid color</sl-option>
                     </sl-select>
                 </div>
             </div>
 
             <div id="brightness-settings">
-                <!-- Настройки яркости будут добавлены сюда -->
+                <!-- Brightness settings will be added here -->
             </div>
 
             <sl-divider></sl-divider>
 
             <form id="screensaver-settings-form" novalidate>
                 <div id="screensaver-settings">
-                    <!-- Динамически создаваемые настройки -->
+                    <!-- Dynamically Generated Settings -->
                 </div>
             </form>
 
             <div slot="footer">
-                <sl-button variant="text" href="https://github.com/mamadaevv" target="_blank" class="author-button">Автор: Ник М</sl-button>
+                <sl-button variant="text" href="https://github.com/mamadaevv" target="_blank" class="author-button">Author: Nick M</sl-button>
             </div>
         </sl-drawer>
     </div>
